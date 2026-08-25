@@ -4590,6 +4590,12 @@ describeEmbeddedPostgres("issueService blockers and dependency wake readiness", 
         title: "Child A",
         status: "done",
         priority: "medium",
+        // Give each child a distinct issueNumber so the wake-readiness query's
+        // `orderBy(asc(issueNumber), asc(createdAt))` has a real tiebreaker.
+        // A normal create always assigns a distinct issueNumber; without one
+        // here, both rows tie on issueNumber and on the same-statement
+        // createdAt, so Postgres returns them in an undefined order.
+        issueNumber: 1,
       },
       {
         id: childB,
@@ -4598,6 +4604,7 @@ describeEmbeddedPostgres("issueService blockers and dependency wake readiness", 
         title: "Child B",
         status: "blocked",
         priority: "medium",
+        issueNumber: 2,
       },
     ]);
 
