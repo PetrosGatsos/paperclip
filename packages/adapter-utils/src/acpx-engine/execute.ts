@@ -22,6 +22,7 @@ import {
   prepareAdapterExecutionTargetRuntime,
   readAdapterExecutionTarget,
   resolveAdapterExecutionTargetTimeout,
+  resolveReferencedSourceIgnore,
   runAdapterExecutionTargetShellCommand,
   startAdapterExecutionTargetPaperclipBridge,
   startAdapterExecutionTargetProcessSessionBridge,
@@ -31,6 +32,7 @@ import {
   type AdapterExecutionTargetTimeoutResolution,
   type AdapterManagedRuntimeAsset,
   type PreparedAdapterExecutionTargetRuntime,
+  type ReferencedSourceIgnoreResolution,
   type SandboxAdditionalSource,
 } from "@paperclipai/adapter-utils/execution-target";
 import type { DuplexLossReason } from "../duplex-observability.js";
@@ -518,9 +520,14 @@ export function finalizeLaunchEnvironment(
 }
 
 // Directory names the staging path never ships for a referenced project (heavy
-// build/cache output and git history). The content signature skips them so it
-// reflects only the staged tree and never reads their bytes. Keep this set equal
-// to the staging excludes in the sandbox and remote runtimes.
+// build/cache output and git history), applied regardless of the project's
+// ignore resolution. The content signature skips them so it reflects only the
+// staged tree and never reads their bytes. Keep this set equal to the fixed
+// excludes the sandbox and SSH runtimes always apply. A project's OWN resolved
+// Git-ignored paths (see `resolveReferencedSourceIgnore`) are matched
+// separately, by relative path, inside `referencedSourceContentSignature` — that
+// is the real invariant now: the signature and both staging lanes must consume
+// the SAME one resolution per project, not just this fixed name list.
 const REFERENCED_SOURCE_SIGNATURE_SKIP_DIRS = new Set([
   "node_modules",
   "vendor",
@@ -550,12 +557,30 @@ const REFERENCED_SOURCE_SIGNATURE_SKIP_DIRS = new Set([
  * re-checkout that restores the same size and timestamp. The byte hash busts on any
  * content change, so the fingerprint busts and the next launch stages the current
  * tree. The walk skips the heavy build, cache, and git directories the staging path
- * never ships, and records a symlink by its target text without following it. On a
- * read error the function returns a stable marker, so the fingerprint does not churn
- * while staging surfaces the real error. The walk runs only when the run carries
- * referenced projects (the multi-project sync path).
+ * never ships, plus the project's own resolved Git-ignored paths, and records a
+ * symlink by its target text without following it. On a read error the function
+ * returns a stable marker, so the fingerprint does not churn while staging
+ * surfaces the real error. The walk runs only when the run carries referenced
+ * projects (the multi-project sync path).
+ *
+ * `ignoreResolution` is the ONE resolution `resolveReferencedSourceIgnore`
+ * computed for this project — the same one the sandbox lane and the SSH lane
+ * consume. A `failed` resolution skips the walk entirely and returns a stable
+ * marker instead, because a failed project is not staged and its bytes are not
+ * read anywhere.
  */
-async function referencedSourceContentSignature(localPath: string): Promise<string> {
+export async function referencedSourceContentSignature(
+  localPath: string,
+  ignoreResolution: ReferencedSourceIgnoreResolution,
+): Promise<string> {
+  if (ignoreResolution.kind === "failed") {
+    return `unreadable:${ignoreResolution.reason}`;
+  }
+  const isIgnoredByGitResolution = (relativePath: string): boolean =>
+    ignoreResolution.kind === "git" &&
+    ignoreResolution.ignoredPaths.some(
+      (entry) => relativePath === entry || relativePath.startsWith(`${entry}/`),
+    );
   const hash = createHash("sha256");
   const walk = async (relative: string): Promise<void> => {
     const current = relative ? path.join(localPath, relative) : localPath;
@@ -563,6 +588,9 @@ async function referencedSourceContentSignature(localPath: string): Promise<stri
     dirents.sort((left, right) => (left.name < right.name ? -1 : left.name > right.name ? 1 : 0));
     for (const dirent of dirents) {
       const next = relative ? path.posix.join(relative, dirent.name) : dirent.name;
+      if (isIgnoredByGitResolution(next)) {
+        continue;
+      }
       if (dirent.isDirectory()) {
         if (REFERENCED_SOURCE_SIGNATURE_SKIP_DIRS.has(dirent.name)) {
           continue;
@@ -1539,32 +1567,56 @@ async function buildRuntime(input: {
   const additionalSourceRecords = (
     Array.isArray(realizationContext.additional) ? realizationContext.additional : []
   ).map((entry) => parseObject(entry));
-  const additionalSources: SandboxAdditionalSource[] = additionalSourceRecords
-    .map((entry) => ({ localPath: asString(entry.path, ""), projectId: asString(entry.projectId, "") }))
+  const additionalSourceCandidates = additionalSourceRecords
+    .map((entry) => ({
+      localPath: asString(entry.path, ""),
+      projectId: asString(entry.projectId, ""),
+      projectWorkspaceId: asString(entry.projectWorkspaceId, ""),
+      repoUrl: asString(entry.repoUrl, ""),
+      repoRef: asString(entry.repoRef, ""),
+    }))
     .filter((entry) => entry.localPath.length > 0 && entry.projectId.length > 0);
+  // Resolve each referenced project's Git-ignored paths ONCE, here, before any
+  // staging site runs. The sandbox lane, the SSH lane, and the content signature
+  // below all consume this SAME resolution per project, so they can never apply
+  // a different exclusion set to the same project. See
+  // `resolveReferencedSourceIgnore` for the fail-closed rules.
+  const additionalSourcesWithIgnore = await Promise.all(
+    additionalSourceCandidates.map(async (entry) => ({
+      ...entry,
+      ignoreResolution: await resolveReferencedSourceIgnore(entry.localPath),
+    })),
+  );
+  const additionalSources: SandboxAdditionalSource[] = additionalSourcesWithIgnore.map((entry) => ({
+    localPath: entry.localPath,
+    projectId: entry.projectId,
+    ignoreResolution: entry.ignoreResolution,
+  }));
   // Stable identity of the referenced-project set for the session fingerprint.
   // The staged-runtime cache reuses already-staged referenced-project trees on a
   // compatible resume, so the fingerprint must change when the set OR a project's
   // pinned checkout changes. Without this, a resume reuses a stale staged tree.
   // Fold in each project's id, host path, workspace id, and pinned ref; sort by
   // projectId so the identity depends on the set, not the record order.
-  const additionalSourcesIdentityBase = additionalSourceRecords
+  const additionalSourcesIdentityBase = additionalSourcesWithIgnore
     .map((entry) => ({
-      projectId: asString(entry.projectId, ""),
-      localPath: asString(entry.path, ""),
-      projectWorkspaceId: asString(entry.projectWorkspaceId, ""),
-      repoUrl: asString(entry.repoUrl, ""),
-      repoRef: asString(entry.repoRef, ""),
+      projectId: entry.projectId,
+      localPath: entry.localPath,
+      projectWorkspaceId: entry.projectWorkspaceId,
+      repoUrl: entry.repoUrl,
+      repoRef: entry.repoRef,
+      ignoreResolution: entry.ignoreResolution,
     }))
-    .filter((entry) => entry.localPath.length > 0 && entry.projectId.length > 0)
     .sort((a, b) => (a.projectId < b.projectId ? -1 : a.projectId > b.projectId ? 1 : 0));
   // Metadata alone does not change on a content-only checkout change (same host
   // path and pinned ref, new file bytes). Fold in each tree's content signature so
   // a file add, remove, or edit busts the fingerprint and the resume re-stages.
+  // The signature reads the same `ignoreResolution` the staging sites above use,
+  // so it never disagrees with what was actually shipped.
   const additionalSourcesIdentity = await Promise.all(
-    additionalSourcesIdentityBase.map(async (entry) => ({
+    additionalSourcesIdentityBase.map(async ({ ignoreResolution, ...entry }) => ({
       ...entry,
-      contentSignature: await referencedSourceContentSignature(entry.localPath),
+      contentSignature: await referencedSourceContentSignature(entry.localPath, ignoreResolution),
     })),
   );
   // Referenced-project workspace hints exposed to the agent through PAPERCLIP_WORKSPACES_JSON. The

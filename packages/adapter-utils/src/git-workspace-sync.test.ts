@@ -14,6 +14,7 @@ import {
   integrateImportedGitHead,
   isMissingGitPrerequisiteError,
   readGitWorkspaceSnapshot,
+  readReferencedSourceGitIgnoredPaths,
   runLocalGit,
   sanitizeGitRemoteUrl,
   setExpensiveWorkspaceGitExecutor,
@@ -533,6 +534,69 @@ describe("git workspace sync", () => {
     await expect(integrateImportedGitHead({ localDir: repo, importedHead: missingHead }))
       .rejects.toThrow(/Failed to merge concurrent remote git histories/);
     expect(await git(repo, ["rev-parse", "HEAD"])).toBe(currentHead);
+  });
+
+  describe("readReferencedSourceGitIgnoredPaths", () => {
+    it("returns null for a directory that is not a Git work tree", async () => {
+      const rootDir = await mkdtemp(path.join(os.tmpdir(), "paperclip-referenced-nogit-"));
+      cleanupDirs.push(rootDir);
+      const plainDir = path.join(rootDir, "plain");
+      await mkdir(plainDir, { recursive: true });
+      await writeFile(path.join(plainDir, "file.txt"), "body\n", "utf8");
+
+      await expect(readReferencedSourceGitIgnoredPaths(plainDir)).resolves.toBeNull();
+    });
+
+    it("reads the repository top level and the ignored paths of a Git work tree", async () => {
+      const rootDir = await mkdtemp(path.join(os.tmpdir(), "paperclip-referenced-git-"));
+      cleanupDirs.push(rootDir);
+      const repo = await createRepo(rootDir);
+      await writeFile(path.join(repo, ".gitignore"), "secret.env\nbuild/\n", "utf8");
+      await writeFile(path.join(repo, "secret.env"), "TOKEN=abc\n", "utf8");
+      await mkdir(path.join(repo, "build"), { recursive: true });
+      await writeFile(path.join(repo, "build", "out.js"), "artifact\n", "utf8");
+
+      const scan = await readReferencedSourceGitIgnoredPaths(repo);
+      expect(scan?.toplevel).toBe(await git(repo, ["rev-parse", "--show-toplevel"]));
+      expect(scan?.ignoredPaths).toEqual(["build", "secret.env"]);
+    });
+
+    it("carries the hardened arguments and does not inherit a poisoned GIT_CONFIG_GLOBAL", async () => {
+      const rootDir = await mkdtemp(path.join(os.tmpdir(), "paperclip-referenced-hardened-env-"));
+      cleanupDirs.push(rootDir);
+      const repo = await createRepo(rootDir);
+      const badGlobalConfig = path.join(rootDir, "bad-global-gitconfig");
+      await writeFile(badGlobalConfig, "this is not valid git config syntax [[[\n", "utf8");
+
+      const priorGlobal = process.env.GIT_CONFIG_GLOBAL;
+      process.env.GIT_CONFIG_GLOBAL = badGlobalConfig;
+      try {
+        // A plain invocation inherits the poisoned global config and fails to parse it.
+        await expect(execFile("git", ["-C", repo, "status", "--porcelain"])).rejects.toThrow();
+        // The hardened helper does not inherit GIT_CONFIG_GLOBAL from this process's
+        // environment, so it succeeds regardless.
+        await expect(readReferencedSourceGitIgnoredPaths(repo)).resolves.toMatchObject({ ignoredPaths: [] });
+      } finally {
+        if (priorGlobal === undefined) delete process.env.GIT_CONFIG_GLOBAL;
+        else process.env.GIT_CONFIG_GLOBAL = priorGlobal;
+      }
+    });
+
+    it("neutralizes a repository-local core.fsmonitor hook", async () => {
+      const rootDir = await mkdtemp(path.join(os.tmpdir(), "paperclip-referenced-fsmonitor-"));
+      cleanupDirs.push(rootDir);
+      const repo = await createRepo(rootDir);
+      const markerPath = path.join(rootDir, "pwned.txt");
+      // A malicious repository-local config: a non-boolean `core.fsmonitor` value
+      // is a hook COMMAND Git runs on every status-like read. `--no-optional-locks`
+      // alone does not stop this; only the command-line `-c core.fsmonitor=false`
+      // override does, because command-line config wins over repository config.
+      await git(repo, ["config", "core.fsmonitor", `sh -c 'touch ${markerPath}; printf 1'`]);
+
+      await readReferencedSourceGitIgnoredPaths(repo);
+
+      await expect(stat(markerPath)).rejects.toThrow();
+    });
   });
 });
 

@@ -20,8 +20,12 @@ import type {
   AdditionalSourceStagingFailure,
   SandboxAdditionalSource,
 } from "./sandbox-managed-runtime.js";
+export {
+  resolveReferencedSourceIgnore,
+} from "./sandbox-managed-runtime.js";
 export type {
   AdditionalSourceStagingFailure,
+  ReferencedSourceIgnoreResolution,
   SandboxAdditionalSource,
 } from "./sandbox-managed-runtime.js";
 import {

@@ -31,6 +31,7 @@ import {
   findAncestorBin,
   geminiVersionSupportsNativeAcpFlag,
   parseGeminiVersionParts,
+  referencedSourceContentSignature,
   rewriteGeminiAcpFlagForVersion,
   summarizeAcpxTurnUsage,
   type AcpxEngineExecutorOptions,
@@ -1511,6 +1512,53 @@ describe("shared ACPX engine runtime behavior", () => {
     // The content signature reads bytes, so an equal-size, equal-mtime edit busts
     // the fingerprint and the resume re-stages instead of reusing a stale tree.
     expect(fp(after)).not.toBe(fp(before));
+  });
+
+  describe("referencedSourceContentSignature", () => {
+    it("returns a stable marker without walking the tree when the ignore resolution failed", async () => {
+      const root = await makeTempRoot();
+      // A directory that does not exist: a walk would throw ENOENT. The
+      // `failed` resolution must short-circuit before any `fs.readdir` call.
+      const localPath = path.join(root, "does-not-exist");
+
+      const signature = await referencedSourceContentSignature(localPath, { kind: "failed", reason: "git status timed out" });
+
+      expect(signature).toBe("unreadable:git status timed out");
+    });
+
+    it("skips a Git-ignored file (exact match) so its content never affects the signature", async () => {
+      const root = await makeTempRoot();
+      const localPath = path.join(root, "project");
+      await fs.mkdir(localPath, { recursive: true });
+      await fs.writeFile(path.join(localPath, "kept.txt"), "kept\n", "utf8");
+      await fs.writeFile(path.join(localPath, "secret.env"), "TOKEN=1\n", "utf8");
+
+      const resolution = { kind: "git" as const, ignoredPaths: ["secret.env"] };
+      const before = await referencedSourceContentSignature(localPath, resolution);
+      await fs.writeFile(path.join(localPath, "secret.env"), "TOKEN=2\n", "utf8");
+      const afterIgnoredEdit = await referencedSourceContentSignature(localPath, resolution);
+      await fs.writeFile(path.join(localPath, "kept.txt"), "kept, changed\n", "utf8");
+      const afterKeptEdit = await referencedSourceContentSignature(localPath, resolution);
+
+      // Editing the ignored file never busts the signature; editing the kept file does.
+      expect(afterIgnoredEdit).toBe(before);
+      expect(afterKeptEdit).not.toBe(before);
+    });
+
+    it("skips every file under a Git-ignored directory (prefix match)", async () => {
+      const root = await makeTempRoot();
+      const localPath = path.join(root, "project");
+      await fs.mkdir(path.join(localPath, "build", "nested"), { recursive: true });
+      await fs.writeFile(path.join(localPath, "kept.txt"), "kept\n", "utf8");
+      await fs.writeFile(path.join(localPath, "build", "nested", "artifact.js"), "v1\n", "utf8");
+
+      const resolution = { kind: "git" as const, ignoredPaths: ["build"] };
+      const before = await referencedSourceContentSignature(localPath, resolution);
+      await fs.writeFile(path.join(localPath, "build", "nested", "artifact.js"), "v2\n", "utf8");
+      const after = await referencedSourceContentSignature(localPath, resolution);
+
+      expect(after).toBe(before);
+    });
   });
 
   it("shapes ACPX session env for remote execution identities", async () => {
