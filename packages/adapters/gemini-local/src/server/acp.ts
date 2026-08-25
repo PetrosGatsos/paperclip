@@ -31,6 +31,7 @@ import {
   asString,
   parseObject,
 } from "@paperclipai/adapter-utils/server-utils";
+import { classifyWorkspaceRestoreFailure } from "@paperclipai/adapter-utils/workspace-restore-merge";
 import { DEFAULT_GEMINI_LOCAL_MODEL } from "../index.js";
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
@@ -166,6 +167,7 @@ async function prepareGeminiRemoteManagedHome(
     try {
       await onLog("stdout", "[paperclip] Restoring workspace changes from the sandbox.\n");
       await stagedRuntime.restoreWorkspace((line) => onLog("stdout", line));
+      return { ok: true };
     } catch (err) {
       await onLog(
         "stderr",
@@ -173,6 +175,7 @@ async function prepareGeminiRemoteManagedHome(
           err instanceof Error ? err.message : String(err)
         }\n`,
       );
+      return { ok: false, code: classifyWorkspaceRestoreFailure(err) };
     }
   };
   const geminiSkillsHome = resolveGeminiSkillsHome(input.config);

@@ -1,9 +1,11 @@
-import { chmod, mkdir, mkdtemp, readFile, readdir, rm, stat, symlink, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { chmod, lstat, mkdir, mkdtemp, readFile, readdir, realpath, rm, stat, symlink, writeFile } from "node:fs/promises";
 import net from "node:net";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 
+import { resolvePaperclipInstanceRootForAdapter } from "./server-utils.js";
 import { captureDirectorySnapshot, mergeDirectoryWithBaseline, withDirectoryMergeLock } from "./workspace-restore-merge.js";
 
 describe("workspace restore merge", () => {
@@ -257,5 +259,72 @@ describe("workspace restore merge", () => {
         expect(completedCount).toBe(2);
       },
     );
+  });
+
+  describe("caller-provided env for the lock root", () => {
+    // These tests never touch `process.env`. They prove `withDirectoryMergeLock`
+    // resolves the lock root from a caller's own `env` object — the shape every
+    // environment-parameterized Codex credential call site holds — instead of
+    // always reading `process.env`.
+
+    it("two callers that pass the same env with a temporary PAPERCLIP_HOME take the same lock under that home", async () => {
+      const rootDir = await mkdtemp(path.join(os.tmpdir(), "paperclip-restore-merge-"));
+      cleanupDirs.push(rootDir);
+      const explicitHome = path.join(rootDir, "explicit-home");
+      const env: NodeJS.ProcessEnv = { PAPERCLIP_HOME: explicitHome, PAPERCLIP_INSTANCE_ID: "test-instance" };
+
+      const targetDir = path.join(rootDir, "target");
+      await mkdir(targetDir, { recursive: true });
+
+      const lockRootDir = path.join(explicitHome, "instances", "test-instance", "locks", "directory-merge");
+
+      let lockNameFirstCaller = "";
+      await withDirectoryMergeLock(
+        targetDir,
+        async () => {
+          const entries = await readdir(lockRootDir);
+          lockNameFirstCaller = entries[0] ?? "";
+        },
+        env,
+      );
+
+      let lockNameSecondCaller = "";
+      await withDirectoryMergeLock(
+        targetDir,
+        async () => {
+          const entries = await readdir(lockRootDir);
+          lockNameSecondCaller = entries[0] ?? "";
+        },
+        env,
+      );
+
+      expect(lockNameFirstCaller).not.toBe("");
+      expect(lockNameSecondCaller).toBe(lockNameFirstCaller);
+      expect(lockRootDir.startsWith(explicitHome + path.sep)).toBe(true);
+    });
+
+    it("does not write a lock entry under process.env.PAPERCLIP_HOME when the caller passes its own env", async () => {
+      const rootDir = await mkdtemp(path.join(os.tmpdir(), "paperclip-restore-merge-"));
+      cleanupDirs.push(rootDir);
+      const explicitHome = path.join(rootDir, "explicit-home");
+      const env: NodeJS.ProcessEnv = { PAPERCLIP_HOME: explicitHome, PAPERCLIP_INSTANCE_ID: "test-instance" };
+
+      const targetDir = path.join(rootDir, "target");
+      await mkdir(targetDir, { recursive: true });
+      const canonicalTargetDir = await realpath(targetDir);
+      const lockKey = createHash("sha256").update(canonicalTargetDir).digest("hex");
+
+      // Resolved with no `env` argument, so it reads `process.env` exactly the way
+      // the real instance root does — unaffected by the explicit `env` above.
+      const realInstanceRoot = resolvePaperclipInstanceRootForAdapter();
+      const realLockPath = path.join(realInstanceRoot, "locks", "directory-merge", `${lockKey}.lock`);
+
+      await withDirectoryMergeLock(targetDir, async () => undefined, env);
+
+      await expect(lstat(realLockPath)).rejects.toThrow();
+
+      const explicitLockRootDir = path.join(explicitHome, "instances", "test-instance", "locks", "directory-merge");
+      await expect(stat(explicitLockRootDir)).resolves.toBeTruthy();
+    });
   });
 });

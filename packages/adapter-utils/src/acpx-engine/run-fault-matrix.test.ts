@@ -213,7 +213,7 @@ function managedHomeSeed(options: { teardownRejects?: boolean } = {}): AcpxEngin
         ? async () => {
             throw new Error("copy-back boom");
           }
-        : async () => {},
+        : async () => ({ ok: true as const }),
     };
   };
 }
@@ -689,7 +689,8 @@ describe("composed ACPX run fault matrix", () => {
   });
 
   // Case 14 — a sync-back copy-back that rejects during settlement never changes
-  // the result or the report.
+  // the run's exit code or status, and it surfaces on the result as one
+  // allowlisted `workspaceRestoreFailure` code — never the raw error message.
   it("case_14_sync_back_failure_does_not_change_result", async () => {
     const { stateDir, localCwd, executionTarget } = await setupRemoteSandbox();
     stubBridges();
@@ -710,10 +711,33 @@ describe("composed ACPX run fault matrix", () => {
 
     expect(result.exitCode).toBe(0);
     expect(result.resultJson?.status).toBe("completed");
+    expect(result.resultJson?.workspaceRestoreFailure).toBe("restore_failed");
+    expect(JSON.stringify(result.resultJson)).not.toContain("copy-back boom");
     assertDispositionReport(capture.last(), {
       acquired: SANDBOX_WITH_MANAGED_HOME,
       transferred: "staged_runtime",
     });
+  });
+
+  // Case 14b — a clean sync-back adds no `workspaceRestoreFailure` key at all.
+  it("case_14b_clean_sync_back_adds_no_workspace_restore_failure_key", async () => {
+    const { stateDir, localCwd, executionTarget } = await setupRemoteSandbox();
+    stubBridges();
+    const execute = createAcpxEngineExecutor({
+      warmHandles: new Map(),
+      stagedRuntimes: new Map(),
+      stagingLocks: new Map(),
+      createRuntime: () => completedRuntime(),
+      prepareRemoteManagedHome: managedHomeSeed(),
+    });
+
+    const result = await execute({
+      runId: "fault-sync-back-clean",
+      ...remoteArgs(stateDir, localCwd, executionTarget),
+    } as never);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.resultJson).not.toHaveProperty("workspaceRestoreFailure");
   });
 
   // Case 15 — a concurrent double settlement is a structural error: the second

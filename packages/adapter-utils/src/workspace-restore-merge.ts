@@ -109,6 +109,48 @@ function entriesMatch(left: SnapshotEntry | null | undefined, right: SnapshotEnt
 
 const LOCK_STALE_MS = 30_000;
 
+/**
+ * The stable `code` a lock-timeout error carries, so a caller can identify it
+ * without matching on the error message text (the message embeds the lock
+ * directory path).
+ */
+export const WORKSPACE_RESTORE_LOCK_TIMEOUT_CODE = "ERR_WORKSPACE_RESTORE_LOCK_TIMEOUT";
+
+/**
+ * The closed set of codes a failed workspace restore can carry off the
+ * sandbox. Every code is safe to store on a run record readable by any
+ * same-company actor: none embeds a filesystem path, a raw error message, or
+ * a process id.
+ */
+export type WorkspaceRestoreFailureCode =
+  | "restore_permission_denied"
+  | "restore_lock_timeout"
+  | "restore_failed";
+
+/**
+ * The outcome of one workspace restore. `ok: true` on a clean restore. `ok:
+ * false` carries one allowlisted {@link WorkspaceRestoreFailureCode} — never a
+ * raw error, a path, or a process id.
+ */
+export type WorkspaceRestoreOutcome =
+  | { readonly ok: true }
+  | { readonly ok: false; readonly code: WorkspaceRestoreFailureCode };
+
+/**
+ * Classifies a caught workspace-restore error into one allowlisted code. Maps
+ * `EACCES` and `EPERM` to a permission failure, the merge-lock timeout
+ * (matched by {@link WORKSPACE_RESTORE_LOCK_TIMEOUT_CODE}, never by the error
+ * message text) to a lock-timeout failure, and every other error to a generic
+ * failure. Never reads or returns `Error.message`, a filesystem path, or a
+ * process id.
+ */
+export function classifyWorkspaceRestoreFailure(error: unknown): WorkspaceRestoreFailureCode {
+  const code = error && typeof error === "object" ? (error as NodeJS.ErrnoException).code : undefined;
+  if (code === "EACCES" || code === "EPERM") return "restore_permission_denied";
+  if (code === WORKSPACE_RESTORE_LOCK_TIMEOUT_CODE) return "restore_lock_timeout";
+  return "restore_failed";
+}
+
 async function isLockStale(lockDir: string): Promise<boolean> {
   try {
     const raw = await fs.readFile(path.join(lockDir, "owner.json"), "utf8");
@@ -161,7 +203,11 @@ async function acquireDirectoryMergeLock(lockDir: string): Promise<() => Promise
         continue;
       }
       if (Date.now() >= deadline) {
-        throw new Error(`Timed out waiting for workspace restore lock at ${lockDir}`);
+        const timeoutError: NodeJS.ErrnoException = new Error(
+          `Timed out waiting for workspace restore lock at ${lockDir}`,
+        );
+        timeoutError.code = WORKSPACE_RESTORE_LOCK_TIMEOUT_CODE;
+        throw timeoutError;
       }
       await new Promise((resolve) => setTimeout(resolve, 50));
     }
@@ -183,14 +229,24 @@ const DIRECTORY_MERGE_LOCK_ROOT_MODE = 0o700;
  * so a read-only target parent (the workspace-restore bug) cannot block a
  * lock acquisition.
  *
+ * The root reads `PAPERCLIP_HOME` and `PAPERCLIP_INSTANCE_ID` from `env`, so an
+ * environment-parameterized caller (a Codex credential call site that builds
+ * its own `env` object instead of reading `process.env`) resolves its lock
+ * root under the same instance root as the directory it protects. A caller
+ * that omits `env` gets `process.env`, which keeps the resolution unchanged
+ * for the workspace-restore call site.
+ *
  * The root is validated, not trusted: `lstat` rejects a symlink and rejects
  * any non-directory before use (fail closed). `fs.mkdir` does not change the
  * mode of a directory that already exists, so an existing valid directory
  * keeps whatever mode it already has; only a freshly created root gets mode
  * `0o700`.
  */
-async function resolveDirectoryMergeLockRoot(): Promise<string> {
-  const instanceRoot = resolvePaperclipInstanceRootForAdapter();
+async function resolveDirectoryMergeLockRoot(env: NodeJS.ProcessEnv = process.env): Promise<string> {
+  const instanceRoot = resolvePaperclipInstanceRootForAdapter({
+    homeDir: env.PAPERCLIP_HOME,
+    instanceId: env.PAPERCLIP_INSTANCE_ID,
+  });
   const lockRoot = path.join(instanceRoot, "locks", "directory-merge");
   const existing = await fs.lstat(lockRoot).catch((error: NodeJS.ErrnoException) => {
     if (error.code === "ENOENT") return null;
@@ -209,11 +265,12 @@ async function resolveDirectoryMergeLockRoot(): Promise<string> {
 export async function withDirectoryMergeLock<T>(
   targetDir: string,
   fn: (canonicalTargetDir: string) => Promise<T>,
+  env: NodeJS.ProcessEnv = process.env,
 ): Promise<T> {
   // Canonicalize before we hash or lock: a retargeted symlink must not let the
   // lock protect one directory while the caller mutates another.
   const canonicalTargetDir = await fs.realpath(targetDir);
-  const lockRoot = await resolveDirectoryMergeLockRoot();
+  const lockRoot = await resolveDirectoryMergeLockRoot(env);
   const lockKey = createHash("sha256").update(canonicalTargetDir).digest("hex");
   const releaseLock = await acquireDirectoryMergeLock(path.join(lockRoot, `${lockKey}.lock`));
   try {

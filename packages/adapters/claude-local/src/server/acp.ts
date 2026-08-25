@@ -48,6 +48,7 @@ import {
   classifyThrownErrorClass,
   logSandboxProbeDiagnostic,
 } from "./probe-diagnostics.js";
+import { classifyWorkspaceRestoreFailure } from "@paperclipai/adapter-utils/workspace-restore-merge";
 import { buildLocalAdapterTestProbeEnv } from "./probe-env.js";
 import { detectClaudeLoginRequired, parseClaudeStreamJson } from "./parse.js";
 import { buildClaudeProbePermissionArgs } from "./permissions.js";
@@ -219,6 +220,7 @@ async function prepareClaudeRemoteManagedHome(
     try {
       await onLog("stdout", "[paperclip] Restoring workspace changes from the sandbox.\n");
       await stagedRuntime.restoreWorkspace((line) => onLog("stdout", line));
+      return { ok: true };
     } catch (err) {
       await onLog(
         "stderr",
@@ -226,6 +228,7 @@ async function prepareClaudeRemoteManagedHome(
           err instanceof Error ? err.message : String(err)
         }\n`,
       );
+      return { ok: false, code: classifyWorkspaceRestoreFailure(err) };
     }
   };
   const envConfig = parseObject(input.config.env);

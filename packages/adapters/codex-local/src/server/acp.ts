@@ -35,6 +35,7 @@ import {
   asString,
   parseObject,
 } from "@paperclipai/adapter-utils/server-utils";
+import { classifyWorkspaceRestoreFailure } from "@paperclipai/adapter-utils/workspace-restore-merge";
 import { normalizeCodexModel } from "../index.js";
 import { classifyCodexAuthRefreshFailure } from "./parse.js";
 import { copyBackCodexAuth } from "./codex-auth-copyback.js";
@@ -243,6 +244,7 @@ async function prepareCodexRemoteManagedHome(
           "[paperclip] Restoring workspace changes and Codex auth from the sandbox.\n",
         );
         await stagedRuntime.restoreWorkspace((line) => onLog("stdout", line));
+        return { ok: true };
       } catch (err) {
         // Fail-soft: a teardown copy-back miss loses this rotation and surfaces
         // loudly as refresh_token_reused on the next host Codex use (re-auth
@@ -254,6 +256,7 @@ async function prepareCodexRemoteManagedHome(
             err instanceof Error ? err.message : String(err)
           }\n`,
         );
+        return { ok: false, code: classifyWorkspaceRestoreFailure(err) };
       }
     },
     // One-time cleanup of the HOST staged home temp dir. Fired ONLY when the

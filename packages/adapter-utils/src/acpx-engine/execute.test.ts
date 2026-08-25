@@ -2926,6 +2926,7 @@ describe("ACPX engine remote managed-home seam (PR 2: per-adapter home seed)", (
             stagedRuntime,
             teardown: async () => {
               teardownCalls += 1;
+              return { ok: true };
             },
           };
         },
@@ -3269,6 +3270,7 @@ describe("ACPX engine remote session-lifecycle re-staging (PR 3: stage once / re
           stagedRuntime,
           teardown: async () => {
             teardownCalls += 1;
+            return { ok: true };
           },
           disposeStaged: async () => {
             disposeCalls += 1;
@@ -3313,6 +3315,7 @@ describe("ACPX engine remote session-lifecycle re-staging (PR 3: stage once / re
         stagedRuntime: await input.stage([]),
         teardown: async () => {
           teardownCalls += 1;
+          return { ok: true };
         },
         disposeStaged: async () => {
           disposeCalls += 1;
@@ -4582,6 +4585,7 @@ describe("ACPX engine sandbox-start spans (opt-in root + child parenting)", () =
               teardownExecFired = true;
               issueSandboxExecFromStore(traceContext);
             }
+            return { ok: true };
           },
         };
       },
