@@ -31,7 +31,10 @@ import {
   asString,
   parseObject,
 } from "@paperclipai/adapter-utils/server-utils";
-import { classifyWorkspaceRestoreFailure } from "@paperclipai/adapter-utils/workspace-restore-merge";
+import {
+  classifyWorkspaceRestoreFailure,
+  describeWorkspaceRestoreFailure,
+} from "@paperclipai/adapter-utils/workspace-restore-merge";
 import { DEFAULT_GEMINI_LOCAL_MODEL } from "../index.js";
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
@@ -169,13 +172,16 @@ async function prepareGeminiRemoteManagedHome(
       await stagedRuntime.restoreWorkspace((line) => onLog("stdout", line));
       return { ok: true };
     } catch (err) {
+      // The run log is readable by any same-company actor, so it must never
+      // carry the caught error's own message: that message can hold a host
+      // filesystem path or a process id. Log only the fixed, allowlisted
+      // diagnostic for the classified code.
+      const code = classifyWorkspaceRestoreFailure(err);
       await onLog(
         "stderr",
-        `[paperclip] Gemini ACP teardown workspace restore failed: ${
-          err instanceof Error ? err.message : String(err)
-        }\n`,
+        `[paperclip] Gemini ACP teardown workspace restore failed: ${describeWorkspaceRestoreFailure(code)}\n`,
       );
-      return { ok: false, code: classifyWorkspaceRestoreFailure(err) };
+      return { ok: false, code };
     }
   };
   const geminiSkillsHome = resolveGeminiSkillsHome(input.config);

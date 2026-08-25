@@ -151,6 +151,25 @@ export function classifyWorkspaceRestoreFailure(error: unknown): WorkspaceRestor
   return "restore_failed";
 }
 
+/**
+ * The fixed, allowlisted line an ACP adapter writes to the run log when a
+ * workspace restore fails. Every call site must pass this to `onLog` instead
+ * of the caught error's own message: the caught error can carry a host
+ * filesystem path or the lock owner's process id, and the run log is
+ * readable by any same-company actor. Never add the code's raw
+ * `Error.message` to this text.
+ */
+export function describeWorkspaceRestoreFailure(code: WorkspaceRestoreFailureCode): string {
+  switch (code) {
+    case "restore_permission_denied":
+      return "the restore could not write to the workspace (permission denied)";
+    case "restore_lock_timeout":
+      return "the restore timed out waiting for the workspace merge lock";
+    case "restore_failed":
+      return "the restore failed";
+  }
+}
+
 async function isLockStale(lockDir: string): Promise<boolean> {
   try {
     const raw = await fs.readFile(path.join(lockDir, "owner.json"), "utf8");
@@ -247,6 +266,14 @@ function nonEmpty(value: string | undefined): string | null {
  * mode of a directory that already exists, so an existing valid directory
  * keeps whatever mode it already has; only a freshly created root gets mode
  * `0o700`.
+ *
+ * The existence check and the `mkdir` below are two separate calls, so a
+ * racing writer can plant a symlink at `lockRoot` in between them. `fs.mkdir`
+ * with `recursive: true` does not fail on a leaf that already exists as a
+ * symlink to a real directory, so a successful `mkdir` call alone does not
+ * prove the path is a plain directory. The `lstat` after `mkdir` closes that
+ * window: it validates what is actually at `lockRoot` (never a `stat`, which
+ * would follow the symlink) before any caller treats it as the lock root.
  */
 async function resolveDirectoryMergeLockRoot(env: NodeJS.ProcessEnv = process.env): Promise<string> {
   const instanceRoot = resolvePaperclipInstanceRootForAdapter({
@@ -266,6 +293,10 @@ async function resolveDirectoryMergeLockRoot(env: NodeJS.ProcessEnv = process.en
     return lockRoot;
   }
   await fs.mkdir(lockRoot, { recursive: true, mode: DIRECTORY_MERGE_LOCK_ROOT_MODE });
+  const created = await fs.lstat(lockRoot);
+  if (created.isSymbolicLink() || !created.isDirectory()) {
+    throw new Error(`Directory merge lock root at ${lockRoot} is not a plain directory.`);
+  }
   return lockRoot;
 }
 

@@ -48,7 +48,10 @@ import {
   classifyThrownErrorClass,
   logSandboxProbeDiagnostic,
 } from "./probe-diagnostics.js";
-import { classifyWorkspaceRestoreFailure } from "@paperclipai/adapter-utils/workspace-restore-merge";
+import {
+  classifyWorkspaceRestoreFailure,
+  describeWorkspaceRestoreFailure,
+} from "@paperclipai/adapter-utils/workspace-restore-merge";
 import { buildLocalAdapterTestProbeEnv } from "./probe-env.js";
 import { detectClaudeLoginRequired, parseClaudeStreamJson } from "./parse.js";
 import { buildClaudeProbePermissionArgs } from "./permissions.js";
@@ -222,13 +225,16 @@ async function prepareClaudeRemoteManagedHome(
       await stagedRuntime.restoreWorkspace((line) => onLog("stdout", line));
       return { ok: true };
     } catch (err) {
+      // The run log is readable by any same-company actor, so it must never
+      // carry the caught error's own message: that message can hold a host
+      // filesystem path or a process id. Log only the fixed, allowlisted
+      // diagnostic for the classified code.
+      const code = classifyWorkspaceRestoreFailure(err);
       await onLog(
         "stderr",
-        `[paperclip] Claude ACP teardown workspace restore failed: ${
-          err instanceof Error ? err.message : String(err)
-        }\n`,
+        `[paperclip] Claude ACP teardown workspace restore failed: ${describeWorkspaceRestoreFailure(code)}\n`,
       );
-      return { ok: false, code: classifyWorkspaceRestoreFailure(err) };
+      return { ok: false, code };
     }
   };
   const envConfig = parseObject(input.config.env);

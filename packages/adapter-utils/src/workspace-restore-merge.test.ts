@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { promises as fsPromises } from "node:fs";
 import { chmod, lstat, mkdir, mkdtemp, readFile, readdir, realpath, rm, stat, symlink, writeFile } from "node:fs/promises";
 import net from "node:net";
 import os from "node:os";
@@ -9,6 +10,7 @@ import { resolvePaperclipInstanceRootForAdapter } from "./server-utils.js";
 import {
   captureDirectorySnapshot,
   classifyWorkspaceRestoreFailure,
+  describeWorkspaceRestoreFailure,
   mergeDirectoryWithBaseline,
   withDirectoryMergeLock,
   WORKSPACE_RESTORE_LOCK_TIMEOUT_CODE,
@@ -113,6 +115,33 @@ describe("workspace restore merge", () => {
       expect(classifyWorkspaceRestoreFailure(new Error("some other failure"))).toBe("restore_failed");
       expect(classifyWorkspaceRestoreFailure("a plain string")).toBe("restore_failed");
       expect(classifyWorkspaceRestoreFailure(null)).toBe("restore_failed");
+    });
+  });
+
+  describe("describeWorkspaceRestoreFailure", () => {
+    it("returns one fixed diagnostic line per allowlisted code, and no other text", () => {
+      expect(describeWorkspaceRestoreFailure("restore_permission_denied")).toBe(
+        "the restore could not write to the workspace (permission denied)",
+      );
+      expect(describeWorkspaceRestoreFailure("restore_lock_timeout")).toBe(
+        "the restore timed out waiting for the workspace merge lock",
+      );
+      expect(describeWorkspaceRestoreFailure("restore_failed")).toBe("the restore failed");
+    });
+
+    it("never reflects a sentinel host path or process id, however the caught error is classified", () => {
+      const sentinelPath = "/srv/telemetry-backend";
+      const sentinelPid = String(process.pid);
+      const error: NodeJS.ErrnoException = new Error(
+        `EACCES: permission denied, mkdir '${sentinelPath}.paperclip-restore.lock' (pid ${sentinelPid})`,
+      );
+      error.code = "EACCES";
+
+      const line = describeWorkspaceRestoreFailure(classifyWorkspaceRestoreFailure(error));
+
+      expect(line).not.toContain(sentinelPath);
+      expect(line).not.toContain(sentinelPid);
+      expect(line).not.toContain(error.message);
     });
   });
 
@@ -239,6 +268,41 @@ describe("workspace restore merge", () => {
       await expect(withDirectoryMergeLock(targetDir, async () => undefined)).rejects.toThrow(
         /not a plain directory/,
       );
+    });
+
+    it("closes the create/validate TOCTOU window: rejects a lock root a racing writer swapped for a symlink during creation", async () => {
+      const rootDir = await mkdtemp(path.join(os.tmpdir(), "paperclip-restore-merge-"));
+      cleanupDirs.push(rootDir);
+      const paperclipHome = path.join(rootDir, "paperclip-home");
+      useTempPaperclipHome(paperclipHome, "test-instance");
+
+      const targetDir = path.join(rootDir, "target");
+      await mkdir(targetDir, { recursive: true });
+      const decoyDir = path.join(rootDir, "decoy");
+      await mkdir(decoyDir, { recursive: true });
+      // Pre-create the lock root's parent, so the mock below only has to
+      // reproduce what `fs.mkdir({ recursive: true })` does to the leaf path.
+      await mkdir(path.join(paperclipHome, "instances", "test-instance", "locks"), { recursive: true });
+
+      // Real `fs.mkdir({ recursive: true })` does not fail on a leaf that
+      // already exists as a symlink to a real directory. This stub reproduces
+      // exactly that: it plants a symlink to the attacker-controlled decoy
+      // directory in the window between the resolver's own "does the root
+      // exist yet" check and its own `mkdir` call, then resolves the way a
+      // real `mkdir` would (silently) — proving the resolver must validate
+      // what `mkdir` actually left behind, not trust that the call resolved.
+      const mkdirSpy = vi.spyOn(fsPromises, "mkdir").mockImplementationOnce(async (dirPath) => {
+        await symlink(decoyDir, dirPath as string);
+        return undefined;
+      });
+
+      try {
+        await expect(withDirectoryMergeLock(targetDir, async () => undefined)).rejects.toThrow(
+          /not a plain directory/,
+        );
+      } finally {
+        mkdirSpy.mockRestore();
+      }
     });
 
     it("creates the lock root at mode 0o700 and removes the lock directory after release", async () => {

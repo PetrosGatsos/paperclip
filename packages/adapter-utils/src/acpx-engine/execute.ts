@@ -37,6 +37,10 @@ import type { DuplexLossReason } from "../duplex-observability.js";
 import { DUPLEX_CHANNEL_LOST_ERROR_CODE } from "../bridge-transport-contract.js";
 import type { WorkspaceRestoreFailureCode, WorkspaceRestoreOutcome } from "../workspace-restore-merge.js";
 import {
+  classifyWorkspaceRestoreFailure,
+  describeWorkspaceRestoreFailure,
+} from "../workspace-restore-merge.js";
+import {
   DEFAULT_PAPERCLIP_AGENT_PROMPT_TEMPLATE,
   applyPaperclipWorkspaceEnv,
   asNumber,
@@ -3401,8 +3405,21 @@ export function createAcpxEngineExecutor(deps: AcpxEngineExecutorOptions = {}) {
       let workspaceRestoreFailureField:
         | { workspaceRestoreFailure: WorkspaceRestoreFailureCode }
         | Record<string, never> = {};
+      // The one settlement step name whose error can be the same workspace-
+      // restore failure the adapter teardown closure already classifies (a
+      // caught error from `syncBackManagedHome`). The closure already
+      // sanitizes its own `onLog` line; this is a second, independent layer,
+      // so a defect in that closure (or a future call site that forgets to
+      // sanitize) still cannot put a raw `Error.message` — and the host path
+      // or process id it can carry — on the run log.
+      const SYNC_BACK_SETTLEMENT_STEP = "settlement-sync_back";
       const recordTeardownError = async (step: string, teardownErr: unknown) => {
-        const reason = teardownErr instanceof Error ? teardownErr.message : String(teardownErr);
+        const reason =
+          step === SYNC_BACK_SETTLEMENT_STEP
+            ? describeWorkspaceRestoreFailure(classifyWorkspaceRestoreFailure(teardownErr))
+            : teardownErr instanceof Error
+              ? teardownErr.message
+              : String(teardownErr);
         await ctx
           .onLog("stderr", `[paperclip] ACPX teardown step "${step}" failed: ${reason}\n`)
           .catch(() => {});
