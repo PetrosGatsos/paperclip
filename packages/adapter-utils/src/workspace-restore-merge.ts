@@ -3,6 +3,7 @@ import { createReadStream } from "node:fs";
 import { constants as fsConstants, promises as fs } from "node:fs";
 import path from "node:path";
 import { shouldExcludePath } from "./exclude-patterns.js";
+import { resolvePaperclipInstanceRootForAdapter } from "./server-utils.js";
 
 type SnapshotEntry =
   | { kind: "dir" }
@@ -167,13 +168,56 @@ async function acquireDirectoryMergeLock(lockDir: string): Promise<() => Promise
   }
 }
 
+const DIRECTORY_MERGE_LOCK_ROOT_MODE = 0o700;
+
+/**
+ * Resolves the private, instance-scoped root for every directory-merge lock:
+ * `<instance root>/locks/directory-merge`. Every process that can mutate one
+ * target directory must resolve to the same `PAPERCLIP_HOME` and
+ * `PAPERCLIP_INSTANCE_ID`. That shared resolution is what keeps mutual
+ * exclusion true for all five callers of `withDirectoryMergeLock`, including
+ * the three Codex credential call sites that never touch a workspace.
+ *
+ * This never falls back to `os.tmpdir()` and never places the lock beside the
+ * target directory: both paths funnel through this one instance-scoped root,
+ * so a read-only target parent (the workspace-restore bug) cannot block a
+ * lock acquisition.
+ *
+ * The root is validated, not trusted: `lstat` rejects a symlink and rejects
+ * any non-directory before use (fail closed). `fs.mkdir` does not change the
+ * mode of a directory that already exists, so an existing valid directory
+ * keeps whatever mode it already has; only a freshly created root gets mode
+ * `0o700`.
+ */
+async function resolveDirectoryMergeLockRoot(): Promise<string> {
+  const instanceRoot = resolvePaperclipInstanceRootForAdapter();
+  const lockRoot = path.join(instanceRoot, "locks", "directory-merge");
+  const existing = await fs.lstat(lockRoot).catch((error: NodeJS.ErrnoException) => {
+    if (error.code === "ENOENT") return null;
+    throw error;
+  });
+  if (existing) {
+    if (existing.isSymbolicLink() || !existing.isDirectory()) {
+      throw new Error(`Directory merge lock root at ${lockRoot} is not a plain directory.`);
+    }
+    return lockRoot;
+  }
+  await fs.mkdir(lockRoot, { recursive: true, mode: DIRECTORY_MERGE_LOCK_ROOT_MODE });
+  return lockRoot;
+}
+
 export async function withDirectoryMergeLock<T>(
   targetDir: string,
-  fn: () => Promise<T>,
+  fn: (canonicalTargetDir: string) => Promise<T>,
 ): Promise<T> {
-  const releaseLock = await acquireDirectoryMergeLock(`${targetDir}.paperclip-restore.lock`);
+  // Canonicalize before we hash or lock: a retargeted symlink must not let the
+  // lock protect one directory while the caller mutates another.
+  const canonicalTargetDir = await fs.realpath(targetDir);
+  const lockRoot = await resolveDirectoryMergeLockRoot();
+  const lockKey = createHash("sha256").update(canonicalTargetDir).digest("hex");
+  const releaseLock = await acquireDirectoryMergeLock(path.join(lockRoot, `${lockKey}.lock`));
   try {
-    return await fn();
+    return await fn(canonicalTargetDir);
   } finally {
     await releaseLock();
   }
@@ -227,16 +271,16 @@ export async function mergeDirectoryWithBaseline(input: {
   afterApply?: () => Promise<void>;
 }): Promise<void> {
   const source = await captureDirectorySnapshot(input.sourceDir, { exclude: input.baseline.exclude });
-  await withDirectoryMergeLock(input.targetDir, async () => {
+  await withDirectoryMergeLock(input.targetDir, async (canonicalTargetDir) => {
     await input.beforeApply?.();
-    const current = await captureDirectorySnapshot(input.targetDir, { exclude: input.baseline.exclude });
+    const current = await captureDirectorySnapshot(canonicalTargetDir, { exclude: input.baseline.exclude });
     const deletedLeafEntries = [...input.baseline.entries.entries()]
       .filter(([relative, entry]) => entry.kind !== "dir" && !source.entries.has(relative))
       .sort(([left], [right]) => right.length - left.length);
 
     for (const [relative, baselineEntry] of deletedLeafEntries) {
       if (!entriesMatch(current.entries.get(relative), baselineEntry)) continue;
-      await fs.rm(path.join(input.targetDir, relative), { recursive: true, force: true }).catch(() => undefined);
+      await fs.rm(path.join(canonicalTargetDir, relative), { recursive: true, force: true }).catch(() => undefined);
     }
 
     const deletedDirs = [...input.baseline.entries.entries()]
@@ -244,7 +288,7 @@ export async function mergeDirectoryWithBaseline(input: {
       .sort(([left], [right]) => right.length - left.length);
 
     for (const [relative] of deletedDirs) {
-      await fs.rmdir(path.join(input.targetDir, relative)).catch(() => undefined);
+      await fs.rmdir(path.join(canonicalTargetDir, relative)).catch(() => undefined);
     }
 
     const changedSourceEntries = [...source.entries.entries()]
@@ -252,7 +296,7 @@ export async function mergeDirectoryWithBaseline(input: {
       .sort(([left], [right]) => left.localeCompare(right));
 
     for (const [relative, entry] of changedSourceEntries) {
-      await copySnapshotEntry(input.sourceDir, input.targetDir, relative, entry);
+      await copySnapshotEntry(input.sourceDir, canonicalTargetDir, relative, entry);
     }
 
     await input.afterApply?.();
