@@ -216,6 +216,10 @@ async function acquireDirectoryMergeLock(lockDir: string): Promise<() => Promise
 
 const DIRECTORY_MERGE_LOCK_ROOT_MODE = 0o700;
 
+function nonEmpty(value: string | undefined): string | null {
+  return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
+}
+
 /**
  * Resolves the private, instance-scoped root for every directory-merge lock:
  * `<instance root>/locks/directory-merge`. Every process that can mutate one
@@ -232,9 +236,11 @@ const DIRECTORY_MERGE_LOCK_ROOT_MODE = 0o700;
  * The root reads `PAPERCLIP_HOME` and `PAPERCLIP_INSTANCE_ID` from `env`, so an
  * environment-parameterized caller (a Codex credential call site that builds
  * its own `env` object instead of reading `process.env`) resolves its lock
- * root under the same instance root as the directory it protects. A caller
- * that omits `env` gets `process.env`, which keeps the resolution unchanged
- * for the workspace-restore call site.
+ * root under the same instance root as the directory it protects. This never
+ * reads `process.env` when the caller passes an `env`: every fallback inside
+ * the resolver also reads from that same `env` object. A caller that omits
+ * `env` gets `process.env`, which keeps the resolution unchanged for the
+ * workspace-restore call site.
  *
  * The root is validated, not trusted: `lstat` rejects a symlink and rejects
  * any non-directory before use (fail closed). `fs.mkdir` does not change the
@@ -244,8 +250,9 @@ const DIRECTORY_MERGE_LOCK_ROOT_MODE = 0o700;
  */
 async function resolveDirectoryMergeLockRoot(env: NodeJS.ProcessEnv = process.env): Promise<string> {
   const instanceRoot = resolvePaperclipInstanceRootForAdapter({
-    homeDir: env.PAPERCLIP_HOME,
-    instanceId: env.PAPERCLIP_INSTANCE_ID,
+    homeDir: nonEmpty(env.PAPERCLIP_HOME) ?? undefined,
+    instanceId: nonEmpty(env.PAPERCLIP_INSTANCE_ID) ?? undefined,
+    env,
   });
   const lockRoot = path.join(instanceRoot, "locks", "directory-merge");
   const existing = await fs.lstat(lockRoot).catch((error: NodeJS.ErrnoException) => {

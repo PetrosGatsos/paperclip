@@ -8,6 +8,7 @@ import {
   startAdapterExecutionTargetProcessSessionBridge,
 } from "@paperclipai/adapter-utils/execution-target";
 import { runChildProcess } from "../server-utils.js";
+import { classifyWorkspaceRestoreFailure } from "../workspace-restore-merge.js";
 
 // The composed fault matrix.
 //
@@ -214,6 +215,21 @@ function managedHomeSeed(options: { teardownRejects?: boolean } = {}): AcpxEngin
             throw new Error("copy-back boom");
           }
         : async () => ({ ok: true as const }),
+    };
+  };
+}
+
+// Same seam, but the teardown catches its own restore error and classifies it
+// with the real classifier — the way the three real adapter teardown closures
+// do — instead of letting it reject the promise.
+function managedHomeSeedWithClassifiedTeardownFailure(
+  error: NodeJS.ErrnoException,
+): AcpxEngineExecutorOptions["prepareRemoteManagedHome"] {
+  return async (input) => {
+    const stagedRuntime = await input.stage([]);
+    return {
+      stagedRuntime,
+      teardown: async () => ({ ok: false as const, code: classifyWorkspaceRestoreFailure(error) }),
     };
   };
 }
@@ -738,6 +754,38 @@ describe("composed ACPX run fault matrix", () => {
 
     expect(result.exitCode).toBe(0);
     expect(result.resultJson).not.toHaveProperty("workspaceRestoreFailure");
+  });
+
+  // Case 14c — an EACCES teardown error (the reported lock-mkdir bug) reaches
+  // the run result as the allowlisted restore_permission_denied code, with no
+  // filesystem path and no process id in resultJson, and the run's exit code
+  // and status stay exactly what the turn produced.
+  it("case_14c_eacces_teardown_reaches_result_as_restore_permission_denied", async () => {
+    const { stateDir, localCwd, executionTarget } = await setupRemoteSandbox();
+    stubBridges();
+    const eaccesError: NodeJS.ErrnoException = new Error(
+      `EACCES: permission denied, mkdir '/srv/telemetry-backend.paperclip-restore.lock' (pid ${process.pid})`,
+    );
+    eaccesError.code = "EACCES";
+    const execute = createAcpxEngineExecutor({
+      warmHandles: new Map(),
+      stagedRuntimes: new Map(),
+      stagingLocks: new Map(),
+      createRuntime: () => completedRuntime(),
+      prepareRemoteManagedHome: managedHomeSeedWithClassifiedTeardownFailure(eaccesError),
+    });
+
+    const result = await execute({
+      runId: "fault-sync-back-eacces",
+      ...remoteArgs(stateDir, localCwd, executionTarget),
+    } as never);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.resultJson?.status).toBe("completed");
+    expect(result.resultJson?.workspaceRestoreFailure).toBe("restore_permission_denied");
+    const serializedResult = JSON.stringify(result.resultJson);
+    expect(serializedResult).not.toContain("/srv/telemetry-backend");
+    expect(serializedResult).not.toContain(String(process.pid));
   });
 
   // Case 15 — a concurrent double settlement is a structural error: the second

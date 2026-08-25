@@ -3,10 +3,16 @@ import { chmod, lstat, mkdir, mkdtemp, readFile, readdir, realpath, rm, stat, sy
 import net from "node:net";
 import os from "node:os";
 import path from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { resolvePaperclipInstanceRootForAdapter } from "./server-utils.js";
-import { captureDirectorySnapshot, mergeDirectoryWithBaseline, withDirectoryMergeLock } from "./workspace-restore-merge.js";
+import {
+  captureDirectorySnapshot,
+  classifyWorkspaceRestoreFailure,
+  mergeDirectoryWithBaseline,
+  withDirectoryMergeLock,
+  WORKSPACE_RESTORE_LOCK_TIMEOUT_CODE,
+} from "./workspace-restore-merge.js";
 
 describe("workspace restore merge", () => {
   const cleanupDirs: string[] = [];
@@ -82,6 +88,32 @@ describe("workspace restore merge", () => {
     } finally {
       await new Promise<void>((resolve) => server.close(() => resolve()));
     }
+  });
+
+  describe("classifyWorkspaceRestoreFailure", () => {
+    it("maps an EACCES error to restore_permission_denied", () => {
+      const error: NodeJS.ErrnoException = new Error("permission denied");
+      error.code = "EACCES";
+      expect(classifyWorkspaceRestoreFailure(error)).toBe("restore_permission_denied");
+    });
+
+    it("maps an EPERM error to restore_permission_denied", () => {
+      const error: NodeJS.ErrnoException = new Error("operation not permitted");
+      error.code = "EPERM";
+      expect(classifyWorkspaceRestoreFailure(error)).toBe("restore_permission_denied");
+    });
+
+    it("maps the lock-timeout code to restore_lock_timeout", () => {
+      const error: NodeJS.ErrnoException = new Error("Timed out waiting for workspace restore lock at /some/path");
+      error.code = WORKSPACE_RESTORE_LOCK_TIMEOUT_CODE;
+      expect(classifyWorkspaceRestoreFailure(error)).toBe("restore_lock_timeout");
+    });
+
+    it("maps an unrecognized error, a string, and null to the default restore_failed code", () => {
+      expect(classifyWorkspaceRestoreFailure(new Error("some other failure"))).toBe("restore_failed");
+      expect(classifyWorkspaceRestoreFailure("a plain string")).toBe("restore_failed");
+      expect(classifyWorkspaceRestoreFailure(null)).toBe("restore_failed");
+    });
   });
 
   describe("instance-scoped directory merge lock", () => {
@@ -229,6 +261,56 @@ describe("workspace restore merge", () => {
       await expect(readdir(lockRootDir)).resolves.toHaveLength(0);
     });
 
+    it("classifies the real lock-timeout error by its stable code, never by the message text", async () => {
+      const rootDir = await mkdtemp(path.join(os.tmpdir(), "paperclip-restore-merge-"));
+      cleanupDirs.push(rootDir);
+      const paperclipHome = path.join(rootDir, "paperclip-home");
+      useTempPaperclipHome(paperclipHome, "test-instance");
+
+      const targetDir = path.join(rootDir, "target");
+      await mkdir(targetDir, { recursive: true });
+
+      // Pre-create the lock directory a live process holds, so `isLockStale`
+      // never reports it stale and the retry loop can only leave through the
+      // deadline check. The owner pid is this test process, which stays alive.
+      const canonicalTargetDir = await realpath(targetDir);
+      const lockKey = createHash("sha256").update(canonicalTargetDir).digest("hex");
+      const lockRootDir = path.join(paperclipHome, "instances", "test-instance", "locks", "directory-merge");
+      const heldLockDir = path.join(lockRootDir, `${lockKey}.lock`);
+      await mkdir(heldLockDir, { recursive: true });
+      await writeFile(
+        path.join(heldLockDir, "owner.json"),
+        `${JSON.stringify({ pid: process.pid, createdAt: new Date().toISOString() })}\n`,
+        "utf8",
+      );
+
+      // Reach the real deadline without a real 30-second wait: the first
+      // `Date.now()` call computes the deadline (unchanged), and every call
+      // after reports a time far past it, so the retry loop's own deadline
+      // check — not a mocked message or a shortened constant — throws.
+      const realNow = Date.now();
+      const dateNowSpy = vi
+        .spyOn(Date, "now")
+        .mockImplementationOnce(() => realNow)
+        .mockImplementation(() => Number.MAX_SAFE_INTEGER);
+      let caughtError: NodeJS.ErrnoException | undefined;
+      try {
+        await withDirectoryMergeLock(targetDir, async () => undefined);
+      } catch (error) {
+        caughtError = error as NodeJS.ErrnoException;
+      } finally {
+        dateNowSpy.mockRestore();
+      }
+
+      expect(caughtError).toBeInstanceOf(Error);
+      expect(caughtError?.code).toBe(WORKSPACE_RESTORE_LOCK_TIMEOUT_CODE);
+      // The classifier reads only `code`; prove the message text carries no
+      // trace of the classified outcome, so a message-text match could not
+      // have produced this result.
+      expect(caughtError?.message).not.toContain("restore_lock_timeout");
+      expect(classifyWorkspaceRestoreFailure(caughtError)).toBe("restore_lock_timeout");
+    });
+
     it.skipIf(process.platform === "win32")(
       "serializes two concurrent writers that address one target through different aliases",
       async () => {
@@ -325,6 +407,66 @@ describe("workspace restore merge", () => {
 
       const explicitLockRootDir = path.join(explicitHome, "instances", "test-instance", "locks", "directory-merge");
       await expect(stat(explicitLockRootDir)).resolves.toBeTruthy();
+    });
+
+    it("resolves the lock root under the default instance id when the caller env sets PAPERCLIP_HOME but not PAPERCLIP_INSTANCE_ID, ignoring process.env.PAPERCLIP_INSTANCE_ID", async () => {
+      const rootDir = await mkdtemp(path.join(os.tmpdir(), "paperclip-restore-merge-"));
+      cleanupDirs.push(rootDir);
+      const explicitHome = path.join(rootDir, "explicit-home");
+      const env: NodeJS.ProcessEnv = { PAPERCLIP_HOME: explicitHome };
+
+      const previousInstanceId = process.env.PAPERCLIP_INSTANCE_ID;
+      process.env.PAPERCLIP_INSTANCE_ID = "wrong-instance";
+      try {
+        const targetDir = path.join(rootDir, "target");
+        await mkdir(targetDir, { recursive: true });
+
+        // The independent, no-caller-env resolution of "PAPERCLIP_HOME set,
+        // PAPERCLIP_INSTANCE_ID unset" — the expected default instance id.
+        const expectedInstanceRoot = resolvePaperclipInstanceRootForAdapter({ homeDir: explicitHome, env: {} });
+        const expectedLockRootDir = path.join(expectedInstanceRoot, "locks", "directory-merge");
+        const wrongInstanceLockRootDir = path.join(explicitHome, "instances", "wrong-instance", "locks", "directory-merge");
+
+        await withDirectoryMergeLock(targetDir, async () => undefined, env);
+
+        await expect(stat(expectedLockRootDir)).resolves.toBeTruthy();
+        await expect(stat(wrongInstanceLockRootDir)).rejects.toThrow();
+      } finally {
+        if (previousInstanceId === undefined) delete process.env.PAPERCLIP_INSTANCE_ID;
+        else process.env.PAPERCLIP_INSTANCE_ID = previousInstanceId;
+      }
+    });
+
+    it("does not read process.env.PAPERCLIP_HOME when the caller env sets neither variable", async () => {
+      const rootDir = await mkdtemp(path.join(os.tmpdir(), "paperclip-restore-merge-"));
+      cleanupDirs.push(rootDir);
+      const fakeProcessHome = path.join(rootDir, "process-home");
+      const fallbackOsHome = path.join(rootDir, "os-home");
+      await mkdir(fallbackOsHome, { recursive: true });
+
+      const previousHome = process.env.PAPERCLIP_HOME;
+      process.env.PAPERCLIP_HOME = fakeProcessHome;
+      // Stand in for the real host home directory, so the "no env at all"
+      // fallback lands under a temp dir instead of the real ~/.paperclip.
+      const homedirSpy = vi.spyOn(os, "homedir").mockReturnValue(fallbackOsHome);
+      try {
+        const targetDir = path.join(rootDir, "target");
+        await mkdir(targetDir, { recursive: true });
+
+        // The independent, no-caller-env resolution of "neither variable set" —
+        // the expected fallback root under the mocked home directory.
+        const expectedInstanceRoot = resolvePaperclipInstanceRootForAdapter({ env: {} });
+        const expectedLockRootDir = path.join(expectedInstanceRoot, "locks", "directory-merge");
+
+        await withDirectoryMergeLock(targetDir, async () => undefined, {});
+
+        await expect(stat(fakeProcessHome)).rejects.toThrow();
+        await expect(stat(expectedLockRootDir)).resolves.toBeTruthy();
+      } finally {
+        homedirSpy.mockRestore();
+        if (previousHome === undefined) delete process.env.PAPERCLIP_HOME;
+        else process.env.PAPERCLIP_HOME = previousHome;
+      }
     });
   });
 });
