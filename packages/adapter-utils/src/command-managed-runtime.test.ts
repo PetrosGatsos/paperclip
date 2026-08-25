@@ -356,9 +356,9 @@ describe("command managed runtime", () => {
       adapterKey: "claude",
       workspaceLocalDir: localWorkspaceDir,
       additionalSources: [
-        { localPath: goodOne, projectId: "one", ignoreResolution: { kind: "non_git" } },
-        { localPath: path.join(rootDir, "missing"), projectId: "broken", ignoreResolution: { kind: "non_git" } },
-        { localPath: goodTwo, projectId: "two", ignoreResolution: { kind: "non_git" } },
+        { localPath: goodOne, projectId: "one", ignoreResolution: { kind: "other" } },
+        { localPath: path.join(rootDir, "missing"), projectId: "broken", ignoreResolution: { kind: "other" } },
+        { localPath: goodTwo, projectId: "two", ignoreResolution: { kind: "other" } },
       ],
     });
 

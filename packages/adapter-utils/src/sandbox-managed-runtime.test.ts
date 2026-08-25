@@ -2149,7 +2149,7 @@ describe("sandbox managed runtime", () => {
         adapterKey: "test-adapter",
         client,
         workspaceLocalDir: localWorkspaceDir,
-        additionalSources: [{ localPath: referencedDir, projectId: "proj-first", ignoreResolution: { kind: "non_git" } }],
+        additionalSources: [{ localPath: referencedDir, projectId: "proj-first", ignoreResolution: { kind: "other" } }],
       });
 
       const referencedMapping = captured
@@ -2231,9 +2231,9 @@ describe("sandbox managed runtime", () => {
         adapterKey: "test-adapter",
         workspaceLocalDir: localWorkspaceDir,
         additionalSources: [
-          { localPath: first, projectId: "proj-first", ignoreResolution: { kind: "non_git" } },
-          { localPath: path.join(rootDir, "referenced-missing"), projectId: "proj-missing", ignoreResolution: { kind: "non_git" } },
-          { localPath: second, projectId: "proj-second", ignoreResolution: { kind: "non_git" } },
+          { localPath: first, projectId: "proj-first", ignoreResolution: { kind: "other" } },
+          { localPath: path.join(rootDir, "referenced-missing"), projectId: "proj-missing", ignoreResolution: { kind: "other" } },
+          { localPath: second, projectId: "proj-second", ignoreResolution: { kind: "other" } },
         ],
       });
 
@@ -2313,7 +2313,7 @@ describe("sandbox managed runtime", () => {
       await mkdir(plainDir, { recursive: true });
       await writeFile(path.join(plainDir, "file.txt"), "body\n", "utf8");
 
-      await expect(resolveReferencedSourceIgnore(plainDir)).resolves.toEqual({ kind: "non_git" });
+      await expect(resolveReferencedSourceIgnore(plainDir)).resolves.toEqual({ kind: "other" });
     });
 
     it("fails closed on a real Git error instead of returning an unfiltered result", async () => {
@@ -2403,7 +2403,7 @@ describe("sandbox managed runtime", () => {
       adapterKey: "test-adapter",
       workspaceLocalDir: localWorkspaceDir,
       additionalSources: [
-        { localPath: healthyDir, projectId: "healthy", ignoreResolution: { kind: "non_git" } },
+        { localPath: healthyDir, projectId: "healthy", ignoreResolution: { kind: "other" } },
         { localPath: failedDir, projectId: "failed", ignoreResolution: { kind: "failed", reason: "boom: git status timed out" } },
       ],
     });
@@ -2861,8 +2861,8 @@ describe("sandbox managed runtime inbound coordinator", () => {
       syncWorkspace: false,
       workspaceLocalDir: workspaceDir,
       additionalSources: [
-        { localPath: dirOf("good"), projectId: "good", ignoreResolution: { kind: "non_git" } },
-        { localPath: dirOf("bad"), projectId: "bad", ignoreResolution: { kind: "non_git" } },
+        { localPath: dirOf("good"), projectId: "good", ignoreResolution: { kind: "other" } },
+        { localPath: dirOf("bad"), projectId: "bad", ignoreResolution: { kind: "other" } },
       ],
     });
 
@@ -2954,7 +2954,7 @@ describe("sandbox managed runtime inbound coordinator", () => {
       client,
       workspaceLocalDir: workspaceDir,
       assets: [{ key: "home", localDir: dirOf("home") }],
-      additionalSources: [{ localPath: dirOf("proj"), projectId: "proj-1", ignoreResolution: { kind: "non_git" } }],
+      additionalSources: [{ localPath: dirOf("proj"), projectId: "proj-1", ignoreResolution: { kind: "other" } }],
       runtimeSpan,
     });
 

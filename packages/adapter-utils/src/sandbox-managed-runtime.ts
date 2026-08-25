@@ -145,7 +145,7 @@ export interface SandboxManagedRuntimeAsset {
  * - `git`: `localPath` is a Git work tree. `ignoredPaths` are its ignored
  *   entries, already re-relativized to `localPath` (see
  *   `resolveReferencedSourceIgnore`).
- * - `non_git`: `localPath` is not a Git work tree. The staging path keeps
+ * - `other`: `localPath` is not a Git work tree. The staging path keeps
  *   today's fixed heavy-directory excludes.
  * - `failed`: the Git read failed, timed out, or returned output the
  *   resolver could not parse or safely re-relativize. The project is NOT
@@ -154,7 +154,7 @@ export interface SandboxManagedRuntimeAsset {
  */
 export type ReferencedSourceIgnoreResolution =
   | { kind: "git"; ignoredPaths: string[] }
-  | { kind: "non_git" }
+  | { kind: "other" }
   | { kind: "failed"; reason: string };
 
 /**
@@ -195,7 +195,7 @@ export function escapeTarExcludeLiteral(entry: string): string {
 /**
  * The tar `--exclude` entries a referenced project's resolved ignore set
  * contributes, on top of the fixed heavy-directory excludes every site
- * already applies. Empty for `non_git` (today's fixed excludes are enough)
+ * already applies. Empty for `other` (today's fixed excludes are enough)
  * and for `failed` (the project is not staged at all, so no exclude list
  * matters).
  */
@@ -261,7 +261,7 @@ export async function resolveReferencedSourceIgnore(localPath: string): Promise<
     return { kind: "failed", reason: error instanceof Error ? error.message : String(error) };
   }
   if (!scan) {
-    return { kind: "non_git" };
+    return { kind: "other" };
   }
   const offset = relativizeUnderGitToplevel({ toplevel: scan.toplevel, localPath });
   if (offset === null) {

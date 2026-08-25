@@ -19,7 +19,7 @@ import type { RuntimeProgressSink } from "./runtime-progress.js";
 // The fixed heavy-directory excludes every referenced project drops,
 // regardless of its ignore resolution. A `git`-resolved project additionally
 // drops its own resolved ignored paths (see `referencedSourceIgnoreExcludeEntries`
-// and the per-project merge below); a `non_git` project keeps only this set.
+// and the per-project merge below); an `other` project keeps only this set.
 const REMOTE_ADDITIONAL_SOURCE_HEAVY_DIR_EXCLUDES = [
   "node_modules",
   "vendor",

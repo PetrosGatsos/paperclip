@@ -125,9 +125,9 @@ describe("remote managed runtime", () => {
       workspaceRemoteDir: "/app",
       syncWorkspace: false,
       additionalSources: [
-        { localPath: firstDir, projectId: "first", ignoreResolution: { kind: "non_git" } },
-        { localPath: brokenDir, projectId: "broken", ignoreResolution: { kind: "non_git" } },
-        { localPath: secondDir, projectId: "second", ignoreResolution: { kind: "non_git" } },
+        { localPath: firstDir, projectId: "first", ignoreResolution: { kind: "other" } },
+        { localPath: brokenDir, projectId: "broken", ignoreResolution: { kind: "other" } },
+        { localPath: secondDir, projectId: "second", ignoreResolution: { kind: "other" } },
       ],
     });
 
@@ -171,8 +171,8 @@ describe("remote managed runtime", () => {
       workspaceRemoteDir: "/app",
       syncWorkspace: false,
       additionalSources: [
-        { localPath: "relative/referenced", projectId: "relative", ignoreResolution: { kind: "non_git" } },
-        { localPath: healthyDir, projectId: "healthy", ignoreResolution: { kind: "non_git" } },
+        { localPath: "relative/referenced", projectId: "relative", ignoreResolution: { kind: "other" } },
+        { localPath: healthyDir, projectId: "healthy", ignoreResolution: { kind: "other" } },
       ],
     });
 
@@ -252,7 +252,7 @@ describe("remote managed runtime", () => {
       workspaceRemoteDir: "/app",
       syncWorkspace: false,
       additionalSources: [
-        { localPath: healthyDir, projectId: "healthy", ignoreResolution: { kind: "non_git" } },
+        { localPath: healthyDir, projectId: "healthy", ignoreResolution: { kind: "other" } },
         { localPath: failedDir, projectId: "failed", ignoreResolution: { kind: "failed", reason: "git status timed out" } },
       ],
     });
