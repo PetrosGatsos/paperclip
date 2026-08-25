@@ -1,7 +1,8 @@
 # Observability
 
 This document is the Observability contract. It covers the OpenTelemetry
-trace path and two local instrumentation contracts; see the
+trace path, the opt-in Sentry error-monitoring path, and two local
+instrumentation contracts; see the
 [Telemetry Data Contract](../packages/shared/src/telemetry/README.md) for the
 separate first-party event system.
 
@@ -108,6 +109,206 @@ for this workload; everything else from
 This document also holds two local instrumentation contracts: the sandbox
 startup trace spans, and the sandbox duplex transport instrumentation. Both
 sections follow below.
+
+## Sentry Error Monitoring
+
+Paperclip ships with **opt-in** Sentry error monitoring for the server
+process and the browser app. The operator activates it with one
+environment variable, `SENTRY_DSN`. The server and the browser both read
+this same value, so both report to **one** Sentry project. The feature
+uses built-in Sentry options only. It adds no `beforeSend` hook and no
+custom filter code.
+
+When `SENTRY_DSN` is unset, the feature is fully inactive. The server
+imports no Sentry package. The browser fetches no Sentry chunk.
+
+### Enabling Sentry
+
+#### 1. Install the Sentry peer dependency
+
+Install `@sentry/node` in the server, the same way you install the
+OpenTelemetry packages above. `@sentry/node` is an *optional peer
+dependency*: it is not in the default lockfile, and the server loads it
+dynamically only when `SENTRY_DSN` is set.
+
+```bash
+pnpm add @sentry/node
+```
+
+The browser package, `@sentry/browser`, needs no install step. It is
+already a development dependency of the `ui` package, so the browser code
+ships inside every build. A signed-out browser, or a browser with no DSN,
+never fetches the Sentry chunk — see "DSN delivery to the browser" below.
+
+#### 2. Set the environment
+
+```bash
+export SENTRY_DSN="https://<public-key>@<host>/<project-id>"
+```
+
+No other variable is needed.
+
+### One Sentry project
+
+The server and the browser report to **one** Sentry project, because both
+read the same `SENTRY_DSN` value. The server reads it from the process
+environment. The browser reads it from the authenticated
+`GET /api/auth/get-session` response.
+
+### DSN delivery to the browser
+
+The browser never reads the DSN from a `<meta>` tag or from any other part
+of `index.html`. The served `index.html` holds no DSN — it is a static
+file, built once and served unchanged to every request.
+
+Instead, the browser receives the DSN inside the authenticated
+`GET /api/auth/get-session` response body, next to the signed-in session
+and the user profile. A signed-out browser calls this route with no board
+actor, so the route answers 401 and sends no DSN. A signed-out browser
+therefore loads no Sentry chunk and sends no event. These pages run
+signed out:
+
+- `/auth`
+- `/cli-auth/:id`
+- `/board-claim/:token`
+- `/invite/:token`
+
+**A gap the operator must know:** a browser error that happens before the
+session response arrives is not captured. The gate opens only after the
+session query resolves.
+
+### Privacy settings
+
+The feature uses built-in Sentry options only.
+
+- `sendDefaultPii` is `false`, on both runtimes.
+- `tracesSampleRate` is `0`, on both runtimes. Paperclip sends no
+  performance trace and no profile.
+- There is no `beforeSend` hook and no custom filter, on either runtime.
+
+### Server request data
+
+**A server event carries no request data at all.** It holds no URL, no
+method, no header, no cookie, no query string, and no body. This is a
+verified result, not the Sentry SDK's documented default. A live test
+against the real `@sentry/node@10.71.0` package proves it: it captures an
+event from inside a real HTTP request handler and confirms the event
+holds no request field (see `server/src/__tests__/sentry.test.ts`, "a
+server event captured inside a real HTTP request handler carries no
+request field").
+
+The reason is `skipOpenTelemetrySetup: true`. This feature sets that
+option so it never fights Paperclip's separate, independently opt-in
+OpenTelemetry feature for control of the global tracer. The same option
+turns off Sentry's per-request context tracking. Sentry's built-in
+`RequestData` integration needs that tracking to find a URL, a method, a
+header set, a cookie set, or a query string to attach. `RequestData`
+stays in the integration list — the initializer does not remove it — but
+it attaches nothing under this configuration.
+
+This holds even when the operator turns on the separate OpenTelemetry
+feature too (`OTEL_EXPORTER_OTLP_ENDPOINT` set). A live test with a real
+OpenTelemetry SDK, a real HTTP instrumentation package, and a real
+async-context manager registered still shows no request field on the
+captured event.
+
+A server event carries only the exception, its stack trace, and the
+context the other kept default integrations add: the host name, the
+runtime version, and the dependency list. See "Default capture set"
+below.
+
+### Browser data
+
+The browser sends no page URL, no referrer, no user agent, and no
+breadcrumb.
+
+### Fail-open behavior
+
+A failed Sentry import or a failed init never stops the server and never
+breaks the browser app. Both runtimes fall through to a single diagnostic
+log line and keep running with no error monitoring.
+
+### Default capture set
+
+The lists below name every event and every context field this feature
+sends, so an operator can read what the feature does before turning it on.
+Each Sentry integration name below is verified against the default
+integration list of `@sentry/node@10.71.0` and `@sentry/browser@10.71.0`.
+
+**Server events this feature adds**
+
+- An Express `HttpError` with `status >= 500`.
+- Any unknown throw that is not a `ZodError`. It always answers 500.
+- A server startup failure.
+
+**Server events the default integrations add**
+
+- `OnUncaughtException` — each uncaught exception on the main thread, at
+  level `fatal`. The process still exits.
+- `OnUnhandledRejection` — each unhandled promise rejection. The mode is
+  `strict`, so the process exits after the capture.
+- `ChildProcess` — one event for each worker-thread `error`.
+- `LinkedErrors` — the `error.cause` chain of each captured error.
+
+**Server context the kept integrations attach**
+
+- `RequestData` — attaches nothing under this feature's configuration. See
+  "Server request data" above for the verified reason.
+- `ChildProcess` — a non-zero child-process exit becomes a breadcrumb.
+- `Modules` and `Context` — the dependency list, the host name, the
+  operating system, and the runtime version.
+- `ProcessSession` — one release-health session for each process.
+- `LocalVariablesAsync` — off. It needs `includeLocalVariables: true`,
+  which this feature omits.
+- `NodeSystemError` — a Node system error (for example, `ENOENT`) gets a
+  `node_system_error` context field with its error code. The `path` and
+  `dest` fields are removed by default.
+
+**Server sources this feature removes**
+
+- `Console` — raw `console.*` arguments.
+- `ContextLines` — 7 local source lines around each stack frame.
+- The outbound breadcrumb of `Http` — outbound request URLs and query
+  strings.
+
+**Browser events this feature adds**
+
+- A crash in the application error boundary and a crash in the route
+  error boundary.
+
+**Browser events and context the kept integrations add**
+
+- `GlobalHandlers` — `window.onerror` and `window.onunhandledrejection`.
+- `BrowserApiErrors` — a throw inside `setTimeout`, `setInterval`,
+  `requestAnimationFrame`, and an event listener.
+- `CultureContext` — the locale and the timezone.
+- `Dedupe`, `LinkedErrors`, and `BrowserSession`.
+
+**Browser sources this feature removes**
+
+- `HttpContext` — the page URL, the referrer, and the user agent.
+- `Breadcrumbs` — console output, a click and a keypress target, a
+  `fetch` and an `XHR` request URL, and history navigation.
+
+**Not captured on either runtime**
+
+- A Zod validation error, which answers 400.
+- Each `HttpError` below status 500, such as 401, 403, 404, 409, and 422.
+- A performance trace and a profile, because `tracesSampleRate` is 0.
+
+### Operator responsibilities
+
+Two controls belong to the operator. This feature ships neither one.
+
+1. **Set a rate limit and a quota alert.** Set a per-client-key ingestion
+   rate limit and a quota alert in the Sentry project. The feature sends
+   no built-in rate limit of its own.
+2. **Give a self-hosted sink a reachable host name.** If `SENTRY_DSN`
+   points at a self-hosted Sentry instance, give it an externally
+   reachable ingest host name, not an internal-only host name. The
+   browser sends its events from the operator's network, not from the
+   server's network, so an internal-only host name fails silently for
+   the browser even when it works for the server.
 
 ## Sandbox Startup Trace Spans
 

@@ -1,10 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createRequire } from "node:module";
 import http from "node:http";
+import express from "express";
+import request from "supertest";
 import type { NextFunction, Request, Response } from "express";
 import { HttpError } from "../errors.js";
 import { errorHandler } from "../middleware/error-handler.js";
 import { finalizeServerShutdown } from "../shutdown.js";
+import { authRoutes } from "../routes/auth.js";
 import * as sentryModule from "../sentry.js";
 
 /**
@@ -53,8 +56,9 @@ function mockSentryPackage() {
 
 // A representative default-integration list, shaped like the array
 // `@sentry/node@10.71.0`'s `getDefaultIntegrations()` returns for a Node
-// server. Recorded 2026-08-25 with `node -e` against the published package —
-// see the disposition comment on PAP-5131 for the full command.
+// server. Recorded against the published package with:
+//   node -e "const S=require('@sentry/node'); \
+//     console.log(S.getDefaultIntegrations({}).map(i=>i.name))"
 const DEFAULT_INTEGRATION_NAMES = [
   "InboundFilters",
   "FunctionToString",
@@ -387,6 +391,51 @@ describe("with @sentry/node mocked", () => {
   });
 });
 
+/**
+ * Proves the one-project result: the server and the browser both resolve
+ * their Sentry client from the same `SENTRY_DSN` value, so both send events
+ * to the same Sentry project. The browser reads its DSN from the
+ * `GET /api/auth/get-session` response body (see `ui/src/lib/sentry.ts` and
+ * `ui/src/components/SentryGate.tsx`), never from a `<meta>` tag.
+ */
+describe("one-project resolution", () => {
+  function makeSessionApp() {
+    const app = express();
+    app.use((req, _res, next) => {
+      req.actor = { type: "board", userId: "user-1", source: "session" };
+      next();
+    });
+    const db = {
+      select: () => ({
+        from: () => ({
+          where: () =>
+            Promise.resolve([
+              { id: "user-1", name: "Jane Example", email: "jane@example.com", image: null },
+            ]),
+        }),
+      }),
+    };
+    app.use("/api/auth", authRoutes(db as unknown as Parameters<typeof authRoutes>[0]));
+    app.use(errorHandler);
+    return app;
+  }
+
+  it("the server initializer and GET /api/auth/get-session resolve the same Sentry project", async () => {
+    process.env[DSN_ENV] = "https://public@o0.ingest.sentry.io/1";
+    const mocks = mockSentryPackage();
+
+    const { sentryReady } = await importFreshSentry();
+    await sentryReady;
+    const initOptions = mocks.init.mock.calls[0]![0] as { dsn: string };
+
+    const app = makeSessionApp();
+    const res = await request(app).get("/api/auth/get-session");
+
+    expect(res.status).toBe(200);
+    expect(res.body.sentryDsn).toBe(initOptions.dsn);
+  });
+});
+
 // `@sentry/node` is an optional runtime dependency (see the module comment
 // in sentry.ts). When it is absent, the three tests below cannot run against
 // the true SDK, so they are skipped — the same pattern instrumentation.test.ts
@@ -489,5 +538,44 @@ describe.skipIf(!sentryPackage)("captured event shape against the real @sentry/n
     await Sentry.flush(2000);
 
     expect((captured as unknown as Record<string, unknown>).breadcrumbs).toBeUndefined();
+  });
+
+  /**
+   * `skipOpenTelemetrySetup: true` (set above) keeps this module out of
+   * Paperclip's separate, independently opt-in OpenTelemetry feature. It
+   * also turns off Sentry's own per-request async-context tracking. The
+   * `RequestData` integration reads the inbound URL, method, headers,
+   * cookies, and query string from that per-request context. With the
+   * context off, a captured event carries no request field — not the
+   * SDK's documented default. This test proves the gap, so the operator
+   * documentation states the true capture set.
+   */
+  it("a server event captured inside a real HTTP request handler carries no request field", async () => {
+    const Sentry = sentryPackage!;
+    let captured: Record<string, unknown> | null = null;
+    await initRealSentryForTest((event) => {
+      captured = event;
+    });
+
+    const server = http.createServer((req, res) => {
+      req.on("data", () => {});
+      req.on("end", () => {
+        Sentry.captureException(new Error("boom from a real request handler"));
+        res.end("ok");
+      });
+    });
+    await new Promise<void>((resolve) => server.listen(0, resolve));
+    const port = (server.address() as { port: number }).port;
+    await new Promise<void>((resolve) => {
+      http.get(`http://127.0.0.1:${port}/api/test?foo=bar`, (res) => {
+        res.resume();
+        res.on("end", resolve);
+      });
+    });
+    server.close();
+    await Sentry.flush(2000);
+
+    expect(captured).not.toBeNull();
+    expect((captured as unknown as Record<string, unknown>).request).toBeUndefined();
   });
 });
