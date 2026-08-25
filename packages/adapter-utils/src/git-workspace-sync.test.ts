@@ -561,6 +561,50 @@ describe("git workspace sync", () => {
       expect(scan?.ignoredPaths).toEqual(["build", "secret.env"]);
     });
 
+    it("preserves trailing whitespace in an ignored path entry", async () => {
+      const rootDir = await mkdtemp(path.join(os.tmpdir(), "paperclip-referenced-trailing-ws-"));
+      cleanupDirs.push(rootDir);
+      const repo = await createRepo(rootDir);
+      // A wildcard pattern avoids the separate rule that git trims an
+      // unescaped trailing space in a .gitignore pattern itself; the trailing
+      // space under test lives in the matched FILE name, not the pattern.
+      const paddedName = "secret.env ";
+      await writeFile(path.join(repo, ".gitignore"), "secret.env*\n", "utf8");
+      await writeFile(path.join(repo, paddedName), "TOKEN=abc\n", "utf8");
+
+      const scan = await readReferencedSourceGitIgnoredPaths(repo);
+      expect(scan?.ignoredPaths).toEqual([paddedName]);
+    });
+
+    it("routes both scan commands through the registered scheduler instead of spawning git directly", async () => {
+      const rootDir = await mkdtemp(path.join(os.tmpdir(), "paperclip-referenced-scheduler-"));
+      cleanupDirs.push(rootDir);
+      const repo = await createRepo(rootDir);
+      await writeFile(path.join(repo, ".gitignore"), "build/\n", "utf8");
+      await mkdir(path.join(repo, "build"), { recursive: true });
+      await writeFile(path.join(repo, "build", "out.js"), "artifact\n", "utf8");
+
+      const operations: string[] = [];
+      setExpensiveWorkspaceGitExecutor(async (input) => {
+        operations.push(input.operation);
+        return await runLocalGit(input.localDir, [...input.args], {
+          timeout: input.timeout,
+          maxBuffer: input.maxBuffer,
+          env: input.env,
+        });
+      });
+
+      const scan = await readReferencedSourceGitIgnoredPaths(repo);
+
+      expect(scan?.ignoredPaths).toEqual(["build"]);
+      // Both the toplevel probe and the ignored-paths read go through the SAME
+      // process-wide admission seam the anchor workspace's expensive reads
+      // use. A host process that bounds concurrent scans there also bounds
+      // referenced-project scans, so a run with many referenced projects
+      // cannot spawn one unbounded Git process per project.
+      expect(operations.sort()).toEqual(["referenced_source.ignored_files", "referenced_source.toplevel"]);
+    });
+
     it("carries the hardened arguments and does not inherit a poisoned GIT_CONFIG_GLOBAL", async () => {
       const rootDir = await mkdtemp(path.join(os.tmpdir(), "paperclip-referenced-hardened-env-"));
       cleanupDirs.push(rootDir);

@@ -23,6 +23,15 @@ export interface ExpensiveWorkspaceGitInput {
   operation: string;
   timeout: number;
   maxBuffer: number;
+  /**
+   * Optional environment override for the invocation. Absent for the anchor
+   * workspace's own full-tree walks (they inherit the process environment, a
+   * directory this process already controls). A referenced-project scan sets
+   * this to its hardened environment (see {@link buildHardenedGitEnv}), so a
+   * host executor that honors it still runs the read hardened even though it
+   * dispatches through the same seam as the anchor's reads.
+   */
+  env?: NodeJS.ProcessEnv;
 }
 
 export type ExpensiveWorkspaceGitExecutor = (
@@ -69,6 +78,7 @@ export async function runLocalGit(
   options: {
     timeout?: number;
     maxBuffer?: number;
+    env?: NodeJS.ProcessEnv;
   } = {},
 ): Promise<GitCommandResult> {
   return await new Promise<GitCommandResult>((resolve, reject) => {
@@ -78,6 +88,7 @@ export async function runLocalGit(
       {
         timeout: options.timeout ?? 15_000,
         maxBuffer: options.maxBuffer ?? 1024 * 128,
+        env: options.env ?? process.env,
       },
       (error, stdout, stderr) => {
         if (error) {
@@ -97,7 +108,7 @@ async function runExpensiveWorkspaceGit(
   localDir: string,
   args: string[],
   operation: string,
-  options: { timeout: number; maxBuffer: number },
+  options: { timeout: number; maxBuffer: number; env?: NodeJS.ProcessEnv },
 ): Promise<GitCommandResult> {
   if (expensiveWorkspaceGitExecutor) {
     return await expensiveWorkspaceGitExecutor({
@@ -106,6 +117,7 @@ async function runExpensiveWorkspaceGit(
       operation,
       timeout: options.timeout,
       maxBuffer: options.maxBuffer,
+      env: options.env,
     });
   }
   return await runLocalGit(localDir, args, options);
@@ -206,39 +218,34 @@ function buildHardenedGitEnv(): NodeJS.ProcessEnv {
 
 /**
  * Run a read-only Git command against a directory this process does not
- * control, hardened against a hostile repository-local configuration. Unlike
- * {@link runLocalGit}, every call carries `--no-optional-locks` (never blocks
- * on, or is blocked by, a concurrent Git process in the directory) and
+ * control, hardened against a hostile repository-local configuration, and
+ * dispatched through {@link runExpensiveWorkspaceGit} — the SAME process-wide
+ * admission seam the anchor workspace's expensive full-tree reads use. A host
+ * process that registers a bounded scheduler there (see
+ * `setExpensiveWorkspaceGitExecutor`) governs referenced-project scans too, so
+ * a run with many referenced projects cannot spawn one unbounded Git process
+ * per project; each request queues behind the same concurrency limit.
+ *
+ * Every call still carries `--no-optional-locks` (never blocks on, or is
+ * blocked by, a concurrent Git process in the directory) and
  * `-c core.fsmonitor=false` (neutralizes a repository-local `core.fsmonitor`
  * setting that would otherwise run an arbitrary configured program on this
- * read). See {@link buildHardenedGitEnv} for the paired environment hardening.
- * This function stays separate from `runLocalGit`; do not widen that shared
- * helper with these flags, because most of its callers read the anchor
- * workspace, a directory this process already controls.
+ * read). See {@link buildHardenedGitEnv} for the paired environment hardening,
+ * carried through the executor's optional `env` field so hardening survives
+ * the hop through a host-registered scheduler.
  */
 async function runHardenedReadOnlyGit(
   localDir: string,
   args: string[],
+  operation: string,
   options: { timeout: number; maxBuffer: number },
 ): Promise<GitCommandResult> {
-  return await new Promise<GitCommandResult>((resolve, reject) => {
-    execFile(
-      "git",
-      ["-c", "core.fsmonitor=false", "--no-optional-locks", "-C", localDir, ...args],
-      {
-        timeout: options.timeout,
-        maxBuffer: options.maxBuffer,
-        env: buildHardenedGitEnv(),
-      },
-      (error, stdout, stderr) => {
-        if (error) {
-          reject(Object.assign(error, { stdout: stdout ?? "", stderr: stderr ?? "" }));
-          return;
-        }
-        resolve({ stdout: stdout ?? "", stderr: stderr ?? "" });
-      },
-    );
-  });
+  return await runExpensiveWorkspaceGit(
+    localDir,
+    ["-c", "core.fsmonitor=false", "--no-optional-locks", ...args],
+    operation,
+    { timeout: options.timeout, maxBuffer: options.maxBuffer, env: buildHardenedGitEnv() },
+  );
 }
 
 /**
@@ -271,10 +278,12 @@ export async function readReferencedSourceGitIgnoredPaths(
 ): Promise<ReferencedSourceGitIgnoreScan | null> {
   let toplevel: string;
   try {
-    const toplevelResult = await runHardenedReadOnlyGit(localDir, ["rev-parse", "--show-toplevel"], {
-      timeout: 15_000,
-      maxBuffer: 64 * 1024,
-    });
+    const toplevelResult = await runHardenedReadOnlyGit(
+      localDir,
+      ["rev-parse", "--show-toplevel"],
+      "referenced_source.toplevel",
+      { timeout: 15_000, maxBuffer: 64 * 1024 },
+    );
     toplevel = toplevelResult.stdout.trim();
   } catch (error) {
     if (isNotAGitRepositoryError(error)) {
@@ -289,14 +298,20 @@ export async function readReferencedSourceGitIgnoredPaths(
   const ignoredResult = await runHardenedReadOnlyGit(
     localDir,
     ["status", "--ignored", "--porcelain=v1", "-z", "--untracked-files=normal"],
+    "referenced_source.ignored_files",
     { timeout: 60_000, maxBuffer: 16 * 1024 * 1024 },
   );
+  // Do not trim each entry: `git status -z` already delimits entries with a
+  // NUL byte, so a leading or trailing space in an entry is part of the path
+  // itself, not padding to remove. A length check finds the one genuinely
+  // empty entry `-z` appends after the last NUL, without eating a real path's
+  // own leading or trailing whitespace.
   const ignoredPaths = ignoredResult.stdout
     .split("\0")
-    .map((entry) => entry.trim())
+    .filter((entry) => entry.length > 0)
     .filter((entry) => entry.startsWith("!! "))
     .map((entry) => entry.slice(3).replace(/\/+$/, ""))
-    .filter(Boolean)
+    .filter((entry) => entry.length > 0)
     .sort((left, right) => left.localeCompare(right));
 
   return { toplevel, ignoredPaths };

@@ -37,6 +37,7 @@ import {
   type AcpxEngineExecutorOptions,
 } from "./execute.js";
 import { runChildProcess } from "../server-utils.js";
+import { setExpensiveWorkspaceGitExecutor } from "../git-workspace-sync.js";
 import {
   getActiveStepContext,
   runWithRuntimeParent,
@@ -1416,6 +1417,50 @@ describe("shared ACPX engine runtime behavior", () => {
     // Re-pinning one project's checkout ref busts the fingerprint, so the resume
     // re-stages instead of reusing a stale tree.
     expect(fp(repointed)).not.toBe(fp(two));
+  });
+
+  it("routes every referenced project's Git-ignore scan through the registered scheduler, not an unbounded direct spawn", async () => {
+    const root = await makeTempRoot();
+    const stateDir = path.join(root, "state");
+    const cwd = path.join(root, "workspace");
+    const baseConfig = { agentCommand: "node ./fake-acp.js", stateDir };
+    // The paths need not exist: the scheduler hook intercepts the scan before
+    // any real `git` process (or even a directory-existence check) runs.
+    const projectPaths = ["/host/project-a", "/host/project-b", "/host/project-c"];
+
+    const scannedPaths: string[] = [];
+    setExpensiveWorkspaceGitExecutor(async (input) => {
+      scannedPaths.push(input.localDir);
+      const error = new Error("fatal: not a git repository (or any of the parent directories): .git");
+      throw Object.assign(error, { stdout: "", stderr: error.message });
+    });
+
+    try {
+      await runExecutor(baseConfig, {
+        context: {
+          taskId: "issue-1",
+          wakeReason: "issue_assigned",
+          paperclipWorkspace: {
+            cwd,
+            realization: {
+              additional: projectPaths.map((localPath, index) => ({
+                path: localPath,
+                projectId: String.fromCharCode(97 + index),
+              })),
+            },
+          },
+        },
+      });
+    } finally {
+      setExpensiveWorkspaceGitExecutor(null);
+    }
+
+    // Every referenced project's scan reached the registered scheduler hook.
+    // The `Promise.all` fan-out over projects can no longer bypass it by
+    // spawning `git` directly, so a host process that bounds concurrent scans
+    // there bounds referenced-project scans too, however many projects a run
+    // configures.
+    expect(scannedPaths.sort()).toEqual([...projectPaths].sort());
   });
 
   it("busts the session fingerprint when referenced-project files change at the same host path", async () => {
