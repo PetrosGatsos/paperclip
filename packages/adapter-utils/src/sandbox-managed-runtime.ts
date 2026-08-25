@@ -649,6 +649,16 @@ function toBuffer(bytes: Buffer | Uint8Array | ArrayBuffer): Buffer {
   return Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength);
 }
 
+// Sum `bytesTransferred` over a `SandboxSyncResult`. The result crosses the
+// plugin boundary, so a provider can return anything: guard each value and
+// treat a missing, non-finite, or negative number as 0.
+function sumSyncResultBytes(result: SandboxSyncResult): number {
+  return result.operations.reduce((total, operation) => {
+    const bytes = operation.bytesTransferred;
+    return Number.isFinite(bytes) && bytes > 0 ? total + bytes : total;
+  }, 0);
+}
+
 function tarExcludeFlags(exclude: string[] | undefined): string {
   return ["._*", ...(exclude ?? [])].map((entry) => `--exclude ${shellQuote(entry)}`).join(" ");
 }
@@ -911,8 +921,15 @@ export async function prepareSandboxManagedRuntime(input: {
         params.progressLabel,
         { sink: input.onRuntimeProgress, phase: params.statusPhase },
       );
-      await syncIn(operations);
-      await upload.finish(params.progressBytes, params.progressBytes);
+      const syncResult = await syncIn(operations);
+      // Prefer the transport's own byte total. It is the real count for a
+      // provider that has no host tarball to stat (a referenced project rides
+      // a `directory` mapping). Fall back to the caller-supplied count when
+      // the transport reports 0, so a provider that under-reports still
+      // shows the host-known workspace total.
+      const transferredBytes = sumSyncResultBytes(syncResult);
+      const reportedBytes = transferredBytes > 0 ? transferredBytes : params.progressBytes;
+      await upload.finish(reportedBytes, reportedBytes);
     };
 
     // Build the ordered inbound operation task list. Each task stages one inbound
@@ -1275,9 +1292,10 @@ export async function prepareSandboxManagedRuntime(input: {
                       // one `kind: "file"` mapping. The host does not buffer the full
                       // bundle in RAM and does not move the bytes through the base64
                       // read loop. The git import step below reads the bundle from
-                      // `localBundlePath`. The provider transfer reports no byte counts,
-                      // so the "Exporting git history" progress degrades to
-                      // start-and-finish only (mirrors the workspace restore below).
+                      // `localBundlePath`. The provider transfer reports its own byte
+                      // total, so the "Exporting git history" progress still degrades to
+                      // start-and-finish (mirrors the workspace restore below), but the
+                      // finish line carries the real transferred byte count.
                       const operations: SandboxSyncOperation[] = [{
                         operationId: nextSyncOperationId(),
                         files: [{
@@ -1290,8 +1308,9 @@ export async function prepareSandboxManagedRuntime(input: {
                         sourceRoots: [runtimeRootDir],
                         targetRoots: [tempDir],
                       });
-                      await input.client.syncOut!(operations);
-                      await gitExport.finish(0, 0);
+                      const syncResult = await input.client.syncOut!(operations);
+                      const transferredBytes = sumSyncResultBytes(syncResult);
+                      await gitExport.finish(transferredBytes, transferredBytes);
                     } else {
                       const bundleBytes = await input.client.readFile(remoteGitBundle, gitExport.options);
                       const bundleBuffer = toBuffer(bundleBytes);
@@ -1330,7 +1349,8 @@ export async function prepareSandboxManagedRuntime(input: {
                   // a fresh host directory. It is a clean destroy-then-replace into a
                   // temp dir the orchestrator just created, so it maps exactly to a
                   // generic directory file mapping; the host-side baseline merge below is
-                  // unchanged.
+                  // unchanged. The provider transfer reports its own byte total, so the
+                  // finish line carries the real transferred byte count.
                   const operations: SandboxSyncOperation[] = [{
                     operationId: nextSyncOperationId(),
                     files: [{
@@ -1352,8 +1372,9 @@ export async function prepareSandboxManagedRuntime(input: {
                     "workspace",
                     { sink: input.onRuntimeProgress, phase: "restore" },
                   );
-                  await input.client.syncOut!(operations);
-                  await workspaceRestore.finish(0, 0);
+                  const syncResult = await input.client.syncOut!(operations);
+                  const transferredBytes = sumSyncResultBytes(syncResult);
+                  await workspaceRestore.finish(transferredBytes, transferredBytes);
                 } else {
                   const remoteWorkspaceTar = path.posix.join(runtimeRootDir, "workspace-download.tar");
                   await input.client.run(

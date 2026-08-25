@@ -1,5 +1,6 @@
+import { randomBytes } from "node:crypto";
 import { promises as fsPromises } from "node:fs";
-import { lstat, mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from "node:fs/promises";
+import { lstat, mkdir, mkdtemp, readFile, readdir, rm, stat, symlink, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { execFile as execFileCallback, spawn } from "node:child_process";
@@ -34,6 +35,23 @@ import type { RunProcessResult } from "./server-utils.js";
 
 function toArrayBuffer(bytes: Buffer): ArrayBuffer {
   return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+}
+
+// Sum the file sizes under a directory, recursively. Test-only: it stands in
+// for a real provider's own byte count on a `kind: "directory"` mapping, so a
+// fake `syncIn`/`syncOut` can report a real, non-zero `bytesTransferred`.
+async function directoryByteSize(dir: string): Promise<number> {
+  let total = 0;
+  const entries = await readdir(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    const entryPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      total += await directoryByteSize(entryPath);
+    } else if (entry.isFile()) {
+      total += (await stat(entryPath)).size;
+    }
+  }
+  return total;
 }
 
 // Give a bare fake client a `syncIn` that reproduces the non-native base64-tar
@@ -107,7 +125,9 @@ function attachNativeRecordingSyncIn(
 // A capturing `syncIn` that records every operation for assertion and
 // materializes file AND directory mappings. A directory mapping (a referenced
 // project) uses `mirrorDirectory`, so a test can assert the advisory `access`
-// intent on directory mappings as well as file mappings.
+// intent on directory mappings as well as file mappings. It reports a real
+// `bytesTransferred` for a directory mapping too, from a post-mirror byte
+// count, so a test can assert on the emitted progress line.
 function attachCapturingSyncIn(
   client: SandboxManagedRuntimeClient,
   captured: SandboxSyncOperation[],
@@ -122,6 +142,7 @@ function attachCapturingSyncIn(
         await mkdir(path.posix.dirname(mapping.targetPath), { recursive: true });
         if (mapping.kind === "directory") {
           await mirrorDirectory(mapping.sourcePath, mapping.targetPath);
+          bytesTransferred += await directoryByteSize(mapping.targetPath);
         } else {
           const bytes = await readFile(mapping.sourcePath);
           await writeFile(mapping.targetPath, bytes);
@@ -438,6 +459,54 @@ describe("sandbox managed runtime", () => {
       expect.stringMatching(/^restore:Restoring workspace from environment: 100% \(\d+\.\d\/\d+\.\d MB\)$/),
     ]));
     expect(runtimeStatuses.at(-1)).toBe("finalize:Finalizing workspace");
+  });
+
+  it("falls back to the host-known byte count when the provider reports 0 for inbound workspace sync", async () => {
+    const rootDir = await mkdtemp(path.join(os.tmpdir(), "paperclip-sandbox-zero-report-"));
+    cleanupDirs.push(rootDir);
+    const localWorkspaceDir = path.join(rootDir, "local-workspace");
+    const remoteWorkspaceDir = path.join(rootDir, "remote-workspace");
+    await mkdir(localWorkspaceDir, { recursive: true });
+    // Sizeable content, well above the 0.1 MB rounding step, so a fallback bug
+    // that stays at 0 is distinguishable from a small transfer that would
+    // still round down to "0.0 MB".
+    await writeFile(path.join(localWorkspaceDir, "large.bin"), Buffer.alloc(300 * 1024, "a"));
+
+    const client = makeFilesystemClient();
+    const realSyncIn = client.syncIn!;
+    // Simulate a provider that under-reports: it moves the real bytes but
+    // returns 0 in `bytesTransferred`, exactly like a buggy or minimal plugin.
+    client.syncIn = async (operations) => {
+      const result = await realSyncIn(operations);
+      return {
+        operations: result.operations.map((operation) => ({ ...operation, bytesTransferred: 0 })),
+      };
+    };
+
+    const lines: string[] = [];
+    await prepareSandboxManagedRuntime({
+      spec: {
+        transport: "sandbox",
+        provider: "test",
+        sandboxId: "sandbox-1",
+        remoteCwd: remoteWorkspaceDir,
+        timeoutMs: 30_000,
+        apiKey: null,
+      },
+      adapterKey: "test-adapter",
+      client,
+      workspaceLocalDir: localWorkspaceDir,
+      onProgress: (line) => { lines.push(line); },
+    });
+
+    await expect(readFile(path.join(remoteWorkspaceDir, "large.bin"))).resolves.toHaveLength(300 * 1024);
+
+    const workspaceLines = lines.filter((line) => line.includes("Syncing workspace to environment"));
+    expect(workspaceLines.length).toBeGreaterThan(0);
+    // Even though the provider reported 0, the line still shows the real,
+    // host-known workspace size, from the caller-supplied fallback.
+    expect(workspaceLines.some((line) => /\(\d+\.\d\/\d+\.\d MB\)/.test(line))).toBe(true);
+    expect(workspaceLines.some((line) => line.includes("(0.0/0.0 MB)"))).toBe(false);
   });
 
   it.each(["workspace", "git-workspace"])(
@@ -2104,6 +2173,70 @@ describe("sandbox managed runtime", () => {
     }
   });
 
+  it("reports the real transferred bytes for a referenced project's inbound staging", async () => {
+    const flagKey = "PAPERCLIP_MULTI_PROJECT_WORKSPACE_SYNC";
+    const priorFlag = process.env[flagKey];
+    process.env[flagKey] = "1";
+    try {
+      const rootDir = await mkdtemp(path.join(os.tmpdir(), "paperclip-project-bytes-"));
+      cleanupDirs.push(rootDir);
+      const localWorkspaceDir = path.join(rootDir, "local-workspace");
+      const remoteWorkspaceDir = path.join(rootDir, "remote-workspace");
+      const referencedDir = path.join(rootDir, "referenced-project");
+      await mkdir(localWorkspaceDir, { recursive: true });
+      await mkdir(referencedDir, { recursive: true });
+      await writeFile(path.join(localWorkspaceDir, "README.md"), "anchor\n", "utf8");
+      // A referenced project has no host tarball to `fs.stat`, so its progress
+      // line depends entirely on the transport's own `bytesTransferred`. Give it
+      // real, sizeable content (well above the 0.1 MB rounding step), so a bug
+      // that keeps the line at 0 stays distinguishable from a correctly-reported
+      // small transfer that would still round down to "0.0 MB".
+      await writeFile(path.join(referencedDir, "notes.md"), Buffer.alloc(300 * 1024, "a"));
+
+      const client: SandboxManagedRuntimeClient = {
+        makeDir: async (remotePath) => { await mkdir(remotePath, { recursive: true }); },
+        writeFile: async (remotePath, bytes) => {
+          await mkdir(path.dirname(remotePath), { recursive: true });
+          await writeFile(remotePath, Buffer.from(bytes));
+        },
+        readFile: async (remotePath) => await readFile(remotePath),
+        listFiles: async () => [],
+        remove: async (remotePath) => { await rm(remotePath, { recursive: true, force: true }); },
+        run: async (command) => { await execFile("sh", ["-c", command], { maxBuffer: 32 * 1024 * 1024 }); },
+      };
+      attachCapturingSyncIn(client, []);
+
+      const lines: string[] = [];
+      await prepareSandboxManagedRuntime({
+        spec: {
+          transport: "sandbox",
+          provider: "test",
+          sandboxId: "sandbox-1",
+          remoteCwd: remoteWorkspaceDir,
+          timeoutMs: 30_000,
+          apiKey: null,
+        },
+        adapterKey: "test-adapter",
+        client,
+        workspaceLocalDir: localWorkspaceDir,
+        additionalSources: [{ localPath: referencedDir, projectId: "proj-first" }],
+        onProgress: (line) => { lines.push(line); },
+      });
+
+      const projectLines = lines.filter((line) => line.includes("Syncing project-proj-first to environment"));
+      expect(projectLines.length).toBeGreaterThan(0);
+      // The transfer landed real bytes, so the terminal line carries the actual
+      // byte total and a 100% completion, not the "0.0 MB" that a discarded
+      // sync result would show.
+      expect(projectLines.some((line) => line.includes("100%"))).toBe(true);
+      expect(projectLines.every((line) => /\(\d+\.\d\/\d+\.\d MB\)/.test(line))).toBe(true);
+      expect(projectLines.some((line) => line.includes("(0.0/0.0 MB)"))).toBe(false);
+    } finally {
+      if (priorFlag === undefined) delete process.env[flagKey];
+      else process.env[flagKey] = priorFlag;
+    }
+  });
+
   it("keeps the sandbox runtime core free of Codex-specific string literals", async () => {
     const coreSource = await readFile(new URL("./sandbox-managed-runtime.ts", import.meta.url), "utf8");
     // The seam must be generic: no adapter (Codex) knowledge may live in the core.
@@ -3276,24 +3409,31 @@ describe("sandbox git-bundle export transport", () => {
     attachFallbackSyncIn(client);
     if (native) {
       client.syncOut = async (operations) => {
+        const resultOperations: SandboxSyncResult["operations"] = [];
         for (const operation of operations) {
           capture.syncOutOperations.push(operation);
+          // Report a real `bytesTransferred`, from a post-copy byte count, so a
+          // test can assert on the emitted progress line — the same way a real
+          // provider reports the bytes it actually moved.
+          let bytesTransferred = 0;
           for (const mapping of operation.files) {
             if (mapping.kind === "directory") {
               await copyDirectoryWithExclude(mapping.sourcePath, mapping.targetPath, mapping.exclude);
+              bytesTransferred += await directoryByteSize(mapping.targetPath);
             } else {
               await mkdir(path.dirname(mapping.targetPath), { recursive: true });
-              await writeFile(mapping.targetPath, await readFile(mapping.sourcePath));
+              const bytes = await readFile(mapping.sourcePath);
+              await writeFile(mapping.targetPath, bytes);
+              bytesTransferred += bytes.byteLength;
             }
           }
-        }
-        return {
-          operations: operations.map((operation) => ({
+          resultOperations.push({
             operationId: operation.operationId,
             filesTransferred: operation.files.length,
-            bytesTransferred: 0,
-          })),
-        };
+            bytesTransferred,
+          });
+        }
+        return { operations: resultOperations };
       };
     }
     return client;
@@ -3457,5 +3597,41 @@ describe("sandbox git-bundle export transport", () => {
     // The full bundle was self-contained: the host repository now holds the
     // sandbox head commit.
     await expect(git(localWorkspaceDir, ["cat-file", "-e", `${sandboxHead}^{commit}`])).resolves.toBe("");
+  });
+
+  it("reports the real transferred bytes for the native git-history export and workspace restore", async () => {
+    const capture: TransportCapture = { syncOutOperations: [], readFilePaths: [] };
+    const { localWorkspaceDir, remoteWorkspaceDir } = await setupGitBackedWorkspace("paperclip-restore-bytes-");
+    const client = makeTransportClient(true, capture);
+    const prepared = await prepareSandboxManagedRuntime({
+      spec: gitSpec(remoteWorkspaceDir),
+      adapterKey: "test-adapter",
+      client,
+      workspaceLocalDir: localWorkspaceDir,
+    });
+
+    // Add a sizeable, incompressible tracked file in the sandbox, so both the
+    // packed git-history bundle and the restored working tree carry real,
+    // non-trivial bytes well above the 0.1 MB rounding step. Random bytes,
+    // not a repeated byte, so git's own pack compression cannot shrink the
+    // bundle back down to a trivial size.
+    await writeFile(path.join(remoteWorkspaceDir, "large.bin"), randomBytes(300 * 1024));
+    await commitInSandbox(remoteWorkspaceDir);
+
+    const lines: string[] = [];
+    await prepared.restoreWorkspace((line) => { lines.push(line); });
+
+    const exportLines = lines.filter((line) => line.includes("Exporting git history from environment"));
+    const restoreLines = lines.filter((line) => line.includes("Restoring workspace from environment"));
+
+    // Both terminal lines carry the real transferred byte total, not the
+    // "0.0 MB" a discarded native `syncOut` result would leave behind.
+    expect(exportLines.length).toBeGreaterThan(0);
+    expect(exportLines.some((line) => /\(\d+\.\d\/\d+\.\d MB\)/.test(line))).toBe(true);
+    expect(exportLines.some((line) => line.includes("(0.0/0.0 MB)"))).toBe(false);
+
+    expect(restoreLines.length).toBeGreaterThan(0);
+    expect(restoreLines.some((line) => /\(\d+\.\d\/\d+\.\d MB\)/.test(line))).toBe(true);
+    expect(restoreLines.some((line) => line.includes("(0.0/0.0 MB)"))).toBe(false);
   });
 });
