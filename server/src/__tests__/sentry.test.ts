@@ -1,6 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createRequire } from "node:module";
 import http from "node:http";
+import type { NextFunction, Request, Response } from "express";
+import { HttpError } from "../errors.js";
+import { errorHandler } from "../middleware/error-handler.js";
+import { finalizeServerShutdown } from "../shutdown.js";
+import * as sentryModule from "../sentry.js";
 
 /**
  * Tests for the opt-in Sentry error-monitoring gate. `@sentry/node` is an
@@ -115,6 +120,138 @@ describe("shutdownSentry", () => {
     // Memoized: concurrent callers share one shutdown promise.
     expect(first).toBe(second);
     await expect(first).resolves.toBeUndefined();
+  });
+});
+
+/**
+ * Seam tests for the two `errorHandler` call sites that report to Sentry.
+ * These tests spy on the exported `captureException` binding rather than
+ * import a real client, so they assert the call-site shape (one call, the
+ * Error object only) without a live Sentry SDK.
+ */
+describe("errorHandler Sentry capture", () => {
+  function makeReq(): Request {
+    return {
+      method: "GET",
+      originalUrl: "/api/test",
+      body: { a: 1 },
+      params: { id: "123" },
+      query: { q: "x" },
+    } as unknown as Request;
+  }
+
+  function makeRes(): Response {
+    const res = {
+      status: vi.fn(),
+      json: vi.fn(),
+    } as unknown as Response;
+    (res.status as unknown as ReturnType<typeof vi.fn>).mockReturnValue(res);
+    return res;
+  }
+
+  it("captures one event for a 500-level HttpError", () => {
+    const capture = vi.spyOn(sentryModule, "captureException").mockImplementation(() => {});
+    const req = makeReq();
+    const res = makeRes();
+    const next = vi.fn() as unknown as NextFunction;
+    const err = new HttpError(500, "db exploded");
+
+    errorHandler(err, req, res, next);
+
+    expect(capture).toHaveBeenCalledTimes(1);
+  });
+
+  it("captures one event for an unknown error", () => {
+    const capture = vi.spyOn(sentryModule, "captureException").mockImplementation(() => {});
+    const req = makeReq();
+    const res = makeRes();
+    const next = vi.fn() as unknown as NextFunction;
+    const err = new Error("boom");
+
+    errorHandler(err, req, res, next);
+
+    expect(capture).toHaveBeenCalledTimes(1);
+  });
+
+  it("captures no event for a Zod validation 400 response", () => {
+    const capture = vi.spyOn(sentryModule, "captureException").mockImplementation(() => {});
+    const req = makeReq();
+    const res = makeRes();
+    const next = vi.fn() as unknown as NextFunction;
+    const issue = {
+      code: "invalid_type",
+      expected: "string",
+      received: "undefined",
+      path: ["provider"],
+      message: "Required",
+    };
+    const err = Object.assign(new Error("Validation failed"), {
+      name: "ZodError",
+      issues: [issue],
+    });
+
+    errorHandler(err, req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(capture).not.toHaveBeenCalled();
+  });
+
+  it("passes the Error object only to captureException, never the request-bearing ErrorContext", () => {
+    const capture = vi.spyOn(sentryModule, "captureException").mockImplementation(() => {});
+    const req = makeReq();
+    const res = makeRes();
+    const next = vi.fn() as unknown as NextFunction;
+    const err = new Error("boom");
+
+    errorHandler(err, req, res, next);
+
+    expect(capture).toHaveBeenCalledWith(err);
+    const [received] = capture.mock.calls[0]!;
+    expect(received).toBeInstanceOf(Error);
+    // The `ErrorContext` shape carries the request body, params, and query.
+    // The received value must not carry any of them.
+    expect(received).not.toHaveProperty("reqBody");
+    expect(received).not.toHaveProperty("reqParams");
+    expect(received).not.toHaveProperty("reqQuery");
+  });
+
+  it("does not change the errorHandler response when a capture call throws", () => {
+    const capture = vi.spyOn(sentryModule, "captureException").mockImplementation(() => {
+      throw new Error("Sentry capture exploded");
+    });
+    const req = makeReq();
+    const res = makeRes();
+    const next = vi.fn() as unknown as NextFunction;
+    const err = new Error("boom");
+
+    expect(() => errorHandler(err, req, res, next)).not.toThrow();
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({ error: "Internal server error" });
+    expect(capture).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("finalizeServerShutdown Sentry teardown", () => {
+  it("calls shutdownSentry after shutdownInstrumentation", async () => {
+    const order: string[] = [];
+    const shutdownInstrumentation = vi.fn(async () => {
+      order.push("instrumentation");
+    });
+    const shutdownSentry = vi.fn(async () => {
+      order.push("sentry");
+    });
+
+    await finalizeServerShutdown({
+      signal: "SIGTERM",
+      shutdownAppServices: undefined,
+      stopEmbeddedPostgres: null,
+      shutdownInstrumentation,
+      shutdownSentry,
+      log: { info: vi.fn(), error: vi.fn() },
+    });
+
+    expect(order).toEqual(["instrumentation", "sentry"]);
   });
 });
 

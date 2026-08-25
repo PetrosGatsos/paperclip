@@ -4,6 +4,7 @@ import { ZodError } from "zod";
 import { HttpError } from "../errors.js";
 import { trackErrorHandlerCrash } from "@paperclipai/shared/telemetry";
 import { getTelemetryClient } from "../telemetry.js";
+import { captureException } from "../sentry.js";
 import { COMPANY_IMPORT_API_PATH } from "../routes/company-import-paths.js";
 import { logger } from "./logger.js";
 import {
@@ -21,6 +22,20 @@ export interface ErrorContext {
 
 function isRedactedSkillPolicyDenial(details: Record<string, unknown> | null) {
   return details?.code === "skill_policy_denied";
+}
+
+/**
+ * Report an error to Sentry without changing the response the error handler
+ * already built. `captureException` never throws by its own contract, but
+ * this wrapper keeps that guarantee local to this file too, so a future
+ * change to the Sentry gate cannot alter a response or an exit code here.
+ */
+function captureExceptionSafely(err: Error) {
+  try {
+    captureException(err);
+  } catch {
+    // Error monitoring must never change the response. Swallow and move on.
+  }
 }
 
 function readZodIssues(err: unknown): unknown[] | null {
@@ -109,6 +124,7 @@ export function errorHandler(
       );
       const tc = getTelemetryClient();
       if (tc) trackErrorHandlerCrash(tc, { errorCode: err.name });
+      captureExceptionSafely(err);
     }
     res.status(err.status).json({
       error: err.message,
@@ -149,6 +165,7 @@ export function errorHandler(
 
   const tc = getTelemetryClient();
   if (tc) trackErrorHandlerCrash(tc, { errorCode: rootError.name });
+  captureExceptionSafely(rootError);
 
   res.status(500).json({
     error: "Internal server error",
