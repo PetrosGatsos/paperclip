@@ -5,5 +5,75 @@
       "description": "Bir şirket oluşturarak başlayın.",
       "newCompany": "Yeni Şirket"
     }
+  },
+  "monitor": {
+    "title": "Monitör",
+    "description": "Şirket sağlığı, aktif çalışma, kararlar ve uygulama ilerlemesi tek bir görünümde.",
+    "overallHealth": "Genel sağlık",
+    "blockedTasks": "engellenen görevler",
+    "pendingApprovals": "onaylar bekleniyor",
+    "budgetIncidents": "bütçe olayları",
+    "taskFallback": "Görev",
+    "critical": "Kritik",
+    "updated": "Güncellendi",
+    "attentionItem": "Dikkat öğesi",
+    "progress": "İlerleme",
+    "finished": "Bitti",
+    "openTask": "Görevi aç",
+    "openRun": "Çalıştırmayı aç",
+    "createCompany": "Operasyonları izlemek için bir şirket oluşturun.",
+    "selectCompany": "Operasyonları izlemek için bir şirket seçin.",
+    "unavailable": "Monitör kullanılamıyor",
+    "unavailableDescription": "Monitör verileri yüklenemedi.",
+    "tryAgain": "Tekrar dene",
+    "notUpdated": "Henüz güncellenmedi",
+    "refreshing": "Canlandırıcı",
+    "refresh": "Yenile",
+    "partialError": "Bazı monitör verileri güncellenemedi. Mevcut veriler görünür durumda kalır.",
+    "agentStates": "Aracı durumları",
+    "viewAll": "Tümünü görüntüle",
+    "currentTasks": "Mevcut görevler",
+    "inProgress": "devam ediyor",
+    "noCurrentTasks": "Mevcut görev yok.",
+    "openTasks": "Görevleri aç",
+    "recentTasks": "Son görevler",
+    "noRecentTasks": "Yakın zamanda tamamlanmış görev yok.",
+    "pendingAndAttention": "Onaylar ve ilgi bekleniyor",
+    "pending": "beklemede",
+    "noAttention": "Yakın zamanda dikkat edilen öğe yok.",
+    "openDecisions": "Açık kararlar",
+    "executionProgress": "Yürütme ilerlemesi",
+    "live": "canlı",
+    "noLiveRuns": "Hiçbir aracı çalıştırması etkin değil.",
+    "openRuns": "Canlı ve son koşuları aç",
+    "health": {
+      "healthy": {
+        "label": "Sağlıklı",
+        "description": "Hiçbir başarısız temsilci, engellenen görev veya acil kararların dikkate alınması gerekmez."
+      },
+      "attention": {
+        "label": "Dikkat edilmesi gerekiyor",
+        "description": "Duraklatılan işler veya bekleyen kararlar operatörün incelemesini gerektirir."
+      },
+      "critical": {
+        "label": "Kritik durum",
+        "description": "Başarısız aracıların, engellenen görevlerin veya kritik kararların eyleme geçmesi gerekir."
+      }
+    },
+    "agentState": {
+      "running": "Temsilcileri çalıştırmak",
+      "available": "Mevcut acenteler",
+      "paused": "Duraklatılan aracılar",
+      "failed": "Başarısız temsilciler"
+    },
+    "runPhase": {
+      "queued": "Başlamak için sıraya alındı.",
+      "running": "Çalıştırma sürüyor.",
+      "succeeded": "Çalıştırma tamamlandı.",
+      "failed": "Çalıştırma başarısız oldu.",
+      "cancelled": "Koşu iptal edildi.",
+      "timedOut": "Çalıştırma zaman aşımına uğradı.",
+      "unknown": "Çalıştırma durumu kullanılamıyor."
+    }
   }
 }

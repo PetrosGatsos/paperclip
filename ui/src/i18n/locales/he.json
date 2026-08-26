@@ -5,5 +5,75 @@
       "description": "התחילו ביצירת חברה.",
       "newCompany": "חברה חדשה"
     }
+  },
+  "monitor": {
+    "title": "צג",
+    "description": "בריאות החברה, עבודה פעילה, החלטות והתקדמות ביצוע במבט אחד.",
+    "overallHealth": "בריאות כללית",
+    "blockedTasks": "משימות חסומות",
+    "pendingApprovals": "ממתינים לאישורים",
+    "budgetIncidents": "אירועי תקציב",
+    "taskFallback": "משימה",
+    "critical": "קריטי",
+    "updated": "עודכן",
+    "attentionItem": "פריט תשומת לב",
+    "progress": "התקדמות",
+    "finished": "הסתיים",
+    "openTask": "משימה פתוחה",
+    "openRun": "ריצה פתוחה",
+    "createCompany": "הקמת חברה למעקב אחר הפעילות.",
+    "selectCompany": "בחר חברה למעקב אחר הפעילות.",
+    "unavailable": "צג לא זמין",
+    "unavailableDescription": "לא ניתן היה לטעון את נתוני הצג.",
+    "tryAgain": "נסה שוב",
+    "notUpdated": "עדיין לא מעודכן",
+    "refreshing": "מרענן",
+    "refresh": "רענן",
+    "partialError": "לא ניתן היה לעדכן חלק מהנתונים של הצג. הנתונים הקיימים נשארים גלויים.",
+    "agentStates": "הסוכן קובע",
+    "viewAll": "הצג הכל",
+    "currentTasks": "משימות נוכחיות",
+    "inProgress": "בתהליך",
+    "noCurrentTasks": "אין משימות נוכחיות.",
+    "openTasks": "משימות פתוחות",
+    "recentTasks": "משימות אחרונות",
+    "noRecentTasks": "אין משימות שהושלמו לאחרונה.",
+    "pendingAndAttention": "ממתינים לאישורים ותשומת לב",
+    "pending": "בהמתנה",
+    "noAttention": "אין פריטי תשומת לב אחרונים.",
+    "openDecisions": "החלטות פתוחות",
+    "executionProgress": "התקדמות הביצוע",
+    "live": "לחיות",
+    "noLiveRuns": "אין ריצות סוכנים פעילות.",
+    "openRuns": "פתח בשידור חי וריצות אחרונות",
+    "health": {
+      "healthy": {
+        "label": "בריא",
+        "description": "אין סוכנים כושלים, משימות חסומות או החלטות דחופות שצריכים תשומת לב."
+      },
+      "attention": {
+        "label": "צריך תשומת לב",
+        "description": "עבודה מושהית או החלטות ממתינות דורשות בדיקת מפעיל."
+      },
+      "critical": {
+        "label": "מדינה קריטית",
+        "description": "סוכנים שנכשלו, משימות חסומות או החלטות קריטיות דורשות פעולה."
+      }
+    },
+    "agentState": {
+      "running": "מפעילים סוכנים",
+      "available": "סוכנים זמינים",
+      "paused": "סוכנים מושהים",
+      "failed": "סוכנים כושלים"
+    },
+    "runPhase": {
+      "queued": "בתור כדי להתחיל.",
+      "running": "הריצה בעיצומה.",
+      "succeeded": "הריצה הושלמה.",
+      "failed": "הריצה נכשלה.",
+      "cancelled": "הריצה בוטלה.",
+      "timedOut": "תם הזמן הקצוב לריצה.",
+      "unknown": "סטטוס הפעלה אינו זמין."
+    }
   }
 }

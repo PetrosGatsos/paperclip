@@ -93,24 +93,18 @@ function HealthSummary({ state, summary }: { state: HealthState; summary: Dashbo
   const { t } = useTranslation();
   const copy = {
     healthy: {
-      label: t("monitor.health.healthy.label", { defaultValue: "Healthy" }),
-      description: t("monitor.health.healthy.description", {
-        defaultValue: "No failed agents, blocked tasks, or urgent decisions need attention.",
-      }),
+      label: t("monitor.health.healthy.label"),
+      description: t("monitor.health.healthy.description"),
       icon: CheckCircle2,
     },
     attention: {
-      label: t("monitor.health.attention.label", { defaultValue: "Needs attention" }),
-      description: t("monitor.health.attention.description", {
-        defaultValue: "Paused work or pending decisions need an operator review.",
-      }),
+      label: t("monitor.health.attention.label"),
+      description: t("monitor.health.attention.description"),
       icon: ShieldAlert,
     },
     critical: {
-      label: t("monitor.health.critical.label", { defaultValue: "Critical state" }),
-      description: t("monitor.health.critical.description", {
-        defaultValue: "Failed agents, blocked tasks, or critical decisions need action.",
-      }),
+      label: t("monitor.health.critical.label"),
+      description: t("monitor.health.critical.description"),
       icon: CircleAlert,
     },
   }[state];
@@ -127,14 +121,14 @@ function HealthSummary({ state, summary }: { state: HealthState; summary: Dashbo
         <Icon className={cn("mt-0.5 size-5 shrink-0", state === "critical" ? "text-destructive" : "text-foreground")} aria-hidden />
         <div className="min-w-0 flex-1">
           <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            {t("monitor.overallHealth", { defaultValue: "Overall health" })}
+            {t("monitor.overallHealth")}
           </p>
           <h2 id="monitor-health-title" className="mt-1 text-xl font-semibold text-foreground">{copy.label}</h2>
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{copy.description}</p>
           <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-            <span>{summary.tasks.blocked} {t("monitor.blockedTasks", { defaultValue: "blocked tasks" })}</span>
-            <span>{summary.pendingApprovals} {t("monitor.pendingApprovals", { defaultValue: "pending approvals" })}</span>
-            <span>{summary.budgets.activeIncidents} {t("monitor.budgetIncidents", { defaultValue: "budget incidents" })}</span>
+            <span>{summary.tasks.blocked} {t("monitor.blockedTasks")}</span>
+            <span>{summary.pendingApprovals} {t("monitor.pendingApprovals")}</span>
+            <span>{summary.budgets.activeIncidents} {t("monitor.budgetIncidents")}</span>
           </div>
         </div>
       </div>
@@ -169,7 +163,7 @@ function AgentStateCard({ label, count, href, icon: Icon, critical = false }: {
 }
 
 function TaskRow({ task }: { task: CompactIssue }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const taskRef = task.identifier ?? task.id;
   return (
     <Link
@@ -182,13 +176,13 @@ function TaskRow({ task }: { task: CompactIssue }) {
       <div className="min-w-0">
         <div className="flex min-w-0 items-center gap-2">
           <span className="shrink-0 font-mono text-xs text-muted-foreground">
-            {task.identifier ?? t("monitor.taskFallback", { defaultValue: "Task" })}
+            {task.identifier ?? t("monitor.taskFallback")}
           </span>
-          {task.priority === "critical" ? <Badge variant="destructive">{t("monitor.critical", { defaultValue: "Critical" })}</Badge> : null}
+          {task.priority === "critical" ? <Badge variant="destructive">{t("monitor.critical")}</Badge> : null}
         </div>
         <p className="mt-1 break-words text-sm font-medium text-foreground">{task.title}</p>
         <p className="mt-1 font-mono text-xs text-muted-foreground">
-          {t("monitor.updated", { defaultValue: "Updated" })} {timeAgo(task.updatedAt)}
+          {t("monitor.updated")} {timeAgo(task.updatedAt, i18n.resolvedLanguage)}
         </p>
       </div>
       <IssueStatusBadge status={task.status} />
@@ -197,7 +191,7 @@ function TaskRow({ task }: { task: CompactIssue }) {
 }
 
 function AttentionRow({ item }: { item: AttentionItem }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const detail = attentionDetailLine(item) ?? item.whyNow;
   const fallback = item.sourceKind === "approval" ? "/approvals/pending" : "/decisions";
   const href = safeAppHref(item.subject.href ?? item.relatedIssue?.href, fallback);
@@ -213,12 +207,12 @@ function AttentionRow({ item }: { item: AttentionItem }) {
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <p className="break-words text-sm font-medium text-foreground">
-              {item.subject.title ?? item.subject.identifier ?? t("monitor.attentionItem", { defaultValue: "Attention item" })}
+              {item.subject.title ?? item.subject.identifier ?? t("monitor.attentionItem")}
             </p>
-            {item.severity === "critical" ? <Badge variant="destructive">{t("monitor.critical", { defaultValue: "Critical" })}</Badge> : null}
+            {item.severity === "critical" ? <Badge variant="destructive">{t("monitor.critical")}</Badge> : null}
           </div>
           <p className="mt-1 line-clamp-2 break-words text-xs text-muted-foreground">{detail}</p>
-          <p className="mt-2 font-mono text-xs text-muted-foreground">{timeAgo(item.activityAt)}</p>
+          <p className="mt-2 font-mono text-xs text-muted-foreground">{timeAgo(item.activityAt, i18n.resolvedLanguage)}</p>
         </div>
         <ExternalLink className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" aria-hidden />
       </div>
@@ -227,16 +221,16 @@ function AttentionRow({ item }: { item: AttentionItem }) {
 }
 
 function RunRow({ run }: { run: MonitorRun }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const active = run.status === "queued" || run.status === "running";
   const phase = {
-    queued: t("monitor.runPhase.queued", { defaultValue: "Queued to start." }),
-    running: t("monitor.runPhase.running", { defaultValue: "Run is in progress." }),
-    succeeded: t("monitor.runPhase.succeeded", { defaultValue: "Run completed." }),
-    failed: t("monitor.runPhase.failed", { defaultValue: "Run failed." }),
-    cancelled: t("monitor.runPhase.cancelled", { defaultValue: "Run was cancelled." }),
-    timed_out: t("monitor.runPhase.timedOut", { defaultValue: "Run timed out." }),
-  }[run.status] ?? t("monitor.runPhase.unknown", { defaultValue: "Run status is unavailable." });
+    queued: t("monitor.runPhase.queued"),
+    running: t("monitor.runPhase.running"),
+    succeeded: t("monitor.runPhase.succeeded"),
+    failed: t("monitor.runPhase.failed"),
+    cancelled: t("monitor.runPhase.cancelled"),
+    timed_out: t("monitor.runPhase.timedOut"),
+  }[run.status] ?? t("monitor.runPhase.unknown");
   const time = run.finishedAt ?? run.startedAt ?? run.createdAt;
   return (
     <div className="min-w-0 rounded-md border border-border p-3">
@@ -248,19 +242,19 @@ function RunRow({ run }: { run: MonitorRun }) {
           </div>
           <p className="mt-2 line-clamp-2 break-words text-xs text-muted-foreground">{phase}</p>
           <p className="mt-2 font-mono text-xs text-muted-foreground">
-            {active ? t("monitor.progress", { defaultValue: "Progress" }) : t("monitor.finished", { defaultValue: "Finished" })} {timeAgo(time)}
+            {active ? t("monitor.progress") : t("monitor.finished")} {timeAgo(time, i18n.resolvedLanguage)}
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-1">
           {run.issueId ? (
             <Button asChild variant="ghost" size="icon-xs">
-              <Link to={`/issues/${run.issueId}`} aria-label={t("monitor.openTask", { defaultValue: "Open task" })}>
+              <Link to={`/issues/${run.issueId}`} aria-label={t("monitor.openTask")}>
                 <CircleDot aria-hidden />
               </Link>
             </Button>
           ) : null}
           <Button asChild variant="ghost" size="icon-xs">
-            <Link to={`/agents/${run.agentId}/runs/${run.id}`} aria-label={t("monitor.openRun", { defaultValue: "Open run" })}>
+            <Link to={`/agents/${run.agentId}/runs/${run.id}`} aria-label={t("monitor.openRun")}>
               <ExternalLink aria-hidden />
             </Link>
           </Button>
@@ -271,13 +265,13 @@ function RunRow({ run }: { run: MonitorRun }) {
 }
 
 export function Monitor() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
   const { selectedCompanyId, companies } = useCompany();
   const { setBreadcrumbs } = useBreadcrumbs();
 
   useEffect(() => {
-    setBreadcrumbs([{ label: t("monitor.title", { defaultValue: "Monitor" }) }]);
+    setBreadcrumbs([{ label: t("monitor.title") }]);
   }, [setBreadcrumbs, t]);
 
   const dashboardQuery = useQuery({
@@ -359,8 +353,8 @@ export function Monitor() {
       <EmptyState
         icon={Gauge}
         message={companies.length === 0
-          ? t("monitor.createCompany", { defaultValue: "Create a company to monitor operations." })
-          : t("monitor.selectCompany", { defaultValue: "Select a company to monitor operations." })}
+          ? t("monitor.createCompany")
+          : t("monitor.selectCompany")}
       />
     );
   }
@@ -371,9 +365,9 @@ export function Monitor() {
     return (
       <EmptyState
         icon={CircleAlert}
-        title={t("monitor.unavailable", { defaultValue: "Monitor unavailable" })}
-        message={t("monitor.unavailableDescription", { defaultValue: "The monitor data could not be loaded." })}
-        action={t("monitor.tryAgain", { defaultValue: "Try again" })}
+        title={t("monitor.unavailable")}
+        message={t("monitor.unavailableDescription")}
+        action={t("monitor.tryAgain")}
         onAction={() => void refresh()}
         hideActionIcon
       />
@@ -384,20 +378,20 @@ export function Monitor() {
     <div className="min-w-0 max-w-full space-y-5" data-testid="monitor-page">
       <header className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
-          <h1 className="text-2xl font-semibold tracking-normal text-foreground">{t("monitor.title", { defaultValue: "Monitor" })}</h1>
+          <h1 className="text-2xl font-semibold tracking-normal text-foreground">{t("monitor.title")}</h1>
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            {t("monitor.description", { defaultValue: "Company health, active work, decisions, and execution progress in one view." })}
+            {t("monitor.description")}
           </p>
         </div>
         <div className="flex min-w-0 flex-wrap items-center gap-2">
           <span className="font-mono text-xs text-muted-foreground" aria-live="polite">
             {lastUpdatedAt > 0
-              ? `${t("monitor.updated", { defaultValue: "Updated" })} ${timeAgo(new Date(lastUpdatedAt))}`
-              : t("monitor.notUpdated", { defaultValue: "Not updated yet" })}
+              ? `${t("monitor.updated")} ${timeAgo(new Date(lastUpdatedAt), i18n.resolvedLanguage)}`
+              : t("monitor.notUpdated")}
           </span>
           <Button type="button" variant="outline" size="sm" onClick={() => void refresh()} disabled={isRefreshing}>
             <RefreshCw className={cn(isRefreshing && "animate-spin")} aria-hidden />
-            {isRefreshing ? t("monitor.refreshing", { defaultValue: "Refreshing" }) : t("monitor.refresh", { defaultValue: "Refresh" })}
+            {isRefreshing ? t("monitor.refreshing") : t("monitor.refresh")}
           </Button>
         </div>
       </header>
@@ -405,9 +399,9 @@ export function Monitor() {
       {errors.length > 0 ? (
         <div className="flex min-w-0 flex-col gap-2 rounded-md border border-destructive/50 bg-destructive/10 p-3 sm:flex-row sm:items-center sm:justify-between" role="alert">
           <p className="text-sm text-foreground">
-            {t("monitor.partialError", { defaultValue: "Some monitor data could not be updated. Existing data remains visible." })}
+            {t("monitor.partialError")}
           </p>
-          <Button type="button" variant="outline" size="sm" onClick={() => void refresh()}>{t("monitor.tryAgain", { defaultValue: "Try again" })}</Button>
+          <Button type="button" variant="outline" size="sm" onClick={() => void refresh()}>{t("monitor.tryAgain")}</Button>
         </div>
       ) : null}
 
@@ -415,14 +409,14 @@ export function Monitor() {
 
       <section aria-labelledby="monitor-agent-states">
         <div className="mb-2 flex items-center justify-between gap-2">
-          <h2 id="monitor-agent-states" className="text-sm font-semibold text-foreground">{t("monitor.agentStates", { defaultValue: "Agent states" })}</h2>
-          <Link to="/agents/all" className="text-xs text-muted-foreground hover:text-foreground hover:underline">{t("monitor.viewAll", { defaultValue: "View all" })}</Link>
+          <h2 id="monitor-agent-states" className="text-sm font-semibold text-foreground">{t("monitor.agentStates")}</h2>
+          <Link to="/agents/all" className="text-xs text-muted-foreground hover:text-foreground hover:underline">{t("monitor.viewAll")}</Link>
         </div>
         <div className="grid min-w-0 grid-cols-2 gap-2 lg:grid-cols-4">
-          <AgentStateCard label={t("monitor.agentState.active", { defaultValue: "Active" })} count={summary.agents.running} href="/agents/active" icon={Activity} />
-          <AgentStateCard label={t("monitor.agentState.idle", { defaultValue: "Idle" })} count={summary.agents.active} href="/agents/active" icon={Clock3} />
-          <AgentStateCard label={t("monitor.agentState.paused", { defaultValue: "Paused" })} count={summary.agents.paused} href="/agents/paused" icon={PauseCircle} />
-          <AgentStateCard label={t("monitor.agentState.failed", { defaultValue: "Failed" })} count={summary.agents.error} href="/agents/error" icon={CircleAlert} critical />
+          <AgentStateCard label={t("monitor.agentState.running")} count={summary.agents.running} href="/agents/active" icon={Activity} />
+          <AgentStateCard label={t("monitor.agentState.available")} count={summary.agents.active} href="/agents/active" icon={Clock3} />
+          <AgentStateCard label={t("monitor.agentState.paused")} count={summary.agents.paused} href="/agents/paused" icon={PauseCircle} />
+          <AgentStateCard label={t("monitor.agentState.failed")} count={summary.agents.error} href="/agents/error" icon={CircleAlert} critical />
         </div>
       </section>
 
@@ -430,24 +424,24 @@ export function Monitor() {
         <Card className="min-w-0 gap-3 py-4">
           <CardHeader className="min-w-0 px-4">
             <div className="flex min-w-0 items-center justify-between gap-3">
-              <CardTitle className="text-sm">{t("monitor.currentTasks", { defaultValue: "Current tasks" })}</CardTitle>
-              <Badge variant={summary.tasks.blocked > 0 ? "destructive" : "secondary"}>{summary.tasks.inProgress} {t("monitor.inProgress", { defaultValue: "in progress" })}</Badge>
+              <CardTitle className="text-sm">{t("monitor.currentTasks")}</CardTitle>
+              <Badge variant={summary.tasks.blocked > 0 ? "destructive" : "secondary"}>{summary.tasks.inProgress} {t("monitor.inProgress")}</Badge>
             </div>
           </CardHeader>
           <CardContent className="min-w-0 space-y-2 px-4">
             {(currentTasksQuery.data ?? []).length > 0
               ? currentTasksQuery.data?.map((task) => <TaskRow key={task.id} task={task} />)
-              : <p className="rounded-md border border-border p-3 text-sm text-muted-foreground">{t("monitor.noCurrentTasks", { defaultValue: "No current tasks." })}</p>}
-            <Button asChild variant="ghost" size="sm" className="w-full"><Link to="/issues">{t("monitor.openTasks", { defaultValue: "Open tasks" })}</Link></Button>
+              : <p className="rounded-md border border-border p-3 text-sm text-muted-foreground">{t("monitor.noCurrentTasks")}</p>}
+            <Button asChild variant="ghost" size="sm" className="w-full"><Link to="/issues">{t("monitor.openTasks")}</Link></Button>
           </CardContent>
         </Card>
 
         <Card className="min-w-0 gap-3 py-4">
-          <CardHeader className="min-w-0 px-4"><CardTitle className="text-sm">{t("monitor.recentTasks", { defaultValue: "Recent tasks" })}</CardTitle></CardHeader>
+          <CardHeader className="min-w-0 px-4"><CardTitle className="text-sm">{t("monitor.recentTasks")}</CardTitle></CardHeader>
           <CardContent className="min-w-0 space-y-2 px-4">
             {(recentTasksQuery.data ?? []).length > 0
               ? recentTasksQuery.data?.map((task) => <TaskRow key={task.id} task={task} />)
-              : <p className="rounded-md border border-border p-3 text-sm text-muted-foreground">{t("monitor.noRecentTasks", { defaultValue: "No recently completed tasks." })}</p>}
+              : <p className="rounded-md border border-border p-3 text-sm text-muted-foreground">{t("monitor.noRecentTasks")}</p>}
           </CardContent>
         </Card>
       </div>
@@ -456,30 +450,30 @@ export function Monitor() {
         <Card className="min-w-0 gap-3 py-4">
           <CardHeader className="min-w-0 px-4">
             <div className="flex min-w-0 items-center justify-between gap-3">
-              <CardTitle className="text-sm">{t("monitor.pendingAndAttention", { defaultValue: "Pending approvals and attention" })}</CardTitle>
-              <Button asChild variant="ghost" size="xs"><Link to="/approvals/pending">{summary.pendingApprovals} {t("monitor.pending", { defaultValue: "pending" })}</Link></Button>
+              <CardTitle className="text-sm">{t("monitor.pendingAndAttention")}</CardTitle>
+              <Button asChild variant="ghost" size="xs"><Link to="/approvals/pending">{summary.pendingApprovals} {t("monitor.pending")}</Link></Button>
             </div>
           </CardHeader>
           <CardContent className="min-w-0 space-y-2 px-4">
             {attentionItems.length > 0
               ? attentionItems.map((item) => <AttentionRow key={item.id} item={item} />)
-              : <p className="rounded-md border border-border p-3 text-sm text-muted-foreground">{t("monitor.noAttention", { defaultValue: "No recent attention items." })}</p>}
-            <Button asChild variant="ghost" size="sm" className="w-full"><Link to="/decisions">{t("monitor.openDecisions", { defaultValue: "Open decisions" })}</Link></Button>
+              : <p className="rounded-md border border-border p-3 text-sm text-muted-foreground">{t("monitor.noAttention")}</p>}
+            <Button asChild variant="ghost" size="sm" className="w-full"><Link to="/decisions">{t("monitor.openDecisions")}</Link></Button>
           </CardContent>
         </Card>
 
         <Card className="min-w-0 gap-3 py-4">
           <CardHeader className="min-w-0 px-4">
             <div className="flex min-w-0 items-center justify-between gap-3">
-              <CardTitle className="text-sm">{t("monitor.executionProgress", { defaultValue: "Execution progress" })}</CardTitle>
-              <Badge variant="secondary">{liveRunsQuery.data?.length ?? 0} {t("monitor.live", { defaultValue: "live" })}</Badge>
+              <CardTitle className="text-sm">{t("monitor.executionProgress")}</CardTitle>
+              <Badge variant="secondary">{liveRunsQuery.data?.length ?? 0} {t("monitor.live")}</Badge>
             </div>
           </CardHeader>
           <CardContent className="min-w-0 space-y-2 px-4">
             {(liveRunsQuery.data ?? []).length > 0
               ? liveRunsQuery.data?.map((run) => <RunRow key={run.id} run={run} />)
-              : <p className="rounded-md border border-border p-3 text-sm text-muted-foreground">{t("monitor.noLiveRuns", { defaultValue: "No agent runs are active." })}</p>}
-            <Button asChild variant="ghost" size="sm" className="w-full"><Link to="/dashboard/live">{t("monitor.openRuns", { defaultValue: "Open live and recent runs" })}</Link></Button>
+              : <p className="rounded-md border border-border p-3 text-sm text-muted-foreground">{t("monitor.noLiveRuns")}</p>}
+            <Button asChild variant="ghost" size="sm" className="w-full"><Link to="/dashboard/live">{t("monitor.openRuns")}</Link></Button>
           </CardContent>
         </Card>
       </div>

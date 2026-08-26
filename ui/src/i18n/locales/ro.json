@@ -5,5 +5,75 @@
       "description": "Începeți prin crearea unei companii.",
       "newCompany": "Companie nouă"
     }
+  },
+  "monitor": {
+    "title": "Monitorizați",
+    "description": "Sănătatea companiei, munca activă, deciziile și execuția progresează într-o singură vedere.",
+    "overallHealth": "Sănătate generală",
+    "blockedTasks": "sarcini blocate",
+    "pendingApprovals": "aprobări în așteptare",
+    "budgetIncidents": "incidente bugetare",
+    "taskFallback": "Sarcină",
+    "critical": "Critic",
+    "updated": "Actualizat",
+    "attentionItem": "Atenție articol",
+    "progress": "Progres",
+    "finished": "Terminat",
+    "openTask": "Deschideți sarcina",
+    "openRun": "Cursa deschisa",
+    "createCompany": "Creați o companie care să monitorizeze operațiunile.",
+    "selectCompany": "Selectați o companie pentru a monitoriza operațiunile.",
+    "unavailable": "Monitorul nu este disponibil",
+    "unavailableDescription": "Datele monitorului nu au putut fi încărcate.",
+    "tryAgain": "Încercați din nou",
+    "notUpdated": "Nu este încă actualizat",
+    "refreshing": "Înviorător",
+    "refresh": "Reîmprospătați",
+    "partialError": "Unele date de monitor nu au putut fi actualizate. Datele existente rămân vizibile.",
+    "agentStates": "Agentul afirmă",
+    "viewAll": "Vezi toate",
+    "currentTasks": "Sarcini curente",
+    "inProgress": "în curs",
+    "noCurrentTasks": "Fără sarcini curente.",
+    "openTasks": "Deschide sarcini",
+    "recentTasks": "Sarcini recente",
+    "noRecentTasks": "Nicio sarcină finalizată recent.",
+    "pendingAndAttention": "În așteptarea aprobărilor și atenției",
+    "pending": "în aşteptare",
+    "noAttention": "Niciun element recent de atenție.",
+    "openDecisions": "Deciziile deschise",
+    "executionProgress": "Progresul execuției",
+    "live": "trăiesc",
+    "noLiveRuns": "Nicio rulare de agent nu este activă.",
+    "openRuns": "Deschide live și rulări recente",
+    "health": {
+      "healthy": {
+        "label": "Sănătos",
+        "description": "Niciun agent eșuat, sarcini blocate sau decizii urgente nu necesită atenție."
+      },
+      "attention": {
+        "label": "Necesită atenție",
+        "description": "Lucrările întrerupte sau deciziile în așteptare necesită o revizuire a operatorului."
+      },
+      "critical": {
+        "label": "Stare critică",
+        "description": "Agenții eșuați, sarcinile blocate sau deciziile critice necesită acțiune."
+      }
+    },
+    "agentState": {
+      "running": "Agenți de rulare",
+      "available": "Agenți disponibili",
+      "paused": "Agenți întrerupti",
+      "failed": "Agenți eșuați"
+    },
+    "runPhase": {
+      "queued": "În coadă pentru a începe.",
+      "running": "Run este în curs.",
+      "succeeded": "Executare finalizată.",
+      "failed": "Executarea a eșuat.",
+      "cancelled": "Run a fost anulat.",
+      "timedOut": "Timpul de rulare a expirat.",
+      "unknown": "Starea de rulare este indisponibilă."
+    }
   }
 }

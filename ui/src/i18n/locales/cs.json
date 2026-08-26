@@ -5,5 +5,75 @@
       "description": "Začněte vytvořením společnosti.",
       "newCompany": "Nová společnost"
     }
+  },
+  "monitor": {
+    "title": "Monitor",
+    "description": "Zdraví společnosti, aktivní práce, rozhodování a provádění v jednom pohledu.",
+    "overallHealth": "Celkové zdraví",
+    "blockedTasks": "zablokované úkoly",
+    "pendingApprovals": "čekající na schválení",
+    "budgetIncidents": "rozpočtové incidenty",
+    "taskFallback": "Úkol",
+    "critical": "Kritické",
+    "updated": "Aktualizováno",
+    "attentionItem": "Pozor položka",
+    "progress": "Pokrok",
+    "finished": "Hotovo",
+    "openTask": "Otevřete úkol",
+    "openRun": "Otevřený běh",
+    "createCompany": "Vytvořte společnost pro sledování operací.",
+    "selectCompany": "Vyberte společnost, kterou chcete sledovat.",
+    "unavailable": "Monitor není k dispozici",
+    "unavailableDescription": "Data monitoru nelze načíst.",
+    "tryAgain": "Zkuste to znovu",
+    "notUpdated": "Zatím neaktualizováno",
+    "refreshing": "Osvěžující",
+    "refresh": "Obnovit",
+    "partialError": "Některá data monitoru se nepodařilo aktualizovat. Stávající data zůstávají viditelná.",
+    "agentStates": "Agent uvádí",
+    "viewAll": "Zobrazit vše",
+    "currentTasks": "Aktuální úkoly",
+    "inProgress": "probíhá",
+    "noCurrentTasks": "Žádné aktuální úkoly.",
+    "openTasks": "Otevřené úkoly",
+    "recentTasks": "Nedávné úkoly",
+    "noRecentTasks": "Žádné nedávno dokončené úkoly.",
+    "pendingAndAttention": "Čeká na schválení a pozornost",
+    "pending": "čeká na vyřízení",
+    "noAttention": "Žádné položky nedávné pozornosti.",
+    "openDecisions": "Otevřená rozhodnutí",
+    "executionProgress": "Průběh exekuce",
+    "live": "žít",
+    "noLiveRuns": "Nejsou aktivní žádné běhy agentů.",
+    "openRuns": "Otevřené živé a nedávné běhy",
+    "health": {
+      "healthy": {
+        "label": "Zdravý",
+        "description": "Žádní neúspěšní agenti, zablokované úkoly nebo naléhavá rozhodnutí nevyžadují pozornost."
+      },
+      "attention": {
+        "label": "Vyžaduje pozornost",
+        "description": "Pozastavená práce nebo čekající rozhodnutí vyžadují kontrolu operátora."
+      },
+      "critical": {
+        "label": "Kritický stav",
+        "description": "Selhali agenti, zablokované úkoly nebo kritická rozhodnutí vyžadují akci."
+      }
+    },
+    "agentState": {
+      "running": "Běžící agenti",
+      "available": "Dostupné agenty",
+      "paused": "Pozastavení agenti",
+      "failed": "Neúspěšní agenti"
+    },
+    "runPhase": {
+      "queued": "Ve frontě ke spuštění.",
+      "running": "Probíhá běh.",
+      "succeeded": "Běh dokončen.",
+      "failed": "Spuštění se nezdařilo.",
+      "cancelled": "Běh byl zrušen.",
+      "timedOut": "Vypršel časový limit běhu.",
+      "unknown": "Stav spuštění je nedostupný."
+    }
   }
 }

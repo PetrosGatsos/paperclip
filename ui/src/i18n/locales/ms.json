@@ -5,5 +5,75 @@
       "description": "Mulakan dengan mencipta syarikat.",
       "newCompany": "Syarikat Baharu"
     }
+  },
+  "monitor": {
+    "title": "Pantau",
+    "description": "Kesihatan syarikat, kerja aktif, keputusan dan kemajuan pelaksanaan dalam satu pandangan.",
+    "overallHealth": "Kesihatan keseluruhan",
+    "blockedTasks": "tugas yang disekat",
+    "pendingApprovals": "menunggu kelulusan",
+    "budgetIncidents": "insiden bajet",
+    "taskFallback": "Tugasan",
+    "critical": "kritikal",
+    "updated": "dikemas kini",
+    "attentionItem": "Item perhatian",
+    "progress": "Kemajuan",
+    "finished": "Selesai",
+    "openTask": "Tugas terbuka",
+    "openRun": "Larian terbuka",
+    "createCompany": "Wujudkan syarikat untuk memantau operasi.",
+    "selectCompany": "Pilih syarikat untuk memantau operasi.",
+    "unavailable": "Monitor tidak tersedia",
+    "unavailableDescription": "Data monitor tidak dapat dimuatkan.",
+    "tryAgain": "Cuba lagi",
+    "notUpdated": "Belum dikemas kini",
+    "refreshing": "Menyegarkan",
+    "refresh": "Segarkan semula",
+    "partialError": "Beberapa data monitor tidak dapat dikemas kini. Data sedia ada kekal kelihatan.",
+    "agentStates": "Negeri ejen",
+    "viewAll": "Lihat semua",
+    "currentTasks": "Tugas semasa",
+    "inProgress": "sedang berjalan",
+    "noCurrentTasks": "Tiada tugas semasa.",
+    "openTasks": "Tugas terbuka",
+    "recentTasks": "Tugasan terkini",
+    "noRecentTasks": "Tiada tugasan yang baru selesai.",
+    "pendingAndAttention": "Menunggu kelulusan dan perhatian",
+    "pending": "belum selesai",
+    "noAttention": "Tiada item perhatian terkini.",
+    "openDecisions": "Keputusan terbuka",
+    "executionProgress": "Kemajuan pelaksanaan",
+    "live": "hidup",
+    "noLiveRuns": "Tiada larian ejen yang aktif.",
+    "openRuns": "Buka siaran langsung dan terkini",
+    "health": {
+      "healthy": {
+        "label": "Sihat",
+        "description": "Tiada ejen yang gagal, tugas yang disekat atau keputusan segera yang memerlukan perhatian."
+      },
+      "attention": {
+        "label": "Perlu perhatian",
+        "description": "Kerja yang dijeda atau keputusan yang belum selesai memerlukan semakan pengendali."
+      },
+      "critical": {
+        "label": "Keadaan kritikal",
+        "description": "Ejen yang gagal, tugas yang disekat atau keputusan kritikal memerlukan tindakan."
+      }
+    },
+    "agentState": {
+      "running": "Ejen yang menjalankan",
+      "available": "Ejen yang ada",
+      "paused": "Ejen dijeda",
+      "failed": "Ejen gagal"
+    },
+    "runPhase": {
+      "queued": "Beratur untuk bermula.",
+      "running": "Larian sedang dijalankan.",
+      "succeeded": "Larian selesai.",
+      "failed": "Larian gagal.",
+      "cancelled": "Larian dibatalkan.",
+      "timedOut": "Larian tamat masa.",
+      "unknown": "Status jalankan tidak tersedia."
+    }
   }
 }

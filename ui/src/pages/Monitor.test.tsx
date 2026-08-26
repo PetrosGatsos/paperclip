@@ -5,7 +5,9 @@ import { flushSync } from "react-dom";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { i18n } from "../i18n";
 import { queryKeys } from "../lib/queryKeys";
+import { timeAgo } from "../lib/timeAgo";
 import { Monitor } from "./Monitor";
 
 const mockDashboardApi = vi.hoisted(() => ({ summary: vi.fn() }));
@@ -120,6 +122,7 @@ describe("Monitor", () => {
   let queryClient: QueryClient;
 
   beforeEach(() => {
+    void i18n.changeLanguage("en");
     container = document.createElement("div");
     document.body.appendChild(container);
     mockDashboardApi.summary.mockResolvedValue(summary);
@@ -146,9 +149,12 @@ describe("Monitor", () => {
     await settle(container);
 
     expect(container.textContent).toContain("Critical state");
-    for (const label of ["Active", "Idle", "Paused", "Failed"]) {
+    for (const label of ["Running", "Available", "Paused", "Failed"]) {
       expect(container.textContent).toContain(label);
     }
+    expect(container.querySelector('a[aria-label="Running: 2"]')).toBeTruthy();
+    expect(container.querySelector('a[aria-label="Available: 3"]')).toBeTruthy();
+    expect(container.textContent).not.toContain("Idle");
     expect(container.textContent).toContain("Repair checkout worker");
     expect(container.textContent).toContain("Document recovery path");
     expect(container.textContent).toContain("Approve production deploy");
@@ -216,5 +222,25 @@ describe("Monitor", () => {
     }));
 
     await vi.waitFor(() => expect(mockHeartbeatsApi.liveRunsForCompany).toHaveBeenCalledTimes(2));
+  });
+
+  it("renders localized monitor copy without an English default fallback", async () => {
+    await i18n.changeLanguage("de");
+
+    await vi.waitFor(() => expect(container.textContent).toContain("Überwachen"));
+    expect(container.textContent).toContain("Verfügbare Agenten");
+    expect(container.textContent).not.toContain("Available");
+  });
+
+  it("formats monitor relative time with the active locale", () => {
+    const now = Date.parse("2026-08-26T12:00:00.000Z");
+    const twoMinutesAgo = new Date(now - 2 * 60 * 1000);
+
+    expect(timeAgo(twoMinutesAgo, "de", now)).toBe(
+      new Intl.RelativeTimeFormat("de", { numeric: "auto", style: "narrow" }).format(-2, "minute"),
+    );
+    expect(timeAgo(twoMinutesAgo, "ar", now)).toBe(
+      new Intl.RelativeTimeFormat("ar", { numeric: "auto", style: "narrow" }).format(-2, "minute"),
+    );
   });
 });

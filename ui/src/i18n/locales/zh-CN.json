@@ -5,5 +5,75 @@
       "description": "通过创建公司开始。",
       "newCompany": "新公司"
     }
+  },
+  "monitor": {
+    "title": "监视器",
+    "description": "公司健康状况、积极工作、决策和执行进度一目了然。",
+    "overallHealth": "整体健康状况",
+    "blockedTasks": "阻塞的任务",
+    "pendingApprovals": "待批准",
+    "budgetIncidents": "预算事件",
+    "taskFallback": "任务",
+    "critical": "关键",
+    "updated": "已更新",
+    "attentionItem": "注意事项",
+    "progress": "进展",
+    "finished": "完成",
+    "openTask": "开放任务",
+    "openRun": "开放运行",
+    "createCompany": "创建一家公司来监控运营。",
+    "selectCompany": "选择一家公司来监控运营情况。",
+    "unavailable": "监视器不可用",
+    "unavailableDescription": "无法加载监控数据。",
+    "tryAgain": "再试一次",
+    "notUpdated": "尚未更新",
+    "refreshing": "清爽",
+    "refresh": "刷新",
+    "partialError": "部分监控数据无法更新。现有数据仍然可见。",
+    "agentStates": "代理人状态",
+    "viewAll": "查看全部",
+    "currentTasks": "当前任务",
+    "inProgress": "进行中",
+    "noCurrentTasks": "当前没有任务。",
+    "openTasks": "开放任务",
+    "recentTasks": "最近的任务",
+    "noRecentTasks": "没有最近完成的任务。",
+    "pendingAndAttention": "等待批准和关注",
+    "pending": "待定",
+    "noAttention": "近期无关注项目。",
+    "openDecisions": "公开决定",
+    "executionProgress": "执行进度",
+    "live": "直播",
+    "noLiveRuns": "没有活动的代理运行。",
+    "openRuns": "打开实时和最近的运行",
+    "health": {
+      "healthy": {
+        "label": "健康",
+        "description": "无需关注失败的代理、阻塞的任务或紧急决策。"
+      },
+      "attention": {
+        "label": "需要注意",
+        "description": "暂停的工作或待决的决定需要操作员审查。"
+      },
+      "critical": {
+        "label": "临界状态",
+        "description": "失败的代理、受阻的任务或关键决策需要采取行动。"
+      }
+    },
+    "agentState": {
+      "running": "运行代理",
+      "available": "可用代理",
+      "paused": "已暂停的代理",
+      "failed": "失败的代理"
+    },
+    "runPhase": {
+      "queued": "排队开始。",
+      "running": "运行正在进行中。",
+      "succeeded": "运行完成。",
+      "failed": "运行失败。",
+      "cancelled": "运行被取消。",
+      "timedOut": "运行超时。",
+      "unknown": "运行状态不可用。"
+    }
   }
 }

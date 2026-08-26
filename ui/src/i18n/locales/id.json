@@ -5,5 +5,75 @@
       "description": "Mulai dengan membuat perusahaan.",
       "newCompany": "Perusahaan Baru"
     }
+  },
+  "monitor": {
+    "title": "Memantau",
+    "description": "Kesehatan perusahaan, kerja aktif, keputusan, dan kemajuan eksekusi dalam satu tampilan.",
+    "overallHealth": "Kesehatan secara keseluruhan",
+    "blockedTasks": "tugas yang diblokir",
+    "pendingApprovals": "persetujuan yang tertunda",
+    "budgetIncidents": "insiden anggaran",
+    "taskFallback": "Tugas",
+    "critical": "Kritis",
+    "updated": "Diperbarui",
+    "attentionItem": "Barang perhatian",
+    "progress": "Kemajuan",
+    "finished": "Selesai",
+    "openTask": "Buka tugas",
+    "openRun": "Jalankan terbuka",
+    "createCompany": "Buat perusahaan untuk memantau operasi.",
+    "selectCompany": "Pilih perusahaan untuk memantau operasi.",
+    "unavailable": "Monitor tidak tersedia",
+    "unavailableDescription": "Data monitor tidak dapat dimuat.",
+    "tryAgain": "Coba lagi",
+    "notUpdated": "Belum diperbarui",
+    "refreshing": "Menyegarkan",
+    "refresh": "Segarkan",
+    "partialError": "Beberapa data monitor tidak dapat diperbarui. Data yang ada tetap terlihat.",
+    "agentStates": "Negara agen",
+    "viewAll": "Lihat semuanya",
+    "currentTasks": "Tugas saat ini",
+    "inProgress": "sedang berlangsung",
+    "noCurrentTasks": "Tidak ada tugas saat ini.",
+    "openTasks": "Buka tugas",
+    "recentTasks": "Tugas terkini",
+    "noRecentTasks": "Tidak ada tugas yang baru saja diselesaikan.",
+    "pendingAndAttention": "Menunggu persetujuan dan perhatian",
+    "pending": "tertunda",
+    "noAttention": "Tidak ada item perhatian terkini.",
+    "openDecisions": "Keputusan terbuka",
+    "executionProgress": "Kemajuan eksekusi",
+    "live": "hidup",
+    "noLiveRuns": "Tidak ada proses agen yang aktif.",
+    "openRuns": "Buka siaran langsung dan terkini",
+    "health": {
+      "healthy": {
+        "label": "Sehat",
+        "description": "Tidak ada agen yang gagal, tugas yang diblokir, atau keputusan mendesak yang memerlukan perhatian."
+      },
+      "attention": {
+        "label": "Perlu perhatian",
+        "description": "Pekerjaan yang dihentikan sementara atau keputusan yang tertunda memerlukan tinjauan operator."
+      },
+      "critical": {
+        "label": "Keadaan kritis",
+        "description": "Agen yang gagal, tugas yang diblokir, atau keputusan penting memerlukan tindakan."
+      }
+    },
+    "agentState": {
+      "running": "Agen berjalan",
+      "available": "Agen yang tersedia",
+      "paused": "Agen yang dijeda",
+      "failed": "Agen yang gagal"
+    },
+    "runPhase": {
+      "queued": "Mengantri untuk memulai.",
+      "running": "Proses sedang berlangsung.",
+      "succeeded": "Jalankan selesai.",
+      "failed": "Jalankan gagal.",
+      "cancelled": "Jalankan dibatalkan.",
+      "timedOut": "Waktu habis.",
+      "unknown": "Status pengoperasian tidak tersedia."
+    }
   }
 }

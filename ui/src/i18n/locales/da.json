@@ -5,5 +5,75 @@
       "description": "Kom i gang ved at oprette en virksomhed.",
       "newCompany": "Ny virksomhed"
     }
+  },
+  "monitor": {
+    "title": "Overvåg",
+    "description": "Virksomhedens sundhed, aktivt arbejde, beslutninger og eksekveringsfremskridt i én visning.",
+    "overallHealth": "Generelt helbred",
+    "blockedTasks": "blokerede opgaver",
+    "pendingApprovals": "afventer godkendelser",
+    "budgetIncidents": "budgethændelser",
+    "taskFallback": "Opgave",
+    "critical": "Kritisk",
+    "updated": "Opdateret",
+    "attentionItem": "Opmærksomhed punkt",
+    "progress": "Fremskridt",
+    "finished": "Færdig",
+    "openTask": "Åben opgave",
+    "openRun": "Åbent løb",
+    "createCompany": "Opret en virksomhed til at overvåge driften.",
+    "selectCompany": "Vælg en virksomhed til at overvåge driften.",
+    "unavailable": "Monitor er ikke tilgængelig",
+    "unavailableDescription": "Monitordataene kunne ikke indlæses.",
+    "tryAgain": "Prøv igen",
+    "notUpdated": "Ikke opdateret endnu",
+    "refreshing": "Forfriskende",
+    "refresh": "Opdater",
+    "partialError": "Nogle monitordata kunne ikke opdateres. Eksisterende data forbliver synlige.",
+    "agentStates": "Agent oplyser",
+    "viewAll": "Se alle",
+    "currentTasks": "Aktuelle opgaver",
+    "inProgress": "i gang",
+    "noCurrentTasks": "Ingen aktuelle opgaver.",
+    "openTasks": "Åbne opgaver",
+    "recentTasks": "Seneste opgaver",
+    "noRecentTasks": "Ingen nyligt udførte opgaver.",
+    "pendingAndAttention": "Afventer godkendelser og opmærksomhed",
+    "pending": "afventer",
+    "noAttention": "Ingen nyere opmærksomhedspunkter.",
+    "openDecisions": "Åbne beslutninger",
+    "executionProgress": "Udførelse fremskridt",
+    "live": "live",
+    "noLiveRuns": "Ingen agentkørsler er aktive.",
+    "openRuns": "Åben live og seneste kørsler",
+    "health": {
+      "healthy": {
+        "label": "Sundt",
+        "description": "Ingen fejlbehæftede agenter, blokerede opgaver eller presserende beslutninger behøver opmærksomhed."
+      },
+      "attention": {
+        "label": "Har brug for opmærksomhed",
+        "description": "Midlertidigt arbejde eller afventende beslutninger kræver en operatørgennemgang."
+      },
+      "critical": {
+        "label": "Kritisk tilstand",
+        "description": "Mislykkede agenter, blokerede opgaver eller kritiske beslutninger kræver handling."
+      }
+    },
+    "agentState": {
+      "running": "Løbende agenter",
+      "available": "Tilgængelige agenter",
+      "paused": "Pausede agenter",
+      "failed": "Mislykkede agenter"
+    },
+    "runPhase": {
+      "queued": "I kø for at starte.",
+      "running": "Løb er i gang.",
+      "succeeded": "Kørsel afsluttet.",
+      "failed": "Kørsel mislykkedes.",
+      "cancelled": "Løbet blev aflyst.",
+      "timedOut": "Kørselstimeout.",
+      "unknown": "Kørstatus er ikke tilgængelig."
+    }
   }
 }

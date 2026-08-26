@@ -5,5 +5,75 @@
       "description": "Bắt đầu bằng cách tạo một công ty.",
       "newCompany": "Công ty mới"
     }
+  },
+  "monitor": {
+    "title": "Màn hình",
+    "description": "Tình hình công ty, hoạt động tích cực, các quyết định và tiến độ thực hiện ở một góc nhìn.",
+    "overallHealth": "Sức khỏe tổng thể",
+    "blockedTasks": "nhiệm vụ bị chặn",
+    "pendingApprovals": "đang chờ phê duyệt",
+    "budgetIncidents": "sự cố ngân sách",
+    "taskFallback": "Nhiệm vụ",
+    "critical": "Quan trọng",
+    "updated": "Đã cập nhật",
+    "attentionItem": "Mục chú ý",
+    "progress": "Tiến độ",
+    "finished": "Đã hoàn thành",
+    "openTask": "nhiệm vụ mở",
+    "openRun": "Chạy mở",
+    "createCompany": "Thành lập công ty để giám sát hoạt động",
+    "selectCompany": "Lựa chọn công ty để giám sát hoạt động",
+    "unavailable": "Màn hình không khả dụng",
+    "unavailableDescription": "Không thể tải dữ liệu màn hình.",
+    "tryAgain": "Thử lại",
+    "notUpdated": "Chưa cập nhật",
+    "refreshing": "Làm mới",
+    "refresh": "Làm mới",
+    "partialError": "Không thể cập nhật một số dữ liệu màn hình. Dữ liệu hiện tại vẫn hiển thị.",
+    "agentStates": "Trạng thái đại lý",
+    "viewAll": "Xem tất cả",
+    "currentTasks": "Nhiệm vụ hiện tại",
+    "inProgress": "đang tiến hành",
+    "noCurrentTasks": "Không có nhiệm vụ hiện tại.",
+    "openTasks": "Nhiệm vụ mở",
+    "recentTasks": "Nhiệm vụ gần đây",
+    "noRecentTasks": "Không có nhiệm vụ nào được hoàn thành gần đây.",
+    "pendingAndAttention": "Đang chờ phê duyệt và chú ý",
+    "pending": "đang chờ xử lý",
+    "noAttention": "Không có mục chú ý gần đây.",
+    "openDecisions": "Quyết định mở",
+    "executionProgress": "Tiến độ thực hiện",
+    "live": "sống",
+    "noLiveRuns": "Không có hoạt động đại lý nào đang hoạt động.",
+    "openRuns": "Mở các lần chạy trực tiếp và gần đây",
+    "health": {
+      "healthy": {
+        "label": "khỏe mạnh",
+        "description": "Không có tác nhân thất bại, nhiệm vụ bị chặn hoặc quyết định khẩn cấp nào cần được chú ý."
+      },
+      "attention": {
+        "label": "Cần chú ý",
+        "description": "Công việc bị tạm dừng hoặc các quyết định đang chờ xử lý cần được người vận hành xem xét."
+      },
+      "critical": {
+        "label": "Trạng thái quan trọng",
+        "description": "Các tác nhân thất bại, nhiệm vụ bị chặn hoặc các quyết định quan trọng cần được hành động."
+      }
+    },
+    "agentState": {
+      "running": "Điều hành đại lý",
+      "available": "Đại lý có sẵn",
+      "paused": "Đại lý bị tạm dừng",
+      "failed": "đại lý thất bại"
+    },
+    "runPhase": {
+      "queued": "Xếp hàng để bắt đầu.",
+      "running": "Đang chạy.",
+      "succeeded": "Chạy xong.",
+      "failed": "Chạy không thành công.",
+      "cancelled": "Cuộc chạy đã bị hủy.",
+      "timedOut": "Hết thời gian chạy.",
+      "unknown": "Trạng thái chạy không có sẵn."
+    }
   }
 }

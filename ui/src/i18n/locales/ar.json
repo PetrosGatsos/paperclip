@@ -5,5 +5,75 @@
       "description": "ابدأ بإنشاء شركة.",
       "newCompany": "شركة جديدة"
     }
+  },
+  "monitor": {
+    "title": "مراقب",
+    "description": "صحة الشركة والعمل النشط والقرارات وتقدم التنفيذ في عرض واحد.",
+    "overallHealth": "الصحة العامة",
+    "blockedTasks": "المهام المحظورة",
+    "pendingApprovals": "في انتظار الموافقات",
+    "budgetIncidents": "حوادث الميزانية",
+    "taskFallback": "المهمة",
+    "critical": "حرجة",
+    "updated": "تم التحديث",
+    "attentionItem": "عنصر الاهتمام",
+    "progress": "التقدم",
+    "finished": "انتهى",
+    "openTask": "مهمة مفتوحة",
+    "openRun": "تشغيل مفتوح",
+    "createCompany": "إنشاء شركة لمراقبة العمليات.",
+    "selectCompany": "اختر شركة لمراقبة العمليات.",
+    "unavailable": "الشاشة غير متوفرة",
+    "unavailableDescription": "تعذر تحميل بيانات الشاشة.",
+    "tryAgain": "حاول مرة أخرى",
+    "notUpdated": "لم يتم تحديثه بعد",
+    "refreshing": "منعش",
+    "refresh": "تحديث",
+    "partialError": "لا يمكن تحديث بعض بيانات الشاشة. تظل البيانات الموجودة مرئية.",
+    "agentStates": "دول الوكيل",
+    "viewAll": "عرض الكل",
+    "currentTasks": "المهام الحالية",
+    "inProgress": "قيد التقدم",
+    "noCurrentTasks": "لا توجد مهام حالية.",
+    "openTasks": "المهام المفتوحة",
+    "recentTasks": "المهام الأخيرة",
+    "noRecentTasks": "لا توجد مهام مكتملة مؤخرًا.",
+    "pendingAndAttention": "في انتظار الموافقات والاهتمام",
+    "pending": "في انتظار",
+    "noAttention": "لا توجد عناصر الاهتمام الأخيرة.",
+    "openDecisions": "قرارات مفتوحة",
+    "executionProgress": "تقدم التنفيذ",
+    "live": "يعيش",
+    "noLiveRuns": "لا توجد عمليات تشغيل وكيل نشطة.",
+    "openRuns": "فتح البث المباشر والحديث",
+    "health": {
+      "healthy": {
+        "label": "صحي",
+        "description": "لا يحتاج أي عملاء فاشلين أو مهام محظورة أو قرارات عاجلة إلى الاهتمام."
+      },
+      "attention": {
+        "label": "يحتاج إلى اهتمام",
+        "description": "يحتاج العمل المتوقف مؤقتًا أو القرارات المعلقة إلى مراجعة المشغل."
+      },
+      "critical": {
+        "label": "حالة حرجة",
+        "description": "يحتاج العملاء الفاشلون أو المهام المحظورة أو القرارات الحاسمة إلى اتخاذ إجراء."
+      }
+    },
+    "agentState": {
+      "running": "وكلاء التشغيل",
+      "available": "الوكلاء المتاحون",
+      "paused": "الوكلاء المتوقفون مؤقتًا",
+      "failed": "وكلاء فاشلون"
+    },
+    "runPhase": {
+      "queued": "في قائمة الانتظار للبدء.",
+      "running": "التشغيل قيد التقدم.",
+      "succeeded": "اكتمل التشغيل.",
+      "failed": "فشل التشغيل.",
+      "cancelled": "تم إلغاء التشغيل.",
+      "timedOut": "انتهت مهلة التشغيل.",
+      "unknown": "حالة التشغيل غير متاحة."
+    }
   }
 }

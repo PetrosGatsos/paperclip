@@ -5,5 +5,75 @@
       "description": "Magsimula sa paggawa ng kumpanya.",
       "newCompany": "Bagong Kumpanya"
     }
+  },
+  "monitor": {
+    "title": "Subaybayan",
+    "description": "Kalusugan ng kumpanya, aktibong trabaho, mga desisyon, at pag-unlad ng pagpapatupad sa isang view.",
+    "overallHealth": "Pangkalahatang kalusugan",
+    "blockedTasks": "mga naka-block na gawain",
+    "pendingApprovals": "nakabinbing pag-apruba",
+    "budgetIncidents": "mga insidente sa badyet",
+    "taskFallback": "Gawain",
+    "critical": "Kritikal",
+    "updated": "Na-update",
+    "attentionItem": "Atensyon item",
+    "progress": "Pag-unlad",
+    "finished": "Tapos na",
+    "openTask": "Buksan ang gawain",
+    "openRun": "Buksan ang pagtakbo",
+    "createCompany": "Lumikha ng isang kumpanya upang subaybayan ang mga operasyon.",
+    "selectCompany": "Pumili ng kumpanyang susubaybayan ang mga operasyon.",
+    "unavailable": "Hindi available ang monitor",
+    "unavailableDescription": "Hindi ma-load ang data ng monitor.",
+    "tryAgain": "Subukan muli",
+    "notUpdated": "Hindi pa updated",
+    "refreshing": "Nagre-refresh",
+    "refresh": "I-refresh",
+    "partialError": "Hindi ma-update ang ilang data ng monitor. Nananatiling nakikita ang kasalukuyang data.",
+    "agentStates": "Mga estado ng ahente",
+    "viewAll": "Tingnan lahat",
+    "currentTasks": "Mga kasalukuyang gawain",
+    "inProgress": "nasa progreso",
+    "noCurrentTasks": "Walang kasalukuyang mga gawain.",
+    "openTasks": "Buksan ang mga gawain",
+    "recentTasks": "Mga kamakailang gawain",
+    "noRecentTasks": "Walang mga kamakailang natapos na gawain.",
+    "pendingAndAttention": "Nakabinbing pag-apruba at atensyon",
+    "pending": "nakabinbin",
+    "noAttention": "Walang kamakailang mga item sa atensyon.",
+    "openDecisions": "Bukas na mga desisyon",
+    "executionProgress": "Pag-unlad ng pagpapatupad",
+    "live": "mabuhay",
+    "noLiveRuns": "Walang tumatakbong ahente ang aktibo.",
+    "openRuns": "Buksan ang mga live at kamakailang pagtakbo",
+    "health": {
+      "healthy": {
+        "label": "Malusog",
+        "description": "Walang mga nabigong ahente, mga naka-block na gawain, o mga agarang desisyon na nangangailangan ng pansin."
+      },
+      "attention": {
+        "label": "Kailangan ng atensyon",
+        "description": "Ang mga naka-pause na trabaho o mga nakabinbing desisyon ay nangangailangan ng pagsusuri ng operator."
+      },
+      "critical": {
+        "label": "Kritikal na estado",
+        "description": "Ang mga nabigong ahente, naka-block na gawain, o kritikal na desisyon ay nangangailangan ng aksyon."
+      }
+    },
+    "agentState": {
+      "running": "Mga tumatakbong ahente",
+      "available": "Mga magagamit na ahente",
+      "paused": "Mga naka-pause na ahente",
+      "failed": "Mga nabigong ahente"
+    },
+    "runPhase": {
+      "queued": "Nakapila para magsimula.",
+      "running": "Kasalukuyang tumatakbo.",
+      "succeeded": "Nakumpleto ang pagtakbo.",
+      "failed": "Nabigo ang pagtakbo.",
+      "cancelled": "Kinansela ang pagtakbo.",
+      "timedOut": "Nag-time out ang pagtakbo.",
+      "unknown": "Hindi available ang katayuan ng pagpapatakbo."
+    }
   }
 }
