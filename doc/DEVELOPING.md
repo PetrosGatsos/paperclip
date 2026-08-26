@@ -926,6 +926,15 @@ pnpm secrets:migrate-inline-env         # dry run
 pnpm secrets:migrate-inline-env --apply # apply migration
 ```
 
+## Microsoft Graph Completion Mail
+
+Deployments that send completion notifications through the authenticated
+Microsoft Graph mailbox must add delegated `Mail.Send`, complete operator
+re-consent, and configure recipients and sender identity at runtime. See
+[MICROSOFT-GRAPH-COMPLETION-MAIL.md](./MICROSOFT-GRAPH-COMPLETION-MAIL.md) for
+the authorization, secret-binding, readiness, ambiguous-outcome, and deployment
+verification contract.
+
 ## Company Deletion Toggle
 
 Company deletion is intended as a dev/debug capability and can be disabled at runtime:

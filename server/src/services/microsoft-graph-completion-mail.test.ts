@@ -50,6 +50,10 @@ describe("Microsoft Graph delegated authorization", () => {
       "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=client&scope=openid%20offline_access%20Mail.Read",
     );
     expect(url.searchParams.get("scope")).toBe("openid offline_access Mail.Read Mail.Send");
+
+    expect(() => extendMicrosoftGraphDelegatedAuthorizationUrl(
+      "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=client&scope=openid%20offline_access",
+    )).toThrow("existing Mail.Read scope");
   });
 });
 
@@ -202,6 +206,33 @@ describe("Microsoft Graph completion-mail transport", () => {
     });
     expect(JSON.stringify(result)).not.toContain("synthetic-access-token");
     expect(JSON.stringify(result)).not.toContain("private-mailbox@example.invalid");
+  });
+
+  it("redacts access-context acquisition failures before dispatch", async () => {
+    const fetchImpl = vi.fn<typeof fetch>();
+    const transport = createMicrosoftGraphCompletionMailTransport({
+      config: CONFIG,
+      fetchImpl,
+      acquireAccessContext: async () => {
+        throw new Error("refresh-token=private-token mailbox=private@example.invalid");
+      },
+      createCorrelationId: () => "notification-correlation-123",
+    });
+
+    const result = await transport.send(MESSAGE);
+
+    expect(result).toMatchObject({
+      outcome: "rejected",
+      correlationId: "notification-correlation-123",
+      error: {
+        category: "authentication",
+        retryable: false,
+        diagnostic: "The delegated Microsoft Graph access context could not be acquired.",
+      },
+    });
+    expect(JSON.stringify(result)).not.toContain("private-token");
+    expect(JSON.stringify(result)).not.toContain("private@example.invalid");
+    expect(fetchImpl).not.toHaveBeenCalled();
   });
 
   it("fails closed before dispatch when Mail.Send is absent", async () => {

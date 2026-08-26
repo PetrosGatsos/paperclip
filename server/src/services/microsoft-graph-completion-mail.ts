@@ -134,9 +134,11 @@ export function extendMicrosoftGraphDelegatedAuthorizationUrl(input: string | UR
   const existingScopes = (authorizationUrl.searchParams.get("scope") ?? "")
     .split(/\s+/)
     .filter(Boolean);
-  if (existingScopes.length === 0) {
+  if (!existingScopes.some(
+    (scope) => scope.trim().toLowerCase() === MICROSOFT_GRAPH_INBOX_READ_SCOPE.toLowerCase(),
+  )) {
     throw new MicrosoftGraphCompletionMailConfigError(
-      "The Microsoft Graph delegated authorization request must include its existing read scopes.",
+      "The Microsoft Graph delegated authorization request must include its existing Mail.Read scope.",
     );
   }
   authorizationUrl.searchParams.set("scope", extendMicrosoftGraphDelegatedScopes(existingScopes).join(" "));
@@ -290,7 +292,16 @@ export function createMicrosoftGraphCompletionMailTransport(input: {
   return {
     async send(message) {
       const correlationId = createCorrelationId();
-      const access = await input.acquireAccessContext();
+      let access: MicrosoftGraphAccessContext;
+      try {
+        access = await input.acquireAccessContext();
+      } catch {
+        return rejectedBeforeDispatch(
+          correlationId,
+          "authentication",
+          "The delegated Microsoft Graph access context could not be acquired.",
+        );
+      }
       const accessToken = access.accessToken.trim();
       if (!accessToken) {
         return rejectedBeforeDispatch(
