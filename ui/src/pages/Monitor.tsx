@@ -39,6 +39,23 @@ const RECENT_TASK_LIMIT = 4;
 const ATTENTION_LIMIT = 6;
 
 type HealthState = "healthy" | "attention" | "critical";
+type MonitorRun = Pick<
+  LiveRunForIssue,
+  "id" | "status" | "startedAt" | "finishedAt" | "createdAt" | "agentId" | "agentName" | "issueId"
+>;
+
+function projectMonitorRun(run: LiveRunForIssue): MonitorRun {
+  return {
+    id: run.id,
+    status: run.status,
+    startedAt: run.startedAt,
+    finishedAt: run.finishedAt,
+    createdAt: run.createdAt,
+    agentId: run.agentId,
+    agentName: run.agentName,
+    issueId: run.issueId,
+  };
+}
 
 const HEALTH_STYLES: Record<HealthState, string> = {
   healthy: "border-border bg-card",
@@ -209,15 +226,18 @@ function AttentionRow({ item }: { item: AttentionItem }) {
   );
 }
 
-function RunRow({ run }: { run: LiveRunForIssue }) {
+function RunRow({ run }: { run: MonitorRun }) {
   const { t } = useTranslation();
   const active = run.status === "queued" || run.status === "running";
-  const progress = run.currentStatusMessage ?? (
-    active
-      ? t("monitor.waitingProgress", { defaultValue: "Waiting for a progress update." })
-      : t("monitor.noProgress", { defaultValue: "No progress summary is available." })
-  );
-  const time = run.currentStatusUpdatedAt ?? run.startedAt ?? run.createdAt;
+  const phase = {
+    queued: t("monitor.runPhase.queued", { defaultValue: "Queued to start." }),
+    running: t("monitor.runPhase.running", { defaultValue: "Run is in progress." }),
+    succeeded: t("monitor.runPhase.succeeded", { defaultValue: "Run completed." }),
+    failed: t("monitor.runPhase.failed", { defaultValue: "Run failed." }),
+    cancelled: t("monitor.runPhase.cancelled", { defaultValue: "Run was cancelled." }),
+    timed_out: t("monitor.runPhase.timedOut", { defaultValue: "Run timed out." }),
+  }[run.status] ?? t("monitor.runPhase.unknown", { defaultValue: "Run status is unavailable." });
+  const time = run.finishedAt ?? run.startedAt ?? run.createdAt;
   return (
     <div className="min-w-0 rounded-md border border-border p-3">
       <div className="flex min-w-0 items-start justify-between gap-3">
@@ -226,7 +246,7 @@ function RunRow({ run }: { run: LiveRunForIssue }) {
             <p className="break-words text-sm font-medium text-foreground">{run.agentName}</p>
             <StatusBadge status={run.status} />
           </div>
-          <p className="mt-2 line-clamp-2 break-words text-xs text-muted-foreground">{progress}</p>
+          <p className="mt-2 line-clamp-2 break-words text-xs text-muted-foreground">{phase}</p>
           <p className="mt-2 font-mono text-xs text-muted-foreground">
             {active ? t("monitor.progress", { defaultValue: "Progress" }) : t("monitor.finished", { defaultValue: "Finished" })} {timeAgo(time)}
           </p>
@@ -291,8 +311,11 @@ export function Monitor() {
     enabled: !!selectedCompanyId,
   });
   const liveRunsQuery = useQuery({
-    queryKey: queryKeys.liveRuns(selectedCompanyId!),
-    queryFn: () => heartbeatsApi.liveRunsForCompany(selectedCompanyId!),
+    queryKey: queryKeys.monitorLiveRuns(selectedCompanyId!),
+    queryFn: async () => {
+      const runs = await heartbeatsApi.liveRunsForCompany(selectedCompanyId!);
+      return runs.map(projectMonitorRun);
+    },
     enabled: !!selectedCompanyId,
   });
 
@@ -300,6 +323,9 @@ export function Monitor() {
     if (!selectedCompanyId || event.companyId !== selectedCompanyId) return;
     if (event.type === "activity.logged") {
       void queryClient.invalidateQueries({ queryKey: queryKeys.attention(selectedCompanyId) });
+    }
+    if (event.type === "heartbeat.run.queued" || event.type === "heartbeat.run.status") {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.monitorLiveRuns(selectedCompanyId) });
     }
   });
 

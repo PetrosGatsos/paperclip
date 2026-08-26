@@ -5,6 +5,7 @@ import { flushSync } from "react-dom";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { queryKeys } from "../lib/queryKeys";
 import { Monitor } from "./Monitor";
 
 const mockDashboardApi = vi.hoisted(() => ({ summary: vi.fn() }));
@@ -93,7 +94,7 @@ const liveRun = {
   id: "run-1",
   status: "running",
   invocationSource: "heartbeat",
-  triggerDetail: null,
+  triggerDetail: "SENSITIVE_TRIGGER_CONTENT",
   startedAt: new Date().toISOString(),
   finishedAt: null,
   createdAt: new Date().toISOString(),
@@ -101,10 +102,12 @@ const liveRun = {
   agentName: "Operator",
   adapterType: "codex_local",
   issueId: "task-current",
-  currentStatusMessage: "Checking the responsive layout",
+  currentStatusMessage: "SENSITIVE_CURRENT_STATUS_MESSAGE",
   currentStatusUpdatedAt: new Date().toISOString(),
   currentToolName: "https://internal.invalid/private-tool",
   lastAssistantSnippet: "SECRET_TRANSCRIPT_CONTENT",
+  livenessReason: "SENSITIVE_LIVENESS_REASON",
+  nextAction: "SENSITIVE_NEXT_ACTION",
 };
 
 async function settle(container: HTMLElement) {
@@ -114,6 +117,7 @@ async function settle(container: HTMLElement) {
 describe("Monitor", () => {
   let container: HTMLDivElement;
   let root: ReturnType<typeof createRoot>;
+  let queryClient: QueryClient;
 
   beforeEach(() => {
     container = document.createElement("div");
@@ -123,7 +127,7 @@ describe("Monitor", () => {
       Promise.resolve(filters.status?.includes("done") ? [recentTask] : [currentTask]));
     mockAttentionApi.list.mockResolvedValue({ items: [attentionItem], totalCount: 1 });
     mockHeartbeatsApi.liveRunsForCompany.mockResolvedValue([liveRun]);
-    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     root = createRoot(container);
     flushSync(() => {
       root.render(<QueryClientProvider client={queryClient}><Monitor /></QueryClientProvider>);
@@ -148,12 +152,28 @@ describe("Monitor", () => {
     expect(container.textContent).toContain("Repair checkout worker");
     expect(container.textContent).toContain("Document recovery path");
     expect(container.textContent).toContain("Approve production deploy");
-    expect(container.textContent).toContain("Checking the responsive layout");
+    expect(container.textContent).toContain("Run is in progress.");
+    expect(container.textContent).not.toContain("SENSITIVE_CURRENT_STATUS_MESSAGE");
     expect(container.textContent).not.toContain("SECRET_TRANSCRIPT_CONTENT");
     expect(container.textContent).not.toContain("private-tool");
+    expect(container.textContent).not.toContain("SENSITIVE_TRIGGER_CONTENT");
+    expect(container.textContent).not.toContain("SENSITIVE_LIVENESS_REASON");
+    expect(container.textContent).not.toContain("SENSITIVE_NEXT_ACTION");
     expect(container.querySelector('a[href="/decisions"]')).toBeTruthy();
     expect(container.querySelector('a[href="/issues/PAP-42"]')).toBeTruthy();
     expect(container.querySelector('a[href="/agents/agent-1/runs/run-1"]')).toBeTruthy();
+
+    expect(queryClient.getQueryData(queryKeys.monitorLiveRuns("company-1"))).toEqual([{
+      id: liveRun.id,
+      status: liveRun.status,
+      startedAt: liveRun.startedAt,
+      finishedAt: liveRun.finishedAt,
+      createdAt: liveRun.createdAt,
+      agentId: liveRun.agentId,
+      agentName: liveRun.agentName,
+      issueId: liveRun.issueId,
+    }]);
+    expect(queryClient.getQueryData(queryKeys.liveRuns("company-1"))).toBeUndefined();
   });
 
   it("keeps the refresh action visible at a 360px viewport and refreshes without navigation", async () => {
@@ -182,5 +202,19 @@ describe("Monitor", () => {
     }));
 
     await vi.waitFor(() => expect(mockAttentionApi.list).toHaveBeenCalledTimes(2));
+  });
+
+  it("refreshes the projected monitor run cache after run lifecycle events", async () => {
+    await settle(container);
+    expect(liveEvent.handler).toBeTypeOf("function");
+
+    flushSync(() => liveEvent.handler?.({
+      type: "heartbeat.run.status",
+      companyId: "company-1",
+      payload: { runId: liveRun.id, status: "succeeded" },
+      createdAt: new Date().toISOString(),
+    }));
+
+    await vi.waitFor(() => expect(mockHeartbeatsApi.liveRunsForCompany).toHaveBeenCalledTimes(2));
   });
 });
