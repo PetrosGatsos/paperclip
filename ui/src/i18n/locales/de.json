@@ -7,7 +7,7 @@
     }
   },
   "monitor": {
-    "title": "Überwachen",
+    "title": "Betriebsmonitor",
     "description": "Unternehmensgesundheit, aktive Arbeit, Entscheidungen und Ausführungsfortschritt auf einen Blick.",
     "overallHealth": "Allgemeine Gesundheit",
     "blockedTasks": "blockierte Aufgaben",
@@ -20,17 +20,17 @@
     "progress": "Fortschritt",
     "finished": "Fertig",
     "openTask": "Aufgabe öffnen",
-    "openRun": "Offener Lauf",
+    "openRun": "Ausführung öffnen",
     "createCompany": "Erstellen Sie ein Unternehmen, um den Betrieb zu überwachen.",
     "selectCompany": "Wählen Sie ein Unternehmen aus, um den Betrieb zu überwachen.",
     "unavailable": "Monitor nicht verfügbar",
     "unavailableDescription": "Die Monitordaten konnten nicht geladen werden.",
     "tryAgain": "Versuchen Sie es erneut",
     "notUpdated": "Noch nicht aktualisiert",
-    "refreshing": "Erfrischend",
-    "refresh": "Aktualisieren",
+    "refreshing": "Wird aktualisiert",
+    "refresh": "Jetzt aktualisieren",
     "partialError": "Einige Monitordaten konnten nicht aktualisiert werden. Vorhandene Daten bleiben sichtbar.",
-    "agentStates": "Agentenzustände",
+    "agentStates": "Agentenstatus",
     "viewAll": "Alle anzeigen",
     "currentTasks": "Aktuelle Aufgaben",
     "inProgress": "in Bearbeitung",
@@ -43,9 +43,9 @@
     "noAttention": "Keine aktuellen Aufmerksamkeitselemente.",
     "openDecisions": "Offene Entscheidungen",
     "executionProgress": "Ausführungsfortschritt",
-    "live": "leben",
-    "noLiveRuns": "Es sind keine Agentenläufe aktiv.",
-    "openRuns": "Offene Live- und aktuelle Läufe",
+    "live": "Aktiv",
+    "noLiveRuns": "Es sind keine Agentenausführungen aktiv.",
+    "openRuns": "Aktive und letzte Ausführungen öffnen",
     "health": {
       "healthy": {
         "label": "Gesund",
@@ -61,18 +61,18 @@
       }
     },
     "agentState": {
-      "running": "Laufende Agenten",
-      "available": "Verfügbare Agenten",
-      "paused": "Angehaltene Agenten",
-      "failed": "Fehlgeschlagene Agenten"
+      "running": "Wird ausgeführt",
+      "available": "Verfügbar",
+      "paused": "Pausiert",
+      "failed": "Fehlgeschlagen"
     },
     "runPhase": {
-      "queued": "In der Warteschlange zum Starten.",
-      "running": "Der Lauf läuft.",
-      "succeeded": "Lauf abgeschlossen.",
-      "failed": "Ausführung fehlgeschlagen.",
-      "cancelled": "Lauf wurde abgebrochen.",
-      "timedOut": "Laufzeitüberschreitung.",
+      "queued": "Zum Starten eingereiht.",
+      "running": "Die Ausführung läuft.",
+      "succeeded": "Die Ausführung wurde abgeschlossen.",
+      "failed": "Die Ausführung ist fehlgeschlagen.",
+      "cancelled": "Die Ausführung wurde abgebrochen.",
+      "timedOut": "Zeitüberschreitung bei der Ausführung.",
       "unknown": "Der Ausführungsstatus ist nicht verfügbar."
     }
   }

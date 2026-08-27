@@ -7,7 +7,7 @@
     }
   },
   "monitor": {
-    "title": "Monitorizați",
+    "title": "Monitorizare operațională",
     "description": "Sănătatea companiei, munca activă, deciziile și execuția progresează într-o singură vedere.",
     "overallHealth": "Sănătate generală",
     "blockedTasks": "sarcini blocate",
@@ -20,17 +20,17 @@
     "progress": "Progres",
     "finished": "Terminat",
     "openTask": "Deschideți sarcina",
-    "openRun": "Cursa deschisa",
+    "openRun": "Deschide execuția",
     "createCompany": "Creați o companie care să monitorizeze operațiunile.",
     "selectCompany": "Selectați o companie pentru a monitoriza operațiunile.",
     "unavailable": "Monitorul nu este disponibil",
     "unavailableDescription": "Datele monitorului nu au putut fi încărcate.",
     "tryAgain": "Încercați din nou",
     "notUpdated": "Nu este încă actualizat",
-    "refreshing": "Înviorător",
-    "refresh": "Reîmprospătați",
+    "refreshing": "Se actualizează",
+    "refresh": "Actualizează acum",
     "partialError": "Unele date de monitor nu au putut fi actualizate. Datele existente rămân vizibile.",
-    "agentStates": "Agentul afirmă",
+    "agentStates": "Stările agenților",
     "viewAll": "Vezi toate",
     "currentTasks": "Sarcini curente",
     "inProgress": "în curs",
@@ -43,9 +43,9 @@
     "noAttention": "Niciun element recent de atenție.",
     "openDecisions": "Deciziile deschise",
     "executionProgress": "Progresul execuției",
-    "live": "trăiesc",
-    "noLiveRuns": "Nicio rulare de agent nu este activă.",
-    "openRuns": "Deschide live și rulări recente",
+    "live": "Activ",
+    "noLiveRuns": "Nu există execuții active ale agenților.",
+    "openRuns": "Deschide execuțiile active și recente",
     "health": {
       "healthy": {
         "label": "Sănătos",
@@ -61,19 +61,19 @@
       }
     },
     "agentState": {
-      "running": "Agenți de rulare",
-      "available": "Agenți disponibili",
-      "paused": "Agenți întrerupti",
-      "failed": "Agenți eșuați"
+      "running": "În execuție",
+      "available": "Disponibil",
+      "paused": "În pauză",
+      "failed": "Eșuat"
     },
     "runPhase": {
-      "queued": "În coadă pentru a începe.",
-      "running": "Run este în curs.",
-      "succeeded": "Executare finalizată.",
-      "failed": "Executarea a eșuat.",
-      "cancelled": "Run a fost anulat.",
-      "timedOut": "Timpul de rulare a expirat.",
-      "unknown": "Starea de rulare este indisponibilă."
+      "queued": "În coadă pentru pornire.",
+      "running": "Execuția este în curs.",
+      "succeeded": "Execuția s-a încheiat.",
+      "failed": "Execuția a eșuat.",
+      "cancelled": "Execuția a fost anulată.",
+      "timedOut": "Timpul de execuție a expirat.",
+      "unknown": "Starea execuției nu este disponibilă."
     }
   }
 }

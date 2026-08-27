@@ -7,30 +7,30 @@
     }
   },
   "monitor": {
-    "title": "Pantau",
+    "title": "Pemantauan operasi",
     "description": "Kesihatan syarikat, kerja aktif, keputusan dan kemajuan pelaksanaan dalam satu pandangan.",
     "overallHealth": "Kesihatan keseluruhan",
     "blockedTasks": "tugas yang disekat",
     "pendingApprovals": "menunggu kelulusan",
     "budgetIncidents": "insiden bajet",
     "taskFallback": "Tugasan",
-    "critical": "kritikal",
+    "critical": "Kritikal",
     "updated": "dikemas kini",
     "attentionItem": "Item perhatian",
     "progress": "Kemajuan",
     "finished": "Selesai",
     "openTask": "Tugas terbuka",
-    "openRun": "Larian terbuka",
+    "openRun": "Buka pelaksanaan",
     "createCompany": "Wujudkan syarikat untuk memantau operasi.",
     "selectCompany": "Pilih syarikat untuk memantau operasi.",
     "unavailable": "Monitor tidak tersedia",
     "unavailableDescription": "Data monitor tidak dapat dimuatkan.",
     "tryAgain": "Cuba lagi",
     "notUpdated": "Belum dikemas kini",
-    "refreshing": "Menyegarkan",
-    "refresh": "Segarkan semula",
+    "refreshing": "Sedang mengemas kini",
+    "refresh": "Kemas kini sekarang",
     "partialError": "Beberapa data monitor tidak dapat dikemas kini. Data sedia ada kekal kelihatan.",
-    "agentStates": "Negeri ejen",
+    "agentStates": "Status ejen",
     "viewAll": "Lihat semua",
     "currentTasks": "Tugas semasa",
     "inProgress": "sedang berjalan",
@@ -43,9 +43,9 @@
     "noAttention": "Tiada item perhatian terkini.",
     "openDecisions": "Keputusan terbuka",
     "executionProgress": "Kemajuan pelaksanaan",
-    "live": "hidup",
-    "noLiveRuns": "Tiada larian ejen yang aktif.",
-    "openRuns": "Buka siaran langsung dan terkini",
+    "live": "Aktif",
+    "noLiveRuns": "Tiada pelaksanaan ejen yang aktif.",
+    "openRuns": "Buka pelaksanaan aktif dan terkini",
     "health": {
       "healthy": {
         "label": "Sihat",
@@ -61,19 +61,19 @@
       }
     },
     "agentState": {
-      "running": "Ejen yang menjalankan",
-      "available": "Ejen yang ada",
-      "paused": "Ejen dijeda",
-      "failed": "Ejen gagal"
+      "running": "Sedang berjalan",
+      "available": "Tersedia",
+      "paused": "Dijeda",
+      "failed": "Gagal"
     },
     "runPhase": {
-      "queued": "Beratur untuk bermula.",
-      "running": "Larian sedang dijalankan.",
-      "succeeded": "Larian selesai.",
-      "failed": "Larian gagal.",
-      "cancelled": "Larian dibatalkan.",
-      "timedOut": "Larian tamat masa.",
-      "unknown": "Status jalankan tidak tersedia."
+      "queued": "Dalam baris gilir untuk bermula.",
+      "running": "Pelaksanaan sedang berjalan.",
+      "succeeded": "Pelaksanaan selesai.",
+      "failed": "Pelaksanaan gagal.",
+      "cancelled": "Pelaksanaan dibatalkan.",
+      "timedOut": "Pelaksanaan tamat masa.",
+      "unknown": "Status pelaksanaan tidak tersedia."
     }
   }
 }

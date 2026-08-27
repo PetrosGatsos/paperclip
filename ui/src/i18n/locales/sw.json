@@ -7,30 +7,30 @@
     }
   },
   "monitor": {
-    "title": "Kufuatilia",
+    "title": "Ufuatiliaji wa shughuli",
     "description": "Afya ya kampuni, kazi hai, maamuzi, na maendeleo ya utekelezaji katika mtazamo mmoja.",
     "overallHealth": "Afya kwa ujumla",
     "blockedTasks": "kazi zilizozuiwa",
     "pendingApprovals": "vibali vinavyosubiri",
     "budgetIncidents": "matukio ya bajeti",
     "taskFallback": "Kazi",
-    "critical": "Muhimu",
+    "critical": "Muhimu sana",
     "updated": "Imesasishwa",
     "attentionItem": "Kipengee cha tahadhari",
     "progress": "Maendeleo",
     "finished": "Imekamilika",
     "openTask": "Fungua kazi",
-    "openRun": "Fungua kukimbia",
+    "openRun": "Fungua utekelezaji",
     "createCompany": "Unda kampuni ya kufuatilia shughuli.",
     "selectCompany": "Chagua kampuni ya kufuatilia shughuli.",
     "unavailable": "Kifuatilia hakipatikani",
     "unavailableDescription": "Data ya mfuatiliaji haikuweza kupakiwa.",
     "tryAgain": "Jaribu tena",
     "notUpdated": "Bado haijasasishwa",
-    "refreshing": "Inaburudisha",
-    "refresh": "Onyesha upya",
+    "refreshing": "Inasasisha",
+    "refresh": "Sasisha sasa",
     "partialError": "Baadhi ya data ya mfuatiliaji haikuweza kusasishwa. Data iliyopo bado inaonekana.",
-    "agentStates": "Majimbo ya wakala",
+    "agentStates": "Hali za mawakala",
     "viewAll": "Tazama zote",
     "currentTasks": "Kazi za sasa",
     "inProgress": "inaendelea",
@@ -43,9 +43,9 @@
     "noAttention": "Hakuna vipengee vya umakini wa hivi majuzi.",
     "openDecisions": "Maamuzi ya wazi",
     "executionProgress": "Maendeleo ya utekelezaji",
-    "live": "kuishi",
-    "noLiveRuns": "Hakuna uendeshaji wa wakala unaotumika.",
-    "openRuns": "Fungua ukimbiaji wa moja kwa moja na wa hivi majuzi",
+    "live": "Inatumika",
+    "noLiveRuns": "Hakuna utekelezaji wa wakala unaotumika.",
+    "openRuns": "Fungua utekelezaji unaotumika na wa hivi karibuni",
     "health": {
       "healthy": {
         "label": "Mwenye afya",
@@ -61,19 +61,19 @@
       }
     },
     "agentState": {
-      "running": "Mawakala wanaoendesha",
-      "available": "Mawakala wanaopatikana",
-      "paused": "Mawakala waliositishwa",
-      "failed": "Mawakala walioshindwa"
+      "running": "Inaendeshwa",
+      "available": "Inapatikana",
+      "paused": "Imesitishwa",
+      "failed": "Imeshindwa"
     },
     "runPhase": {
-      "queued": "Imewekwa kwenye foleni ili kuanza.",
-      "running": "Uendeshaji unaendelea.",
-      "succeeded": "Uendeshaji umekamilika.",
-      "failed": "Imeshindwa kukimbia.",
-      "cancelled": "Uendeshaji ulighairiwa.",
-      "timedOut": "Muda wa kukimbia umekwisha.",
-      "unknown": "Hali ya kukimbia haipatikani."
+      "queued": "Imepangwa kuanza.",
+      "running": "Utekelezaji unaendelea.",
+      "succeeded": "Utekelezaji umekamilika.",
+      "failed": "Utekelezaji umeshindwa.",
+      "cancelled": "Utekelezaji umeghairiwa.",
+      "timedOut": "Muda wa utekelezaji umeisha.",
+      "unknown": "Hali ya utekelezaji haipatikani."
     }
   }
 }

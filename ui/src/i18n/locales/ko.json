@@ -7,7 +7,7 @@
     }
   },
   "monitor": {
-    "title": "모니터",
+    "title": "운영 모니터",
     "description": "회사 상태, 활성 업무, 의사 결정, 실행 진행 상황을 한 눈에 볼 수 있습니다.",
     "overallHealth": "전반적인 건강",
     "blockedTasks": "차단된 작업",
@@ -20,17 +20,17 @@
     "progress": "진행상황",
     "finished": "완료",
     "openTask": "작업 열기",
-    "openRun": "오픈런",
+    "openRun": "실행 열기",
     "createCompany": "운영을 모니터링할 회사를 만듭니다.",
     "selectCompany": "운영을 모니터링할 회사를 선택하세요.",
     "unavailable": "모니터를 사용할 수 없음",
     "unavailableDescription": "모니터 데이터를 로드할 수 없습니다.",
     "tryAgain": "다시 시도하세요",
     "notUpdated": "아직 업데이트되지 않았습니다.",
-    "refreshing": "상쾌함",
-    "refresh": "새로고침",
+    "refreshing": "업데이트 중",
+    "refresh": "지금 업데이트",
     "partialError": "일부 모니터 데이터를 업데이트할 수 없습니다. 기존 데이터는 계속 표시됩니다.",
-    "agentStates": "상담원 상태",
+    "agentStates": "에이전트 상태",
     "viewAll": "모두 보기",
     "currentTasks": "현재 작업",
     "inProgress": "진행 중",
@@ -43,9 +43,9 @@
     "noAttention": "최근 관심상품이 없습니다.",
     "openDecisions": "공개 결정",
     "executionProgress": "실행 진행",
-    "live": "라이브",
-    "noLiveRuns": "활성화된 에이전트 실행이 없습니다.",
-    "openRuns": "실시간 및 최근 실행 열기",
+    "live": "활성",
+    "noLiveRuns": "활성 에이전트 실행이 없습니다.",
+    "openRuns": "활성 및 최근 실행 열기",
     "health": {
       "healthy": {
         "label": "건강하다",
@@ -61,13 +61,13 @@
       }
     },
     "agentState": {
-      "running": "에이전트 실행",
-      "available": "사용 가능한 에이전트",
-      "paused": "일시중지된 에이전트",
-      "failed": "실패한 에이전트"
+      "running": "실행 중",
+      "available": "사용 가능",
+      "paused": "일시 중지",
+      "failed": "실패"
     },
     "runPhase": {
-      "queued": "시작 대기 중입니다.",
+      "queued": "시작 대기열에 추가되었습니다.",
       "running": "실행이 진행 중입니다.",
       "succeeded": "실행이 완료되었습니다.",
       "failed": "실행에 실패했습니다.",

@@ -7,30 +7,30 @@
     }
   },
   "monitor": {
-    "title": "監視器",
+    "title": "作業監控",
     "description": "公司健康狀況、積極工作、決策和執行進度一目了然。",
     "overallHealth": "整體健康狀況",
     "blockedTasks": "阻塞的任務",
     "pendingApprovals": "待批准",
     "budgetIncidents": "預算事件",
     "taskFallback": "任務",
-    "critical": "關鍵",
+    "critical": "嚴重",
     "updated": "已更新",
     "attentionItem": "注意事項",
     "progress": "進展",
     "finished": "完成",
     "openTask": "開放任務",
-    "openRun": "開放運作",
+    "openRun": "開啟執行",
     "createCompany": "創建一家公司來監控營運。",
     "selectCompany": "選擇一家公司來監控營運狀況。",
     "unavailable": "監視器不可用",
     "unavailableDescription": "無法載入監控數據。",
     "tryAgain": "再試一次",
     "notUpdated": "尚未更新",
-    "refreshing": "清爽",
-    "refresh": "重新整理",
+    "refreshing": "正在更新",
+    "refresh": "立即更新",
     "partialError": "部分監控數據無法更新。現有數據仍然可見。",
-    "agentStates": "代理人狀態",
+    "agentStates": "智慧代理狀態",
     "viewAll": "看全部",
     "currentTasks": "目前任務",
     "inProgress": "進行中",
@@ -43,9 +43,9 @@
     "noAttention": "近期無關注項目。",
     "openDecisions": "公開決定",
     "executionProgress": "執行進度",
-    "live": "直播",
-    "noLiveRuns": "沒有活動的代理運行。",
-    "openRuns": "打開實時和最近的運行",
+    "live": "運作中",
+    "noLiveRuns": "沒有運作中的智慧代理執行。",
+    "openRuns": "開啟運作中和最近的執行",
     "health": {
       "healthy": {
         "label": "健康",
@@ -56,24 +56,24 @@
         "description": "暫停的工作或待決的決定需要操作員審查。"
       },
       "critical": {
-        "label": "臨界狀態",
+        "label": "嚴重狀態",
         "description": "失敗的代理、受阻的任務或關鍵決策需要採取行動。"
       }
     },
     "agentState": {
-      "running": "運行代理",
-      "available": "可用代理",
-      "paused": "已暫停的代理",
-      "failed": "失敗的代理"
+      "running": "執行中",
+      "available": "可用",
+      "paused": "已暫停",
+      "failed": "失敗"
     },
     "runPhase": {
-      "queued": "排隊開始。",
-      "running": "運行正在進行中。",
-      "succeeded": "運行完成。",
-      "failed": "運行失敗。",
-      "cancelled": "運行被取消。",
-      "timedOut": "運行超時。",
-      "unknown": "運行狀態不可用。"
+      "queued": "已排入佇列等待啟動。",
+      "running": "執行正在進行。",
+      "succeeded": "執行已完成。",
+      "failed": "執行失敗。",
+      "cancelled": "執行已取消。",
+      "timedOut": "執行已逾時。",
+      "unknown": "執行狀態無法使用。"
     }
   }
 }

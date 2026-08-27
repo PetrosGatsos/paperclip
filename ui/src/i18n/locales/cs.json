@@ -7,7 +7,7 @@
     }
   },
   "monitor": {
-    "title": "Monitor",
+    "title": "Monitor provozu",
     "description": "Zdraví společnosti, aktivní práce, rozhodování a provádění v jednom pohledu.",
     "overallHealth": "Celkové zdraví",
     "blockedTasks": "zablokované úkoly",
@@ -20,17 +20,17 @@
     "progress": "Pokrok",
     "finished": "Hotovo",
     "openTask": "Otevřete úkol",
-    "openRun": "Otevřený běh",
+    "openRun": "Otevřít spuštění",
     "createCompany": "Vytvořte společnost pro sledování operací.",
     "selectCompany": "Vyberte společnost, kterou chcete sledovat.",
     "unavailable": "Monitor není k dispozici",
     "unavailableDescription": "Data monitoru nelze načíst.",
     "tryAgain": "Zkuste to znovu",
     "notUpdated": "Zatím neaktualizováno",
-    "refreshing": "Osvěžující",
-    "refresh": "Obnovit",
+    "refreshing": "Aktualizace",
+    "refresh": "Aktualizovat nyní",
     "partialError": "Některá data monitoru se nepodařilo aktualizovat. Stávající data zůstávají viditelná.",
-    "agentStates": "Agent uvádí",
+    "agentStates": "Stavy agentů",
     "viewAll": "Zobrazit vše",
     "currentTasks": "Aktuální úkoly",
     "inProgress": "probíhá",
@@ -43,9 +43,9 @@
     "noAttention": "Žádné položky nedávné pozornosti.",
     "openDecisions": "Otevřená rozhodnutí",
     "executionProgress": "Průběh exekuce",
-    "live": "žít",
-    "noLiveRuns": "Nejsou aktivní žádné běhy agentů.",
-    "openRuns": "Otevřené živé a nedávné běhy",
+    "live": "Aktivní",
+    "noLiveRuns": "Nejsou aktivní žádná spuštění agentů.",
+    "openRuns": "Otevřít aktivní a nedávná spuštění",
     "health": {
       "healthy": {
         "label": "Zdravý",
@@ -61,19 +61,19 @@
       }
     },
     "agentState": {
-      "running": "Běžící agenti",
-      "available": "Dostupné agenty",
-      "paused": "Pozastavení agenti",
-      "failed": "Neúspěšní agenti"
+      "running": "Spuštěno",
+      "available": "Dostupné",
+      "paused": "Pozastaveno",
+      "failed": "Selhalo"
     },
     "runPhase": {
-      "queued": "Ve frontě ke spuštění.",
-      "running": "Probíhá běh.",
-      "succeeded": "Běh dokončen.",
-      "failed": "Spuštění se nezdařilo.",
-      "cancelled": "Běh byl zrušen.",
-      "timedOut": "Vypršel časový limit běhu.",
-      "unknown": "Stav spuštění je nedostupný."
+      "queued": "Čeká ve frontě na spuštění.",
+      "running": "Spuštění probíhá.",
+      "succeeded": "Spuštění bylo dokončeno.",
+      "failed": "Spuštění selhalo.",
+      "cancelled": "Spuštění bylo zrušeno.",
+      "timedOut": "Vypršel časový limit spuštění.",
+      "unknown": "Stav spuštění není k dispozici."
     }
   }
 }

@@ -7,7 +7,7 @@
     }
   },
   "monitor": {
-    "title": "Overvåg",
+    "title": "Driftsovervågning",
     "description": "Virksomhedens sundhed, aktivt arbejde, beslutninger og eksekveringsfremskridt i én visning.",
     "overallHealth": "Generelt helbred",
     "blockedTasks": "blokerede opgaver",
@@ -20,17 +20,17 @@
     "progress": "Fremskridt",
     "finished": "Færdig",
     "openTask": "Åben opgave",
-    "openRun": "Åbent løb",
+    "openRun": "Åbn kørsel",
     "createCompany": "Opret en virksomhed til at overvåge driften.",
     "selectCompany": "Vælg en virksomhed til at overvåge driften.",
     "unavailable": "Monitor er ikke tilgængelig",
     "unavailableDescription": "Monitordataene kunne ikke indlæses.",
     "tryAgain": "Prøv igen",
     "notUpdated": "Ikke opdateret endnu",
-    "refreshing": "Forfriskende",
-    "refresh": "Opdater",
+    "refreshing": "Opdaterer",
+    "refresh": "Opdater nu",
     "partialError": "Nogle monitordata kunne ikke opdateres. Eksisterende data forbliver synlige.",
-    "agentStates": "Agent oplyser",
+    "agentStates": "Agentstatus",
     "viewAll": "Se alle",
     "currentTasks": "Aktuelle opgaver",
     "inProgress": "i gang",
@@ -43,9 +43,9 @@
     "noAttention": "Ingen nyere opmærksomhedspunkter.",
     "openDecisions": "Åbne beslutninger",
     "executionProgress": "Udførelse fremskridt",
-    "live": "live",
+    "live": "Aktiv",
     "noLiveRuns": "Ingen agentkørsler er aktive.",
-    "openRuns": "Åben live og seneste kørsler",
+    "openRuns": "Åbn aktive og seneste kørsler",
     "health": {
       "healthy": {
         "label": "Sundt",
@@ -61,19 +61,19 @@
       }
     },
     "agentState": {
-      "running": "Løbende agenter",
-      "available": "Tilgængelige agenter",
-      "paused": "Pausede agenter",
-      "failed": "Mislykkede agenter"
+      "running": "Kører",
+      "available": "Tilgængelig",
+      "paused": "Sat på pause",
+      "failed": "Mislykket"
     },
     "runPhase": {
-      "queued": "I kø for at starte.",
-      "running": "Løb er i gang.",
-      "succeeded": "Kørsel afsluttet.",
-      "failed": "Kørsel mislykkedes.",
-      "cancelled": "Løbet blev aflyst.",
-      "timedOut": "Kørselstimeout.",
-      "unknown": "Kørstatus er ikke tilgængelig."
+      "queued": "I kø til start.",
+      "running": "Kørslen er i gang.",
+      "succeeded": "Kørslen er fuldført.",
+      "failed": "Kørslen mislykkedes.",
+      "cancelled": "Kørslen blev annulleret.",
+      "timedOut": "Kørslen fik timeout.",
+      "unknown": "Kørselsstatus er ikke tilgængelig."
     }
   }
 }

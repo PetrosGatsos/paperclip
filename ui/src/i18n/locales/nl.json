@@ -7,30 +7,30 @@
     }
   },
   "monitor": {
-    "title": "Monitor",
+    "title": "Operationsmonitor",
     "description": "Bedrijfsgezondheid, actief werk, beslissingen en uitvoeringsvoortgang in één overzicht.",
     "overallHealth": "Algemene gezondheid",
     "blockedTasks": "geblokkeerde taken",
     "pendingApprovals": "in afwachting van goedkeuringen",
     "budgetIncidents": "budget incidenten",
     "taskFallback": "Taak",
-    "critical": "Kritisch",
+    "critical": "Kritiek",
     "updated": "Bijgewerkt",
     "attentionItem": "Aandachtspunt",
     "progress": "Vooruitgang",
     "finished": "Klaar",
     "openTask": "Open taak",
-    "openRun": "Open rennen",
+    "openRun": "Uitvoering openen",
     "createCompany": "Creëer een bedrijf om de activiteiten te monitoren.",
     "selectCompany": "Selecteer een bedrijf om de activiteiten te monitoren.",
     "unavailable": "Monitor niet beschikbaar",
     "unavailableDescription": "De monitorgegevens konden niet worden geladen.",
     "tryAgain": "Probeer het opnieuw",
     "notUpdated": "Nog niet bijgewerkt",
-    "refreshing": "Verfrissend",
-    "refresh": "Vernieuwen",
+    "refreshing": "Bezig met bijwerken",
+    "refresh": "Nu bijwerken",
     "partialError": "Sommige monitorgegevens konden niet worden bijgewerkt. Bestaande gegevens blijven zichtbaar.",
-    "agentStates": "Agent stelt",
+    "agentStates": "Agentstatussen",
     "viewAll": "Bekijk alles",
     "currentTasks": "Huidige taken",
     "inProgress": "in uitvoering",
@@ -43,9 +43,9 @@
     "noAttention": "Geen recente aandachtsitems.",
     "openDecisions": "Open besluiten",
     "executionProgress": "Voortgang van de uitvoering",
-    "live": "leven",
-    "noLiveRuns": "Er zijn geen agentruns actief.",
-    "openRuns": "Open live en recente runs",
+    "live": "Actief",
+    "noLiveRuns": "Er zijn geen actieve agentuitvoeringen.",
+    "openRuns": "Actieve en recente uitvoeringen openen",
     "health": {
       "healthy": {
         "label": "Gezond",
@@ -61,19 +61,19 @@
       }
     },
     "agentState": {
-      "running": "Lopende agenten",
-      "available": "Beschikbare agenten",
-      "paused": "Gepauzeerde agenten",
-      "failed": "Mislukte agenten"
+      "running": "Actief",
+      "available": "Beschikbaar",
+      "paused": "Gepauzeerd",
+      "failed": "Mislukt"
     },
     "runPhase": {
-      "queued": "In de rij om te beginnen.",
-      "running": "De run is bezig.",
-      "succeeded": "Uitvoering voltooid.",
-      "failed": "Uitvoering mislukt.",
-      "cancelled": "De run is geannuleerd.",
-      "timedOut": "Er is een time-out voor de uitvoering opgetreden.",
-      "unknown": "Uitvoeringsstatus is niet beschikbaar."
+      "queued": "In de wachtrij om te starten.",
+      "running": "De uitvoering is bezig.",
+      "succeeded": "De uitvoering is voltooid.",
+      "failed": "De uitvoering is mislukt.",
+      "cancelled": "De uitvoering is geannuleerd.",
+      "timedOut": "Er is een time-out opgetreden.",
+      "unknown": "De uitvoeringsstatus is niet beschikbaar."
     }
   }
 }

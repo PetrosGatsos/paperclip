@@ -7,7 +7,7 @@
     }
   },
   "monitor": {
-    "title": "Monitor",
+    "title": "Toimintojen valvonta",
     "description": "Yrityksen terveys, aktiivinen työ, päätökset ja toteutus edistyvät yhdessä näkymässä.",
     "overallHealth": "Yleinen terveys",
     "blockedTasks": "estetty tehtävät",
@@ -20,17 +20,17 @@
     "progress": "Edistyminen",
     "finished": "Valmis",
     "openTask": "Avoin tehtävä",
-    "openRun": "Avoin juoksu",
+    "openRun": "Avaa suoritus",
     "createCompany": "Perusta yritys valvomaan toimintaa.",
     "selectCompany": "Valitse yritys seuraamaan toimintaa.",
     "unavailable": "Monitori ei ole käytettävissä",
     "unavailableDescription": "Monitoritietoja ei voitu ladata.",
     "tryAgain": "Yritä uudelleen",
     "notUpdated": "Ei vielä päivitetty",
-    "refreshing": "Virkistävää",
-    "refresh": "Päivitä",
+    "refreshing": "Päivitetään",
+    "refresh": "Päivitä nyt",
     "partialError": "Joitakin näytön tietoja ei voitu päivittää. Olemassa olevat tiedot pysyvät näkyvissä.",
-    "agentStates": "Agentti toteaa",
+    "agentStates": "Agenttien tilat",
     "viewAll": "Näytä kaikki",
     "currentTasks": "Nykyiset tehtävät",
     "inProgress": "käynnissä",
@@ -43,9 +43,9 @@
     "noAttention": "Ei viimeaikaisia huomioitavia kohteita.",
     "openDecisions": "Avoimet päätökset",
     "executionProgress": "Toteutuksen edistyminen",
-    "live": "elää",
-    "noLiveRuns": "Mikään agenttiajo ei ole aktiivinen.",
-    "openRuns": "Avoinna live- ja viimeisimmät ajot",
+    "live": "Aktiivinen",
+    "noLiveRuns": "Aktiivisia agenttisuorituksia ei ole.",
+    "openRuns": "Avaa aktiiviset ja viimeisimmät suoritukset",
     "health": {
       "healthy": {
         "label": "Terve",
@@ -61,19 +61,19 @@
       }
     },
     "agentState": {
-      "running": "Juoksevat agentit",
-      "available": "Saatavilla olevat agentit",
-      "paused": "Keskeytetyt agentit",
-      "failed": "Epäonnistuneita agentteja"
+      "running": "Käynnissä",
+      "available": "Käytettävissä",
+      "paused": "Keskeytetty",
+      "failed": "Epäonnistunut"
     },
     "runPhase": {
-      "queued": "Jonossa aloittaakseen.",
-      "running": "Juoksu on käynnissä.",
-      "succeeded": "Ajo suoritettu.",
-      "failed": "Juoksu epäonnistui.",
-      "cancelled": "Juoksu peruttiin.",
-      "timedOut": "Ajo aikakatkaistiin.",
-      "unknown": "Ajotila ei ole käytettävissä."
+      "queued": "Jonossa käynnistystä varten.",
+      "running": "Suoritus on käynnissä.",
+      "succeeded": "Suoritus valmistui.",
+      "failed": "Suoritus epäonnistui.",
+      "cancelled": "Suoritus peruutettiin.",
+      "timedOut": "Suoritus aikakatkaistiin.",
+      "unknown": "Suorituksen tila ei ole saatavilla."
     }
   }
 }

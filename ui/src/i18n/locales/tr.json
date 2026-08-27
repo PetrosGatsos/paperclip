@@ -7,7 +7,7 @@
     }
   },
   "monitor": {
-    "title": "Monitör",
+    "title": "Operasyon izleme",
     "description": "Şirket sağlığı, aktif çalışma, kararlar ve uygulama ilerlemesi tek bir görünümde.",
     "overallHealth": "Genel sağlık",
     "blockedTasks": "engellenen görevler",
@@ -27,10 +27,10 @@
     "unavailableDescription": "Monitör verileri yüklenemedi.",
     "tryAgain": "Tekrar dene",
     "notUpdated": "Henüz güncellenmedi",
-    "refreshing": "Canlandırıcı",
-    "refresh": "Yenile",
+    "refreshing": "Güncelleniyor",
+    "refresh": "Şimdi güncelle",
     "partialError": "Bazı monitör verileri güncellenemedi. Mevcut veriler görünür durumda kalır.",
-    "agentStates": "Aracı durumları",
+    "agentStates": "Ajan durumları",
     "viewAll": "Tümünü görüntüle",
     "currentTasks": "Mevcut görevler",
     "inProgress": "devam ediyor",
@@ -43,9 +43,9 @@
     "noAttention": "Yakın zamanda dikkat edilen öğe yok.",
     "openDecisions": "Açık kararlar",
     "executionProgress": "Yürütme ilerlemesi",
-    "live": "canlı",
-    "noLiveRuns": "Hiçbir aracı çalıştırması etkin değil.",
-    "openRuns": "Canlı ve son koşuları aç",
+    "live": "Etkin",
+    "noLiveRuns": "Etkin ajan çalıştırması yok.",
+    "openRuns": "Etkin ve son çalıştırmaları aç",
     "health": {
       "healthy": {
         "label": "Sağlıklı",
@@ -61,17 +61,17 @@
       }
     },
     "agentState": {
-      "running": "Temsilcileri çalıştırmak",
-      "available": "Mevcut acenteler",
-      "paused": "Duraklatılan aracılar",
-      "failed": "Başarısız temsilciler"
+      "running": "Çalışıyor",
+      "available": "Kullanılabilir",
+      "paused": "Duraklatıldı",
+      "failed": "Başarısız"
     },
     "runPhase": {
-      "queued": "Başlamak için sıraya alındı.",
-      "running": "Çalıştırma sürüyor.",
+      "queued": "Başlatılmak üzere sıraya alındı.",
+      "running": "Çalıştırma devam ediyor.",
       "succeeded": "Çalıştırma tamamlandı.",
       "failed": "Çalıştırma başarısız oldu.",
-      "cancelled": "Koşu iptal edildi.",
+      "cancelled": "Çalıştırma iptal edildi.",
       "timedOut": "Çalıştırma zaman aşımına uğradı.",
       "unknown": "Çalıştırma durumu kullanılamıyor."
     }

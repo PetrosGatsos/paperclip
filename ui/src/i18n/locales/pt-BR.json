@@ -7,7 +7,7 @@
     }
   },
   "monitor": {
-    "title": "Monitorar",
+    "title": "Monitor de operações",
     "description": "Saúde da empresa, trabalho ativo, decisões e progresso de execução em uma única visualização.",
     "overallHealth": "Saúde geral",
     "blockedTasks": "tarefas bloqueadas",
@@ -20,17 +20,17 @@
     "progress": "Progresso",
     "finished": "Concluído",
     "openTask": "Tarefa aberta",
-    "openRun": "Corrida aberta",
+    "openRun": "Abrir execução",
     "createCompany": "Crie uma empresa para monitorar as operações.",
     "selectCompany": "Selecione uma empresa para monitorar as operações.",
     "unavailable": "Monitor indisponível",
     "unavailableDescription": "Os dados do monitor não puderam ser carregados.",
     "tryAgain": "Tente novamente",
     "notUpdated": "Ainda não atualizado",
-    "refreshing": "Refrescante",
-    "refresh": "Atualizar",
+    "refreshing": "Atualizando",
+    "refresh": "Atualizar agora",
     "partialError": "Alguns dados do monitor não puderam ser atualizados. Os dados existentes permanecem visíveis.",
-    "agentStates": "Estados do agente",
+    "agentStates": "Estados dos agentes",
     "viewAll": "Ver tudo",
     "currentTasks": "Tarefas atuais",
     "inProgress": "em andamento",
@@ -43,9 +43,9 @@
     "noAttention": "Nenhum item de atenção recente.",
     "openDecisions": "Decisões abertas",
     "executionProgress": "Progresso da execução",
-    "live": "viver",
-    "noLiveRuns": "Nenhuma execução de agente está ativa.",
-    "openRuns": "Abra execuções recentes e ao vivo",
+    "live": "Ativo",
+    "noLiveRuns": "Não há execuções de agentes ativas.",
+    "openRuns": "Abrir execuções ativas e recentes",
     "health": {
       "healthy": {
         "label": "Saudável",
@@ -61,19 +61,19 @@
       }
     },
     "agentState": {
-      "running": "Agentes em execução",
-      "available": "Agentes disponíveis",
-      "paused": "Agentes pausados",
-      "failed": "Agentes falhados"
+      "running": "Em execução",
+      "available": "Disponível",
+      "paused": "Pausado",
+      "failed": "Com falha"
     },
     "runPhase": {
-      "queued": "Na fila para começar.",
+      "queued": "Na fila para iniciar.",
       "running": "A execução está em andamento.",
-      "succeeded": "Execução concluída.",
-      "failed": "Falha na execução.",
-      "cancelled": "A corrida foi cancelada.",
-      "timedOut": "A execução expirou.",
-      "unknown": "O status de execução não está disponível."
+      "succeeded": "A execução foi concluída.",
+      "failed": "A execução falhou.",
+      "cancelled": "A execução foi cancelada.",
+      "timedOut": "O tempo limite da execução expirou.",
+      "unknown": "O status da execução não está disponível."
     }
   }
 }

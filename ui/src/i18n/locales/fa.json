@@ -7,30 +7,30 @@
     }
   },
   "monitor": {
-    "title": "نظارت کنید",
+    "title": "پایش عملیات",
     "description": "سلامت شرکت، کار فعال، تصمیم گیری ها و پیشرفت اجرا در یک دیدگاه.",
     "overallHealth": "سلامت کلی",
     "blockedTasks": "وظایف مسدود شده",
     "pendingApprovals": "تاییدیه های معلق",
     "budgetIncidents": "حوادث بودجه",
     "taskFallback": "وظیفه",
-    "critical": "انتقادی",
+    "critical": "بحرانی",
     "updated": "به روز شد",
     "attentionItem": "مورد توجه",
     "progress": "پیشرفت",
     "finished": "تمام شد",
     "openTask": "وظیفه را باز کنید",
-    "openRun": "اجرا را باز کنید",
+    "openRun": "باز کردن اجرا",
     "createCompany": "یک شرکت برای نظارت بر عملیات ایجاد کنید.",
     "selectCompany": "شرکتی را برای نظارت بر عملیات انتخاب کنید.",
     "unavailable": "مانیتور در دسترس نیست",
     "unavailableDescription": "داده های مانیتور بارگیری نشد.",
     "tryAgain": "دوباره امتحان کنید",
     "notUpdated": "هنوز آپدیت نشده",
-    "refreshing": "طراوت بخش",
-    "refresh": "تازه کردن",
+    "refreshing": "در حال به‌روزرسانی",
+    "refresh": "اکنون به‌روزرسانی کنید",
     "partialError": "برخی از داده های مانیتور نمی توانند به روز شوند. داده های موجود قابل مشاهده هستند.",
-    "agentStates": "نماینده بیان می کند",
+    "agentStates": "وضعیت عامل‌ها",
     "viewAll": "مشاهده همه",
     "currentTasks": "وظایف جاری",
     "inProgress": "در حال انجام است",
@@ -43,9 +43,9 @@
     "noAttention": "هیچ مورد توجه اخیری وجود ندارد.",
     "openDecisions": "تصمیمات باز",
     "executionProgress": "پیشرفت اجرا",
-    "live": "زندگی می کنند",
-    "noLiveRuns": "هیچ اجرای عاملی فعال نیست.",
-    "openRuns": "اجرای زنده و اخیر را باز کنید",
+    "live": "فعال",
+    "noLiveRuns": "هیچ اجرای فعالی برای عامل‌ها وجود ندارد.",
+    "openRuns": "باز کردن اجراهای فعال و اخیر",
     "health": {
       "healthy": {
         "label": "سالم",
@@ -61,18 +61,18 @@
       }
     },
     "agentState": {
-      "running": "عوامل در حال اجرا",
-      "available": "عوامل موجود",
-      "paused": "عوامل متوقف شده",
-      "failed": "عوامل شکست خورده"
+      "running": "در حال اجرا",
+      "available": "در دسترس",
+      "paused": "متوقف‌شده",
+      "failed": "ناموفق"
     },
     "runPhase": {
-      "queued": "صف برای شروع",
+      "queued": "در صف شروع.",
       "running": "اجرا در حال انجام است.",
-      "succeeded": "اجرا به پایان رسید.",
+      "succeeded": "اجرا تکمیل شد.",
       "failed": "اجرا ناموفق بود.",
       "cancelled": "اجرا لغو شد.",
-      "timedOut": "زمان اجرا تمام شد.",
+      "timedOut": "مهلت اجرا به پایان رسید.",
       "unknown": "وضعیت اجرا در دسترس نیست."
     }
   }

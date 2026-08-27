@@ -7,7 +7,7 @@
     }
   },
   "monitor": {
-    "title": "Moniteur",
+    "title": "Supervision des opérations",
     "description": "Santé de l'entreprise, travail actif, décisions et progrès d'exécution dans une seule vue.",
     "overallHealth": "Santé globale",
     "blockedTasks": "tâches bloquées",
@@ -20,17 +20,17 @@
     "progress": "Progrès",
     "finished": "Terminé",
     "openTask": "Tâche ouverte",
-    "openRun": "Exécution ouverte",
+    "openRun": "Ouvrir l’exécution",
     "createCompany": "Créer une société pour surveiller les opérations.",
     "selectCompany": "Sélectionnez une entreprise pour surveiller les opérations.",
     "unavailable": "Moniteur indisponible",
     "unavailableDescription": "Les données du moniteur n'ont pas pu être chargées.",
     "tryAgain": "Réessayez",
     "notUpdated": "Pas encore mis à jour",
-    "refreshing": "Rafraîchissant",
-    "refresh": "Actualiser",
+    "refreshing": "Mise à jour",
+    "refresh": "Actualiser maintenant",
     "partialError": "Certaines données du moniteur n'ont pas pu être mises à jour. Les données existantes restent visibles.",
-    "agentStates": "États des agents",
+    "agentStates": "État des agents",
     "viewAll": "Voir tout",
     "currentTasks": "Tâches actuelles",
     "inProgress": "en cours",
@@ -43,9 +43,9 @@
     "noAttention": "Aucun élément d'attention récent.",
     "openDecisions": "Décisions ouvertes",
     "executionProgress": "Avancement de l'exécution",
-    "live": "vivre",
-    "noLiveRuns": "Aucune exécution d'agent n'est active.",
-    "openRuns": "Ouvrir les courses en direct et récentes",
+    "live": "Actif",
+    "noLiveRuns": "Aucune exécution d’agent n’est active.",
+    "openRuns": "Ouvrir les exécutions actives et récentes",
     "health": {
       "healthy": {
         "label": "Sain",
@@ -61,19 +61,19 @@
       }
     },
     "agentState": {
-      "running": "Agents en cours d'exécution",
-      "available": "Agents disponibles",
-      "paused": "Agents en pause",
-      "failed": "Agents en échec"
+      "running": "En cours",
+      "available": "Disponible",
+      "paused": "En pause",
+      "failed": "En échec"
     },
     "runPhase": {
-      "queued": "En file d'attente pour commencer.",
-      "running": "L'exécution est en cours.",
-      "succeeded": "Exécution terminée.",
-      "failed": "L'exécution a échoué.",
-      "cancelled": "La course a été annulée.",
-      "timedOut": "Le délai d'exécution a expiré.",
-      "unknown": "L'état d'exécution n'est pas disponible."
+      "queued": "En attente de démarrage.",
+      "running": "L’exécution est en cours.",
+      "succeeded": "L’exécution est terminée.",
+      "failed": "L’exécution a échoué.",
+      "cancelled": "L’exécution a été annulée.",
+      "timedOut": "Le délai d’exécution a expiré.",
+      "unknown": "L’état de l’exécution n’est pas disponible."
     }
   }
 }

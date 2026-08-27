@@ -7,7 +7,7 @@
     }
   },
   "monitor": {
-    "title": "Monitorare",
+    "title": "Monitoraggio operativo",
     "description": "Salute dell'azienda, lavoro attivo, decisioni e progresso dell'esecuzione in un'unica visualizzazione.",
     "overallHealth": "Salute generale",
     "blockedTasks": "compiti bloccati",
@@ -20,17 +20,17 @@
     "progress": "Progresso",
     "finished": "Finito",
     "openTask": "Apri attività",
-    "openRun": "Corsa aperta",
+    "openRun": "Apri esecuzione",
     "createCompany": "Creare una società per monitorare le operazioni.",
     "selectCompany": "Seleziona un'azienda per monitorare le operazioni.",
     "unavailable": "Monitor non disponibile",
     "unavailableDescription": "Impossibile caricare i dati del monitor.",
     "tryAgain": "Riprova",
     "notUpdated": "Non ancora aggiornato",
-    "refreshing": "Rinfrescante",
-    "refresh": "Aggiorna",
+    "refreshing": "Aggiornamento",
+    "refresh": "Aggiorna ora",
     "partialError": "Impossibile aggiornare alcuni dati del monitor. I dati esistenti rimangono visibili.",
-    "agentStates": "Afferma l'agente",
+    "agentStates": "Stati degli agenti",
     "viewAll": "Visualizza tutto",
     "currentTasks": "Compiti attuali",
     "inProgress": "in corso",
@@ -43,9 +43,9 @@
     "noAttention": "Nessun elemento di attenzione recente.",
     "openDecisions": "Decisioni aperte",
     "executionProgress": "Avanzamento dell'esecuzione",
-    "live": "vivere",
-    "noLiveRuns": "Nessuna esecuzione dell'agente è attiva.",
-    "openRuns": "Apri corse live e recenti",
+    "live": "Attivo",
+    "noLiveRuns": "Non ci sono esecuzioni di agenti attive.",
+    "openRuns": "Apri esecuzioni attive e recenti",
     "health": {
       "healthy": {
         "label": "Sano",
@@ -61,19 +61,19 @@
       }
     },
     "agentState": {
-      "running": "Agenti in corsa",
-      "available": "Agenti disponibili",
-      "paused": "Agenti in pausa",
-      "failed": "Agenti falliti"
+      "running": "In esecuzione",
+      "available": "Disponibile",
+      "paused": "In pausa",
+      "failed": "Non riuscito"
     },
     "runPhase": {
-      "queued": "In coda per iniziare.",
-      "running": "La corsa è in corso.",
-      "succeeded": "Corsa completata.",
-      "failed": "Esecuzione fallita.",
-      "cancelled": "La corsa è stata annullata.",
-      "timedOut": "Esecuzione scaduta.",
-      "unknown": "Lo stato di esecuzione non è disponibile."
+      "queued": "In coda per l’avvio.",
+      "running": "L’esecuzione è in corso.",
+      "succeeded": "L’esecuzione è stata completata.",
+      "failed": "L’esecuzione non è riuscita.",
+      "cancelled": "L’esecuzione è stata annullata.",
+      "timedOut": "L’esecuzione è scaduta.",
+      "unknown": "Lo stato dell’esecuzione non è disponibile."
     }
   }
 }

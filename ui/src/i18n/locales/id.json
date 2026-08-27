@@ -7,7 +7,7 @@
     }
   },
   "monitor": {
-    "title": "Memantau",
+    "title": "Pemantauan operasi",
     "description": "Kesehatan perusahaan, kerja aktif, keputusan, dan kemajuan eksekusi dalam satu tampilan.",
     "overallHealth": "Kesehatan secara keseluruhan",
     "blockedTasks": "tugas yang diblokir",
@@ -20,17 +20,17 @@
     "progress": "Kemajuan",
     "finished": "Selesai",
     "openTask": "Buka tugas",
-    "openRun": "Jalankan terbuka",
+    "openRun": "Buka eksekusi",
     "createCompany": "Buat perusahaan untuk memantau operasi.",
     "selectCompany": "Pilih perusahaan untuk memantau operasi.",
     "unavailable": "Monitor tidak tersedia",
     "unavailableDescription": "Data monitor tidak dapat dimuat.",
     "tryAgain": "Coba lagi",
     "notUpdated": "Belum diperbarui",
-    "refreshing": "Menyegarkan",
-    "refresh": "Segarkan",
+    "refreshing": "Memperbarui",
+    "refresh": "Perbarui sekarang",
     "partialError": "Beberapa data monitor tidak dapat diperbarui. Data yang ada tetap terlihat.",
-    "agentStates": "Negara agen",
+    "agentStates": "Status agen",
     "viewAll": "Lihat semuanya",
     "currentTasks": "Tugas saat ini",
     "inProgress": "sedang berlangsung",
@@ -43,9 +43,9 @@
     "noAttention": "Tidak ada item perhatian terkini.",
     "openDecisions": "Keputusan terbuka",
     "executionProgress": "Kemajuan eksekusi",
-    "live": "hidup",
-    "noLiveRuns": "Tidak ada proses agen yang aktif.",
-    "openRuns": "Buka siaran langsung dan terkini",
+    "live": "Aktif",
+    "noLiveRuns": "Tidak ada eksekusi agen yang aktif.",
+    "openRuns": "Buka eksekusi aktif dan terbaru",
     "health": {
       "healthy": {
         "label": "Sehat",
@@ -61,19 +61,19 @@
       }
     },
     "agentState": {
-      "running": "Agen berjalan",
-      "available": "Agen yang tersedia",
-      "paused": "Agen yang dijeda",
-      "failed": "Agen yang gagal"
+      "running": "Berjalan",
+      "available": "Tersedia",
+      "paused": "Dijeda",
+      "failed": "Gagal"
     },
     "runPhase": {
-      "queued": "Mengantri untuk memulai.",
-      "running": "Proses sedang berlangsung.",
-      "succeeded": "Jalankan selesai.",
-      "failed": "Jalankan gagal.",
-      "cancelled": "Jalankan dibatalkan.",
-      "timedOut": "Waktu habis.",
-      "unknown": "Status pengoperasian tidak tersedia."
+      "queued": "Mengantre untuk dimulai.",
+      "running": "Eksekusi sedang berlangsung.",
+      "succeeded": "Eksekusi selesai.",
+      "failed": "Eksekusi gagal.",
+      "cancelled": "Eksekusi dibatalkan.",
+      "timedOut": "Waktu eksekusi habis.",
+      "unknown": "Status eksekusi tidak tersedia."
     }
   }
 }

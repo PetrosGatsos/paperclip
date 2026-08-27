@@ -7,7 +7,7 @@
     }
   },
   "monitor": {
-    "title": "Overvåke",
+    "title": "Driftsovervåking",
     "description": "Bedriftshelse, aktivt arbeid, beslutninger og utførelsesfremgang i ett syn.",
     "overallHealth": "Generell helse",
     "blockedTasks": "blokkerte oppgaver",
@@ -20,17 +20,17 @@
     "progress": "Fremgang",
     "finished": "Ferdig",
     "openTask": "Åpen oppgave",
-    "openRun": "Åpent løp",
+    "openRun": "Åpne kjøring",
     "createCompany": "Opprett et selskap for å overvåke driften.",
     "selectCompany": "Velg et selskap for å overvåke driften.",
     "unavailable": "Monitor utilgjengelig",
     "unavailableDescription": "Monitordataene kunne ikke lastes inn.",
     "tryAgain": "Prøv igjen",
     "notUpdated": "Ikke oppdatert ennå",
-    "refreshing": "Forfriskende",
-    "refresh": "Oppdater",
+    "refreshing": "Oppdaterer",
+    "refresh": "Oppdater nå",
     "partialError": "Noen monitordata kunne ikke oppdateres. Eksisterende data forblir synlige.",
-    "agentStates": "Agent opplyser",
+    "agentStates": "Agentstatus",
     "viewAll": "Se alle",
     "currentTasks": "Aktuelle oppgaver",
     "inProgress": "pågår",
@@ -43,9 +43,9 @@
     "noAttention": "Ingen nyere oppmerksomhetselementer.",
     "openDecisions": "Åpne vedtak",
     "executionProgress": "Utførelsesfremgang",
-    "live": "live",
+    "live": "Aktiv",
     "noLiveRuns": "Ingen agentkjøringer er aktive.",
-    "openRuns": "Åpne live og nylige løp",
+    "openRuns": "Åpne aktive og nylige kjøringer",
     "health": {
       "healthy": {
         "label": "Sunn",
@@ -61,19 +61,19 @@
       }
     },
     "agentState": {
-      "running": "Løpende agenter",
-      "available": "Tilgjengelige agenter",
-      "paused": "Midler som er satt på pause",
-      "failed": "Mislykkede agenter"
+      "running": "Kjører",
+      "available": "Tilgjengelig",
+      "paused": "Satt på pause",
+      "failed": "Mislykket"
     },
     "runPhase": {
       "queued": "I kø for å starte.",
-      "running": "Løpet pågår.",
-      "succeeded": "Kjøret er fullført.",
-      "failed": "Kjør mislyktes.",
-      "cancelled": "Løpet ble avbrutt.",
-      "timedOut": "Tidsavbrudd for kjøringen.",
-      "unknown": "Kjørestatus er utilgjengelig."
+      "running": "Kjøringen pågår.",
+      "succeeded": "Kjøringen er fullført.",
+      "failed": "Kjøringen mislyktes.",
+      "cancelled": "Kjøringen ble avbrutt.",
+      "timedOut": "Kjøringen fikk tidsavbrudd.",
+      "unknown": "Kjørestatus er ikke tilgjengelig."
     }
   }
 }

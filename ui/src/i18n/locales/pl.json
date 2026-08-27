@@ -7,7 +7,7 @@
     }
   },
   "monitor": {
-    "title": "Monitoruj",
+    "title": "Monitor operacji",
     "description": "Kondycja firmy, aktywna praca, decyzje i postęp realizacji w jednym widoku.",
     "overallHealth": "Ogólny stan zdrowia",
     "blockedTasks": "zablokowane zadania",
@@ -20,17 +20,17 @@
     "progress": "Postęp",
     "finished": "Skończone",
     "openTask": "Otwórz zadanie",
-    "openRun": "Otwarty bieg",
+    "openRun": "Otwórz wykonanie",
     "createCompany": "Utwórz firmę, aby monitorować operacje.",
     "selectCompany": "Wybierz firmę do monitorowania operacji.",
     "unavailable": "Monitor niedostępny",
     "unavailableDescription": "Nie można załadować danych monitora.",
     "tryAgain": "Spróbuj ponownie",
     "notUpdated": "Jeszcze nie zaktualizowany",
-    "refreshing": "Orzeźwiający",
-    "refresh": "Odśwież",
+    "refreshing": "Aktualizowanie",
+    "refresh": "Aktualizuj teraz",
     "partialError": "Nie udało się zaktualizować niektórych danych monitora. Istniejące dane pozostają widoczne.",
-    "agentStates": "Stany agenta",
+    "agentStates": "Stany agentów",
     "viewAll": "Zobacz wszystkie",
     "currentTasks": "Aktualne zadania",
     "inProgress": "w toku",
@@ -43,9 +43,9 @@
     "noAttention": "Brak niedawnych elementów uwagi.",
     "openDecisions": "Otwarte decyzje",
     "executionProgress": "Postęp realizacji",
-    "live": "żyć",
-    "noLiveRuns": "Żadne uruchomienia agenta nie są aktywne.",
-    "openRuns": "Otwarte przebiegi na żywo i ostatnie",
+    "live": "Aktywne",
+    "noLiveRuns": "Brak aktywnych wykonań agentów.",
+    "openRuns": "Otwórz aktywne i ostatnie wykonania",
     "health": {
       "healthy": {
         "label": "Zdrowy",
@@ -61,19 +61,19 @@
       }
     },
     "agentState": {
-      "running": "Działający agenci",
-      "available": "Dostępni agenci",
-      "paused": "Wstrzymani agenci",
-      "failed": "Nieudani agenci"
+      "running": "Uruchomiony",
+      "available": "Dostępny",
+      "paused": "Wstrzymany",
+      "failed": "Niepowodzenie"
     },
     "runPhase": {
-      "queued": "W kolejce do startu.",
-      "running": "Bieg jest w toku.",
-      "succeeded": "Uruchomienie zakończone.",
-      "failed": "Uruchomienie nie powiodło się.",
-      "cancelled": "Bieg został odwołany.",
-      "timedOut": "Upłynął limit czasu działania.",
-      "unknown": "Stan uruchomienia jest niedostępny."
+      "queued": "W kolejce do uruchomienia.",
+      "running": "Wykonanie jest w toku.",
+      "succeeded": "Wykonanie zakończono.",
+      "failed": "Wykonanie nie powiodło się.",
+      "cancelled": "Wykonanie anulowano.",
+      "timedOut": "Przekroczono limit czasu wykonania.",
+      "unknown": "Stan wykonania jest niedostępny."
     }
   }
 }

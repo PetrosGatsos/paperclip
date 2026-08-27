@@ -227,8 +227,8 @@ describe("Monitor", () => {
   it("renders localized monitor copy without an English default fallback", async () => {
     await i18n.changeLanguage("de");
 
-    await vi.waitFor(() => expect(container.textContent).toContain("Überwachen"));
-    expect(container.textContent).toContain("Verfügbare Agenten");
+    await vi.waitFor(() => expect(container.textContent).toContain("Betriebsmonitor"));
+    expect(container.textContent).toContain("Verfügbar");
     expect(container.textContent).not.toContain("Available");
   });
 
