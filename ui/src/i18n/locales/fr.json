@@ -5,5 +5,75 @@
       "description": "Commencez par créer une entreprise.",
       "newCompany": "Nouvelle entreprise"
     }
+  },
+  "monitor": {
+    "title": "Supervision des opérations",
+    "description": "Santé de l'entreprise, travail actif, décisions et progrès d'exécution dans une seule vue.",
+    "overallHealth": "Santé globale",
+    "blockedTasks": "tâches bloquées",
+    "pendingApprovals": "en attente d'approbations",
+    "budgetIncidents": "incidents budgétaires",
+    "taskFallback": "Tâche",
+    "critical": "Critique",
+    "updated": "Mis à jour",
+    "attentionItem": "Élément d'attention",
+    "progress": "Progrès",
+    "finished": "Terminé",
+    "openTask": "Tâche ouverte",
+    "openRun": "Ouvrir l’exécution",
+    "createCompany": "Créer une société pour surveiller les opérations.",
+    "selectCompany": "Sélectionnez une entreprise pour surveiller les opérations.",
+    "unavailable": "Moniteur indisponible",
+    "unavailableDescription": "Les données du moniteur n'ont pas pu être chargées.",
+    "tryAgain": "Réessayez",
+    "notUpdated": "Pas encore mis à jour",
+    "refreshing": "Mise à jour",
+    "refresh": "Actualiser maintenant",
+    "partialError": "Certaines données du moniteur n'ont pas pu être mises à jour. Les données existantes restent visibles.",
+    "agentStates": "État des agents",
+    "viewAll": "Voir tout",
+    "currentTasks": "Tâches actuelles",
+    "inProgress": "en cours",
+    "noCurrentTasks": "Aucune tâche en cours.",
+    "openTasks": "Tâches ouvertes",
+    "recentTasks": "Tâches récentes",
+    "noRecentTasks": "Aucune tâche récemment terminée.",
+    "pendingAndAttention": "En attente d'approbations et d'attention",
+    "pending": "en attente",
+    "noAttention": "Aucun élément d'attention récent.",
+    "openDecisions": "Décisions ouvertes",
+    "executionProgress": "Avancement de l'exécution",
+    "live": "Actif",
+    "noLiveRuns": "Aucune exécution d’agent n’est active.",
+    "openRuns": "Ouvrir les exécutions actives et récentes",
+    "health": {
+      "healthy": {
+        "label": "Sain",
+        "description": "Aucun agent défaillant, aucune tâche bloquée ou décision urgente ne nécessitent votre attention."
+      },
+      "attention": {
+        "label": "A besoin d'attention",
+        "description": "Les travaux interrompus ou les décisions en attente nécessitent un examen par l'opérateur."
+      },
+      "critical": {
+        "label": "État critique",
+        "description": "Les agents défaillants, les tâches bloquées ou les décisions critiques nécessitent une action."
+      }
+    },
+    "agentState": {
+      "running": "En cours",
+      "available": "Disponible",
+      "paused": "En pause",
+      "failed": "En échec"
+    },
+    "runPhase": {
+      "queued": "En attente de démarrage.",
+      "running": "L’exécution est en cours.",
+      "succeeded": "L’exécution est terminée.",
+      "failed": "L’exécution a échoué.",
+      "cancelled": "L’exécution a été annulée.",
+      "timedOut": "Le délai d’exécution a expiré.",
+      "unknown": "L’état de l’exécution n’est pas disponible."
+    }
   }
 }

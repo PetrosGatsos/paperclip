@@ -5,5 +5,75 @@
       "description": "Kom i gang ved å opprette et selskap.",
       "newCompany": "Nytt selskap"
     }
+  },
+  "monitor": {
+    "title": "Driftsovervåking",
+    "description": "Bedriftshelse, aktivt arbeid, beslutninger og utførelsesfremgang i ett syn.",
+    "overallHealth": "Generell helse",
+    "blockedTasks": "blokkerte oppgaver",
+    "pendingApprovals": "venter på godkjenninger",
+    "budgetIncidents": "budsjetthendelser",
+    "taskFallback": "Oppgave",
+    "critical": "Kritisk",
+    "updated": "Oppdatert",
+    "attentionItem": "Oppmerksomhet element",
+    "progress": "Fremgang",
+    "finished": "Ferdig",
+    "openTask": "Åpen oppgave",
+    "openRun": "Åpne kjøring",
+    "createCompany": "Opprett et selskap for å overvåke driften.",
+    "selectCompany": "Velg et selskap for å overvåke driften.",
+    "unavailable": "Monitor utilgjengelig",
+    "unavailableDescription": "Monitordataene kunne ikke lastes inn.",
+    "tryAgain": "Prøv igjen",
+    "notUpdated": "Ikke oppdatert ennå",
+    "refreshing": "Oppdaterer",
+    "refresh": "Oppdater nå",
+    "partialError": "Noen monitordata kunne ikke oppdateres. Eksisterende data forblir synlige.",
+    "agentStates": "Agentstatus",
+    "viewAll": "Se alle",
+    "currentTasks": "Aktuelle oppgaver",
+    "inProgress": "pågår",
+    "noCurrentTasks": "Ingen aktuelle oppgaver.",
+    "openTasks": "Åpne oppgaver",
+    "recentTasks": "Nylige oppgaver",
+    "noRecentTasks": "Ingen nylig fullførte oppgaver.",
+    "pendingAndAttention": "Venter på godkjenninger og oppmerksomhet",
+    "pending": "venter",
+    "noAttention": "Ingen nyere oppmerksomhetselementer.",
+    "openDecisions": "Åpne vedtak",
+    "executionProgress": "Utførelsesfremgang",
+    "live": "Aktiv",
+    "noLiveRuns": "Ingen agentkjøringer er aktive.",
+    "openRuns": "Åpne aktive og nylige kjøringer",
+    "health": {
+      "healthy": {
+        "label": "Sunn",
+        "description": "Ingen mislykkede agenter, blokkerte oppgaver eller hastebeslutninger trenger oppmerksomhet."
+      },
+      "attention": {
+        "label": "Trenger oppmerksomhet",
+        "description": "Pausert arbeid eller ventende avgjørelser må gjennomgås av operatøren."
+      },
+      "critical": {
+        "label": "Kritisk tilstand",
+        "description": "Mislykkede agenter, blokkerte oppgaver eller kritiske beslutninger trenger handling."
+      }
+    },
+    "agentState": {
+      "running": "Kjører",
+      "available": "Tilgjengelig",
+      "paused": "Satt på pause",
+      "failed": "Mislykket"
+    },
+    "runPhase": {
+      "queued": "I kø for å starte.",
+      "running": "Kjøringen pågår.",
+      "succeeded": "Kjøringen er fullført.",
+      "failed": "Kjøringen mislyktes.",
+      "cancelled": "Kjøringen ble avbrutt.",
+      "timedOut": "Kjøringen fikk tidsavbrudd.",
+      "unknown": "Kjørestatus er ikke tilgjengelig."
+    }
   }
 }

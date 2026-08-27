@@ -5,5 +5,75 @@
       "description": "通过创建公司开始。",
       "newCompany": "新公司"
     }
+  },
+  "monitor": {
+    "title": "运行监控",
+    "description": "公司健康状况、积极工作、决策和执行进度一目了然。",
+    "overallHealth": "整体健康状况",
+    "blockedTasks": "阻塞的任务",
+    "pendingApprovals": "待批准",
+    "budgetIncidents": "预算事件",
+    "taskFallback": "任务",
+    "critical": "严重",
+    "updated": "已更新",
+    "attentionItem": "注意事项",
+    "progress": "进展",
+    "finished": "完成",
+    "openTask": "开放任务",
+    "openRun": "打开执行",
+    "createCompany": "创建一家公司来监控运营。",
+    "selectCompany": "选择一家公司来监控运营情况。",
+    "unavailable": "监视器不可用",
+    "unavailableDescription": "无法加载监控数据。",
+    "tryAgain": "再试一次",
+    "notUpdated": "尚未更新",
+    "refreshing": "正在更新",
+    "refresh": "立即更新",
+    "partialError": "部分监控数据无法更新。现有数据仍然可见。",
+    "agentStates": "智能体状态",
+    "viewAll": "查看全部",
+    "currentTasks": "当前任务",
+    "inProgress": "进行中",
+    "noCurrentTasks": "当前没有任务。",
+    "openTasks": "开放任务",
+    "recentTasks": "最近的任务",
+    "noRecentTasks": "没有最近完成的任务。",
+    "pendingAndAttention": "等待批准和关注",
+    "pending": "待定",
+    "noAttention": "近期无关注项目。",
+    "openDecisions": "公开决定",
+    "executionProgress": "执行进度",
+    "live": "活跃",
+    "noLiveRuns": "没有活跃的智能体执行。",
+    "openRuns": "打开活跃和最近的执行",
+    "health": {
+      "healthy": {
+        "label": "健康",
+        "description": "无需关注失败的智能体、阻塞的任务或紧急决策。"
+      },
+      "attention": {
+        "label": "需要注意",
+        "description": "暂停的工作或待决的决定需要操作员审查。"
+      },
+      "critical": {
+        "label": "严重状态",
+        "description": "失败的智能体、受阻的任务或关键决策需要采取行动。"
+      }
+    },
+    "agentState": {
+      "running": "运行中",
+      "available": "可用",
+      "paused": "已暂停",
+      "failed": "失败"
+    },
+    "runPhase": {
+      "queued": "已排队等待启动。",
+      "running": "执行正在进行。",
+      "succeeded": "执行已完成。",
+      "failed": "执行失败。",
+      "cancelled": "执行已取消。",
+      "timedOut": "执行已超时。",
+      "unknown": "执行状态不可用。"
+    }
   }
 }

@@ -5,5 +5,75 @@
       "description": "Kom igång genom att skapa ett företag.",
       "newCompany": "Nytt företag"
     }
+  },
+  "monitor": {
+    "title": "Driftövervakning",
+    "description": "Företagshälsa, aktivt arbete, beslut och genomförandeframsteg i en vy.",
+    "overallHealth": "Övergripande hälsa",
+    "blockedTasks": "blockerade uppgifter",
+    "pendingApprovals": "väntar på godkännanden",
+    "budgetIncidents": "budgetincidenter",
+    "taskFallback": "Uppgift",
+    "critical": "Kritisk",
+    "updated": "Uppdaterad",
+    "attentionItem": "Uppmärksamhet objekt",
+    "progress": "Framsteg",
+    "finished": "Färdig",
+    "openTask": "Öppen uppgift",
+    "openRun": "Öppna körning",
+    "createCompany": "Skapa ett företag för att övervaka verksamheten.",
+    "selectCompany": "Välj ett företag för att övervaka verksamheten.",
+    "unavailable": "Monitorn är inte tillgänglig",
+    "unavailableDescription": "Övervakningsdata kunde inte laddas.",
+    "tryAgain": "Försök igen",
+    "notUpdated": "Inte uppdaterad ännu",
+    "refreshing": "Uppdaterar",
+    "refresh": "Uppdatera nu",
+    "partialError": "Vissa monitordata kunde inte uppdateras. Befintlig data förblir synlig.",
+    "agentStates": "Agentstatus",
+    "viewAll": "Visa alla",
+    "currentTasks": "Aktuella uppgifter",
+    "inProgress": "pågår",
+    "noCurrentTasks": "Inga aktuella uppgifter.",
+    "openTasks": "Öppna uppgifter",
+    "recentTasks": "Senaste uppgifterna",
+    "noRecentTasks": "Inga nyligen avslutade uppgifter.",
+    "pendingAndAttention": "Väntar på godkännanden och uppmärksamhet",
+    "pending": "väntande",
+    "noAttention": "Inga nya uppmärksamhetsobjekt.",
+    "openDecisions": "Öppna beslut",
+    "executionProgress": "Utförande framsteg",
+    "live": "Aktiv",
+    "noLiveRuns": "Inga agentkörningar är aktiva.",
+    "openRuns": "Öppna aktiva och senaste körningar",
+    "health": {
+      "healthy": {
+        "label": "Frisk",
+        "description": "Inga misslyckade agenter, blockerade uppgifter eller brådskande beslut behöver uppmärksamhet."
+      },
+      "attention": {
+        "label": "Behöver uppmärksamhet",
+        "description": "Pausat arbete eller väntande beslut behöver en operatörsgranskning."
+      },
+      "critical": {
+        "label": "Kritiskt tillstånd",
+        "description": "Misslyckade agenter, blockerade uppgifter eller kritiska beslut behöver åtgärder."
+      }
+    },
+    "agentState": {
+      "running": "Körs",
+      "available": "Tillgänglig",
+      "paused": "Pausad",
+      "failed": "Misslyckad"
+    },
+    "runPhase": {
+      "queued": "I kö för att starta.",
+      "running": "Körningen pågår.",
+      "succeeded": "Körningen är klar.",
+      "failed": "Körningen misslyckades.",
+      "cancelled": "Körningen avbröts.",
+      "timedOut": "Körningen överskred tidsgränsen.",
+      "unknown": "Körstatus är inte tillgänglig."
+    }
   }
 }

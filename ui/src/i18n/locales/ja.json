@@ -5,5 +5,75 @@
       "description": "会社を作成して始めましょう。",
       "newCompany": "新しい会社"
     }
+  },
+  "monitor": {
+    "title": "運用モニター",
+    "description": "会社の健全性、活発な仕事、意思決定、実行の進捗状況を 1 つのビューで確認できます。",
+    "overallHealth": "全体的な健康状態",
+    "blockedTasks": "ブロックされたタスク",
+    "pendingApprovals": "承認待ち",
+    "budgetIncidents": "予算に関するインシデント",
+    "taskFallback": "タスク",
+    "critical": "重大",
+    "updated": "更新されました",
+    "attentionItem": "注目アイテム",
+    "progress": "進捗状況",
+    "finished": "完了しました",
+    "openTask": "タスクを開く",
+    "openRun": "実行を開く",
+    "createCompany": "運営を監視する会社を設立します。",
+    "selectCompany": "運用を監視する会社を選択します。",
+    "unavailable": "モニターが使用不可",
+    "unavailableDescription": "モニターデータを読み込めませんでした。",
+    "tryAgain": "もう一度試してください",
+    "notUpdated": "まだ更新されていません",
+    "refreshing": "更新中",
+    "refresh": "今すぐ更新",
+    "partialError": "一部のモニターデータが更新できませんでした。既存のデータは引き続き表示されます。",
+    "agentStates": "エージェントの状態",
+    "viewAll": "すべて見る",
+    "currentTasks": "現在のタスク",
+    "inProgress": "進行中",
+    "noCurrentTasks": "現在のタスクはありません。",
+    "openTasks": "開いているタスク",
+    "recentTasks": "最近のタスク",
+    "noRecentTasks": "最近完了したタスクはありません。",
+    "pendingAndAttention": "保留中の承認と注目",
+    "pending": "保留中",
+    "noAttention": "最近の注目アイテムはありません。",
+    "openDecisions": "オープンな意思決定",
+    "executionProgress": "実行の進行状況",
+    "live": "稼働中",
+    "noLiveRuns": "実行中のエージェント処理はありません。",
+    "openRuns": "実行中および最近の処理を開く",
+    "health": {
+      "healthy": {
+        "label": "健康",
+        "description": "失敗したエージェント、ブロックされたタスク、または緊急の決定に注意を払う必要はありません。"
+      },
+      "attention": {
+        "label": "注意が必要です",
+        "description": "一時停止した作業または保留中の決定については、オペレーターによるレビューが必要です。"
+      },
+      "critical": {
+        "label": "重大な状態",
+        "description": "失敗したエージェント、ブロックされたタスク、または重要な決定にはアクションが必要です。"
+      }
+    },
+    "agentState": {
+      "running": "実行中",
+      "available": "利用可能",
+      "paused": "一時停止",
+      "failed": "失敗"
+    },
+    "runPhase": {
+      "queued": "開始待ちです。",
+      "running": "処理を実行しています。",
+      "succeeded": "処理が完了しました。",
+      "failed": "処理に失敗しました。",
+      "cancelled": "処理はキャンセルされました。",
+      "timedOut": "処理がタイムアウトしました。",
+      "unknown": "処理の状態を取得できません。"
+    }
   }
 }

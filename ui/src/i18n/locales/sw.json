@@ -5,5 +5,75 @@
       "description": "Anza kwa kuunda kampuni.",
       "newCompany": "Kampuni Mpya"
     }
+  },
+  "monitor": {
+    "title": "Ufuatiliaji wa shughuli",
+    "description": "Afya ya kampuni, kazi hai, maamuzi, na maendeleo ya utekelezaji katika mtazamo mmoja.",
+    "overallHealth": "Afya kwa ujumla",
+    "blockedTasks": "kazi zilizozuiwa",
+    "pendingApprovals": "vibali vinavyosubiri",
+    "budgetIncidents": "matukio ya bajeti",
+    "taskFallback": "Kazi",
+    "critical": "Muhimu sana",
+    "updated": "Imesasishwa",
+    "attentionItem": "Kipengee cha tahadhari",
+    "progress": "Maendeleo",
+    "finished": "Imekamilika",
+    "openTask": "Fungua kazi",
+    "openRun": "Fungua utekelezaji",
+    "createCompany": "Unda kampuni ya kufuatilia shughuli.",
+    "selectCompany": "Chagua kampuni ya kufuatilia shughuli.",
+    "unavailable": "Kifuatilia hakipatikani",
+    "unavailableDescription": "Data ya mfuatiliaji haikuweza kupakiwa.",
+    "tryAgain": "Jaribu tena",
+    "notUpdated": "Bado haijasasishwa",
+    "refreshing": "Inasasisha",
+    "refresh": "Sasisha sasa",
+    "partialError": "Baadhi ya data ya mfuatiliaji haikuweza kusasishwa. Data iliyopo bado inaonekana.",
+    "agentStates": "Hali za mawakala",
+    "viewAll": "Tazama zote",
+    "currentTasks": "Kazi za sasa",
+    "inProgress": "inaendelea",
+    "noCurrentTasks": "Hakuna kazi za sasa.",
+    "openTasks": "Fungua kazi",
+    "recentTasks": "Kazi za hivi majuzi",
+    "noRecentTasks": "Hakuna kazi zilizokamilishwa hivi majuzi.",
+    "pendingAndAttention": "Inasubiri idhini na umakini",
+    "pending": "inasubiri",
+    "noAttention": "Hakuna vipengee vya umakini wa hivi majuzi.",
+    "openDecisions": "Maamuzi ya wazi",
+    "executionProgress": "Maendeleo ya utekelezaji",
+    "live": "Inatumika",
+    "noLiveRuns": "Hakuna utekelezaji wa wakala unaotumika.",
+    "openRuns": "Fungua utekelezaji unaotumika na wa hivi karibuni",
+    "health": {
+      "healthy": {
+        "label": "Mwenye afya",
+        "description": "Hakuna mawakala walioshindwa, kazi zilizozuiwa, au maamuzi ya haraka yanayohitaji kuzingatiwa."
+      },
+      "attention": {
+        "label": "Inahitaji umakini",
+        "description": "Kazi iliyositishwa au maamuzi yanayosubiri yanahitaji ukaguzi wa waendeshaji."
+      },
+      "critical": {
+        "label": "Hali mbaya",
+        "description": "Mawakala walioshindwa, kazi zilizozuiwa au maamuzi muhimu yanahitaji hatua."
+      }
+    },
+    "agentState": {
+      "running": "Inaendeshwa",
+      "available": "Inapatikana",
+      "paused": "Imesitishwa",
+      "failed": "Imeshindwa"
+    },
+    "runPhase": {
+      "queued": "Imepangwa kuanza.",
+      "running": "Utekelezaji unaendelea.",
+      "succeeded": "Utekelezaji umekamilika.",
+      "failed": "Utekelezaji umeshindwa.",
+      "cancelled": "Utekelezaji umeghairiwa.",
+      "timedOut": "Muda wa utekelezaji umeisha.",
+      "unknown": "Hali ya utekelezaji haipatikani."
+    }
   }
 }

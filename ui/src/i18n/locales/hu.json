@@ -5,5 +5,75 @@
       "description": "Kezdje egy vállalat létrehozásával.",
       "newCompany": "Új vállalat"
     }
+  },
+  "monitor": {
+    "title": "Műveletfigyelő",
+    "description": "A vállalati egészség, az aktív munka, a döntések és a végrehajtás előrehaladása egy nézetben.",
+    "overallHealth": "Általános egészség",
+    "blockedTasks": "blokkolt feladatok",
+    "pendingApprovals": "függőben lévő jóváhagyások",
+    "budgetIncidents": "költségvetési incidensek",
+    "taskFallback": "Feladat",
+    "critical": "Kritikus",
+    "updated": "Frissítve",
+    "attentionItem": "Figyelem elem",
+    "progress": "Haladás",
+    "finished": "kész",
+    "openTask": "Nyitott feladat",
+    "openRun": "Végrehajtás megnyitása",
+    "createCompany": "Hozzon létre egy céget a műveletek figyelemmel kísérésére.",
+    "selectCompany": "Válasszon ki egy vállalatot a műveletek figyeléséhez.",
+    "unavailable": "A monitor nem elérhető",
+    "unavailableDescription": "A monitor adatait nem sikerült betölteni.",
+    "tryAgain": "Próbáld újra",
+    "notUpdated": "Még nincs frissítve",
+    "refreshing": "Frissítés folyamatban",
+    "refresh": "Frissítés most",
+    "partialError": "Egyes monitoradatokat nem sikerült frissíteni. A meglévő adatok láthatóak maradnak.",
+    "agentStates": "Ügynökállapotok",
+    "viewAll": "Az összes megtekintése",
+    "currentTasks": "Aktuális feladatok",
+    "inProgress": "folyamatban",
+    "noCurrentTasks": "Nincsenek aktuális feladatok.",
+    "openTasks": "Nyitott feladatok",
+    "recentTasks": "Legutóbbi feladatok",
+    "noRecentTasks": "Nincsenek nemrég befejezett feladatok.",
+    "pendingAndAttention": "Függőben lévő jóváhagyások és figyelem",
+    "pending": "függőben",
+    "noAttention": "Nincsenek közelmúltbeli figyelemfelkeltő elemek.",
+    "openDecisions": "Nyitott döntések",
+    "executionProgress": "A végrehajtás előrehaladása",
+    "live": "Aktív",
+    "noLiveRuns": "Nincs aktív ügynökvégrehajtás.",
+    "openRuns": "Aktív és legutóbbi végrehajtások megnyitása",
+    "health": {
+      "healthy": {
+        "label": "Egészséges",
+        "description": "Nincs szükség meghiúsult ügynökökre, blokkolt feladatokra vagy sürgős döntésekre."
+      },
+      "attention": {
+        "label": "Figyelmet igényel",
+        "description": "A szüneteltetett munkát vagy a függőben lévő döntéseket a kezelőnek felül kell vizsgálnia."
+      },
+      "critical": {
+        "label": "Kritikus állapot",
+        "description": "A sikertelen ügynökök, a blokkolt feladatok vagy a kritikus döntések cselekvést igényelnek."
+      }
+    },
+    "agentState": {
+      "running": "Fut",
+      "available": "Elérhető",
+      "paused": "Szüneteltetve",
+      "failed": "Sikertelen"
+    },
+    "runPhase": {
+      "queued": "Indításra várakozik.",
+      "running": "A végrehajtás folyamatban van.",
+      "succeeded": "A végrehajtás befejeződött.",
+      "failed": "A végrehajtás sikertelen volt.",
+      "cancelled": "A végrehajtást megszakították.",
+      "timedOut": "A végrehajtás túllépte az időkorlátot.",
+      "unknown": "A végrehajtás állapota nem érhető el."
+    }
   }
 }

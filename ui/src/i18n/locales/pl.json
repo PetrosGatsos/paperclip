@@ -5,5 +5,75 @@
       "description": "Zacznij od utworzenia firmy.",
       "newCompany": "Nowa firma"
     }
+  },
+  "monitor": {
+    "title": "Monitor operacji",
+    "description": "Kondycja firmy, aktywna praca, decyzje i postęp realizacji w jednym widoku.",
+    "overallHealth": "Ogólny stan zdrowia",
+    "blockedTasks": "zablokowane zadania",
+    "pendingApprovals": "oczekujące na zatwierdzenia",
+    "budgetIncidents": "incydenty budżetowe",
+    "taskFallback": "Zadanie",
+    "critical": "Krytyczny",
+    "updated": "Zaktualizowano",
+    "attentionItem": "Uwaga, przedmiot",
+    "progress": "Postęp",
+    "finished": "Skończone",
+    "openTask": "Otwórz zadanie",
+    "openRun": "Otwórz wykonanie",
+    "createCompany": "Utwórz firmę, aby monitorować operacje.",
+    "selectCompany": "Wybierz firmę do monitorowania operacji.",
+    "unavailable": "Monitor niedostępny",
+    "unavailableDescription": "Nie można załadować danych monitora.",
+    "tryAgain": "Spróbuj ponownie",
+    "notUpdated": "Jeszcze nie zaktualizowany",
+    "refreshing": "Aktualizowanie",
+    "refresh": "Aktualizuj teraz",
+    "partialError": "Nie udało się zaktualizować niektórych danych monitora. Istniejące dane pozostają widoczne.",
+    "agentStates": "Stany agentów",
+    "viewAll": "Zobacz wszystkie",
+    "currentTasks": "Aktualne zadania",
+    "inProgress": "w toku",
+    "noCurrentTasks": "Brak bieżących zadań.",
+    "openTasks": "Otwórz zadania",
+    "recentTasks": "Ostatnie zadania",
+    "noRecentTasks": "Brak ostatnio ukończonych zadań.",
+    "pendingAndAttention": "Oczekujące na zatwierdzenie i uwagę",
+    "pending": "w toku",
+    "noAttention": "Brak niedawnych elementów uwagi.",
+    "openDecisions": "Otwarte decyzje",
+    "executionProgress": "Postęp realizacji",
+    "live": "Aktywne",
+    "noLiveRuns": "Brak aktywnych wykonań agentów.",
+    "openRuns": "Otwórz aktywne i ostatnie wykonania",
+    "health": {
+      "healthy": {
+        "label": "Zdrowy",
+        "description": "Żadne nieudane agenty, zablokowane zadania lub pilne decyzje nie wymagają uwagi."
+      },
+      "attention": {
+        "label": "Potrzebuje uwagi",
+        "description": "Wstrzymana praca lub oczekujące decyzje wymagają przeglądu operatora."
+      },
+      "critical": {
+        "label": "Stan krytyczny",
+        "description": "Niesprawni agenci, zablokowane zadania lub krytyczne decyzje wymagają działania."
+      }
+    },
+    "agentState": {
+      "running": "Uruchomiony",
+      "available": "Dostępny",
+      "paused": "Wstrzymany",
+      "failed": "Niepowodzenie"
+    },
+    "runPhase": {
+      "queued": "W kolejce do uruchomienia.",
+      "running": "Wykonanie jest w toku.",
+      "succeeded": "Wykonanie zakończono.",
+      "failed": "Wykonanie nie powiodło się.",
+      "cancelled": "Wykonanie anulowano.",
+      "timedOut": "Przekroczono limit czasu wykonania.",
+      "unknown": "Stan wykonania jest niedostępny."
+    }
   }
 }

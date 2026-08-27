@@ -262,3 +262,12 @@ describe("Decisions routes", () => {
     expect(appSource).not.toContain('path="training/:id"');
   });
 });
+
+describe("Monitor routes", () => {
+  it("registers prefixed and unprefixed monitor paths inside the authenticated board tree", () => {
+    expect(appSource).toContain('import { Monitor } from "./pages/Monitor";');
+    expect(appSource.match(/path="monitor"/g)).toHaveLength(2);
+    expect(appSource).toContain('<Route path="monitor" element={<Monitor />} />');
+    expect(appSource).toContain('<Route path="monitor" element={<UnprefixedBoardRedirect />} />');
+  });
+});

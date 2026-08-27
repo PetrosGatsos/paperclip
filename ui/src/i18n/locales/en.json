@@ -5,5 +5,75 @@
       "description": "Get started by creating a company.",
       "newCompany": "New Company"
     }
+  },
+  "monitor": {
+    "title": "Monitor",
+    "description": "Company health, active work, decisions, and execution progress in one view.",
+    "overallHealth": "Overall health",
+    "blockedTasks": "blocked tasks",
+    "pendingApprovals": "pending approvals",
+    "budgetIncidents": "budget incidents",
+    "taskFallback": "Task",
+    "critical": "Critical",
+    "updated": "Updated",
+    "attentionItem": "Attention item",
+    "progress": "Progress",
+    "finished": "Finished",
+    "openTask": "Open task",
+    "openRun": "Open run",
+    "createCompany": "Create a company to monitor operations.",
+    "selectCompany": "Select a company to monitor operations.",
+    "unavailable": "Monitor unavailable",
+    "unavailableDescription": "The monitor data could not be loaded.",
+    "tryAgain": "Try again",
+    "notUpdated": "Not updated yet",
+    "refreshing": "Refreshing",
+    "refresh": "Refresh",
+    "partialError": "Some monitor data could not be updated. Existing data remains visible.",
+    "agentStates": "Agent states",
+    "viewAll": "View all",
+    "currentTasks": "Current tasks",
+    "inProgress": "in progress",
+    "noCurrentTasks": "No current tasks.",
+    "openTasks": "Open tasks",
+    "recentTasks": "Recent tasks",
+    "noRecentTasks": "No recently completed tasks.",
+    "pendingAndAttention": "Pending approvals and attention",
+    "pending": "pending",
+    "noAttention": "No recent attention items.",
+    "openDecisions": "Open decisions",
+    "executionProgress": "Execution progress",
+    "live": "live",
+    "noLiveRuns": "No agent runs are active.",
+    "openRuns": "Open live and recent runs",
+    "health": {
+      "healthy": {
+        "label": "Healthy",
+        "description": "No failed agents, blocked tasks, or urgent decisions need attention."
+      },
+      "attention": {
+        "label": "Needs attention",
+        "description": "Paused work or pending decisions need an operator review."
+      },
+      "critical": {
+        "label": "Critical state",
+        "description": "Failed agents, blocked tasks, or critical decisions need action."
+      }
+    },
+    "agentState": {
+      "running": "Running",
+      "available": "Available",
+      "paused": "Paused",
+      "failed": "Failed"
+    },
+    "runPhase": {
+      "queued": "Queued to start.",
+      "running": "Run is in progress.",
+      "succeeded": "Run completed.",
+      "failed": "Run failed.",
+      "cancelled": "Run was cancelled.",
+      "timedOut": "Run timed out.",
+      "unknown": "Run status is unavailable."
+    }
   }
 }

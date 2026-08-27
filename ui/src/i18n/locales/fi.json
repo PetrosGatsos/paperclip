@@ -5,5 +5,75 @@
       "description": "Aloita luomalla yritys.",
       "newCompany": "Uusi yritys"
     }
+  },
+  "monitor": {
+    "title": "Toimintojen valvonta",
+    "description": "Yrityksen terveys, aktiivinen työ, päätökset ja toteutus edistyvät yhdessä näkymässä.",
+    "overallHealth": "Yleinen terveys",
+    "blockedTasks": "estetty tehtävät",
+    "pendingApprovals": "vireillä olevia hyväksyntöjä",
+    "budgetIncidents": "budjettitapaukset",
+    "taskFallback": "Tehtävä",
+    "critical": "Kriittinen",
+    "updated": "Päivitetty",
+    "attentionItem": "Huomiokohde",
+    "progress": "Edistyminen",
+    "finished": "Valmis",
+    "openTask": "Avoin tehtävä",
+    "openRun": "Avaa suoritus",
+    "createCompany": "Perusta yritys valvomaan toimintaa.",
+    "selectCompany": "Valitse yritys seuraamaan toimintaa.",
+    "unavailable": "Monitori ei ole käytettävissä",
+    "unavailableDescription": "Monitoritietoja ei voitu ladata.",
+    "tryAgain": "Yritä uudelleen",
+    "notUpdated": "Ei vielä päivitetty",
+    "refreshing": "Päivitetään",
+    "refresh": "Päivitä nyt",
+    "partialError": "Joitakin näytön tietoja ei voitu päivittää. Olemassa olevat tiedot pysyvät näkyvissä.",
+    "agentStates": "Agenttien tilat",
+    "viewAll": "Näytä kaikki",
+    "currentTasks": "Nykyiset tehtävät",
+    "inProgress": "käynnissä",
+    "noCurrentTasks": "Ei nykyisiä tehtäviä.",
+    "openTasks": "Avoimet tehtävät",
+    "recentTasks": "Viimeaikaiset tehtävät",
+    "noRecentTasks": "Ei äskettäin suoritettuja tehtäviä.",
+    "pendingAndAttention": "Odottaa hyväksyntää ja huomiota",
+    "pending": "vireillä",
+    "noAttention": "Ei viimeaikaisia huomioitavia kohteita.",
+    "openDecisions": "Avoimet päätökset",
+    "executionProgress": "Toteutuksen edistyminen",
+    "live": "Aktiivinen",
+    "noLiveRuns": "Aktiivisia agenttisuorituksia ei ole.",
+    "openRuns": "Avaa aktiiviset ja viimeisimmät suoritukset",
+    "health": {
+      "healthy": {
+        "label": "Terve",
+        "description": "Epäonnistuneet agentit, estetyt tehtävät tai kiireelliset päätökset eivät tarvitse huomiota."
+      },
+      "attention": {
+        "label": "Vaatii huomiota",
+        "description": "Keskeytetyt työt tai odottavat päätökset vaativat operaattorin tarkastuksen."
+      },
+      "critical": {
+        "label": "Kriittinen tila",
+        "description": "Epäonnistuneet agentit, estetyt tehtävät tai kriittiset päätökset vaativat toimia."
+      }
+    },
+    "agentState": {
+      "running": "Käynnissä",
+      "available": "Käytettävissä",
+      "paused": "Keskeytetty",
+      "failed": "Epäonnistunut"
+    },
+    "runPhase": {
+      "queued": "Jonossa käynnistystä varten.",
+      "running": "Suoritus on käynnissä.",
+      "succeeded": "Suoritus valmistui.",
+      "failed": "Suoritus epäonnistui.",
+      "cancelled": "Suoritus peruutettiin.",
+      "timedOut": "Suoritus aikakatkaistiin.",
+      "unknown": "Suorituksen tila ei ole saatavilla."
+    }
   }
 }

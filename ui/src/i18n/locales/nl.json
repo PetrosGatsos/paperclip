@@ -5,5 +5,75 @@
       "description": "Begin door een bedrijf aan te maken.",
       "newCompany": "Nieuw bedrijf"
     }
+  },
+  "monitor": {
+    "title": "Operationsmonitor",
+    "description": "Bedrijfsgezondheid, actief werk, beslissingen en uitvoeringsvoortgang in één overzicht.",
+    "overallHealth": "Algemene gezondheid",
+    "blockedTasks": "geblokkeerde taken",
+    "pendingApprovals": "in afwachting van goedkeuringen",
+    "budgetIncidents": "budget incidenten",
+    "taskFallback": "Taak",
+    "critical": "Kritiek",
+    "updated": "Bijgewerkt",
+    "attentionItem": "Aandachtspunt",
+    "progress": "Vooruitgang",
+    "finished": "Klaar",
+    "openTask": "Open taak",
+    "openRun": "Uitvoering openen",
+    "createCompany": "Creëer een bedrijf om de activiteiten te monitoren.",
+    "selectCompany": "Selecteer een bedrijf om de activiteiten te monitoren.",
+    "unavailable": "Monitor niet beschikbaar",
+    "unavailableDescription": "De monitorgegevens konden niet worden geladen.",
+    "tryAgain": "Probeer het opnieuw",
+    "notUpdated": "Nog niet bijgewerkt",
+    "refreshing": "Bezig met bijwerken",
+    "refresh": "Nu bijwerken",
+    "partialError": "Sommige monitorgegevens konden niet worden bijgewerkt. Bestaande gegevens blijven zichtbaar.",
+    "agentStates": "Agentstatussen",
+    "viewAll": "Bekijk alles",
+    "currentTasks": "Huidige taken",
+    "inProgress": "in uitvoering",
+    "noCurrentTasks": "Geen huidige taken.",
+    "openTasks": "Openstaande taken",
+    "recentTasks": "Recente taken",
+    "noRecentTasks": "Geen recent voltooide taken.",
+    "pendingAndAttention": "In afwachting van goedkeuring en aandacht",
+    "pending": "in afwachting",
+    "noAttention": "Geen recente aandachtsitems.",
+    "openDecisions": "Open besluiten",
+    "executionProgress": "Voortgang van de uitvoering",
+    "live": "Actief",
+    "noLiveRuns": "Er zijn geen actieve agentuitvoeringen.",
+    "openRuns": "Actieve en recente uitvoeringen openen",
+    "health": {
+      "healthy": {
+        "label": "Gezond",
+        "description": "Geen enkele mislukte agent, geblokkeerde taak of dringende beslissing heeft aandacht nodig."
+      },
+      "attention": {
+        "label": "Heeft aandacht nodig",
+        "description": "Onderbroken werkzaamheden of hangende beslissingen vereisen een beoordeling door de operator."
+      },
+      "critical": {
+        "label": "Kritieke toestand",
+        "description": "Mislukte agenten, geblokkeerde taken of cruciale beslissingen vereisen actie."
+      }
+    },
+    "agentState": {
+      "running": "Actief",
+      "available": "Beschikbaar",
+      "paused": "Gepauzeerd",
+      "failed": "Mislukt"
+    },
+    "runPhase": {
+      "queued": "In de wachtrij om te starten.",
+      "running": "De uitvoering is bezig.",
+      "succeeded": "De uitvoering is voltooid.",
+      "failed": "De uitvoering is mislukt.",
+      "cancelled": "De uitvoering is geannuleerd.",
+      "timedOut": "Er is een time-out opgetreden.",
+      "unknown": "De uitvoeringsstatus is niet beschikbaar."
+    }
   }
 }

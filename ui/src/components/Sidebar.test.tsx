@@ -6,6 +6,7 @@ import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Sidebar } from "./Sidebar";
+import sidebarSource from "./Sidebar.tsx?raw";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 const mockHeartbeatsApi = vi.hoisted(() => ({
@@ -629,5 +630,12 @@ describe("Sidebar", () => {
     flushSync(() => {
       root.unmount();
     });
+  });
+});
+
+describe("Monitor navigation", () => {
+  it("links to the monitor from primary navigation", () => {
+    expect(sidebarSource).toContain('<SidebarNavItem to="/monitor"');
+    expect(sidebarSource).toContain('defaultValue: "Monitor"');
   });
 });

@@ -5,5 +5,75 @@
       "description": "Beginnen Sie, indem Sie ein Unternehmen erstellen.",
       "newCompany": "Neues Unternehmen"
     }
+  },
+  "monitor": {
+    "title": "Betriebsmonitor",
+    "description": "Unternehmensgesundheit, aktive Arbeit, Entscheidungen und Ausführungsfortschritt auf einen Blick.",
+    "overallHealth": "Allgemeine Gesundheit",
+    "blockedTasks": "blockierte Aufgaben",
+    "pendingApprovals": "noch ausstehende Genehmigungen",
+    "budgetIncidents": "Haushaltsvorfälle",
+    "taskFallback": "Aufgabe",
+    "critical": "Kritisch",
+    "updated": "Aktualisiert",
+    "attentionItem": "Achtung Artikel",
+    "progress": "Fortschritt",
+    "finished": "Fertig",
+    "openTask": "Aufgabe öffnen",
+    "openRun": "Ausführung öffnen",
+    "createCompany": "Erstellen Sie ein Unternehmen, um den Betrieb zu überwachen.",
+    "selectCompany": "Wählen Sie ein Unternehmen aus, um den Betrieb zu überwachen.",
+    "unavailable": "Monitor nicht verfügbar",
+    "unavailableDescription": "Die Monitordaten konnten nicht geladen werden.",
+    "tryAgain": "Versuchen Sie es erneut",
+    "notUpdated": "Noch nicht aktualisiert",
+    "refreshing": "Wird aktualisiert",
+    "refresh": "Jetzt aktualisieren",
+    "partialError": "Einige Monitordaten konnten nicht aktualisiert werden. Vorhandene Daten bleiben sichtbar.",
+    "agentStates": "Agentenstatus",
+    "viewAll": "Alle anzeigen",
+    "currentTasks": "Aktuelle Aufgaben",
+    "inProgress": "in Bearbeitung",
+    "noCurrentTasks": "Keine aktuellen Aufgaben.",
+    "openTasks": "Offene Aufgaben",
+    "recentTasks": "Aktuelle Aufgaben",
+    "noRecentTasks": "Keine kürzlich abgeschlossenen Aufgaben.",
+    "pendingAndAttention": "Ausstehende Genehmigungen und Aufmerksamkeit",
+    "pending": "ausstehend",
+    "noAttention": "Keine aktuellen Aufmerksamkeitselemente.",
+    "openDecisions": "Offene Entscheidungen",
+    "executionProgress": "Ausführungsfortschritt",
+    "live": "Aktiv",
+    "noLiveRuns": "Es sind keine Agentenausführungen aktiv.",
+    "openRuns": "Aktive und letzte Ausführungen öffnen",
+    "health": {
+      "healthy": {
+        "label": "Gesund",
+        "description": "Keine ausgefallenen Agenten, blockierten Aufgaben oder dringenden Entscheidungen erfordern Aufmerksamkeit."
+      },
+      "attention": {
+        "label": "Braucht Aufmerksamkeit",
+        "description": "Unterbrochene Arbeiten oder ausstehende Entscheidungen erfordern eine Überprüfung durch den Bediener."
+      },
+      "critical": {
+        "label": "Kritischer Zustand",
+        "description": "Fehlgeschlagene Agenten, blockierte Aufgaben oder kritische Entscheidungen erfordern Maßnahmen."
+      }
+    },
+    "agentState": {
+      "running": "Wird ausgeführt",
+      "available": "Verfügbar",
+      "paused": "Pausiert",
+      "failed": "Fehlgeschlagen"
+    },
+    "runPhase": {
+      "queued": "Zum Starten eingereiht.",
+      "running": "Die Ausführung läuft.",
+      "succeeded": "Die Ausführung wurde abgeschlossen.",
+      "failed": "Die Ausführung ist fehlgeschlagen.",
+      "cancelled": "Die Ausführung wurde abgebrochen.",
+      "timedOut": "Zeitüberschreitung bei der Ausführung.",
+      "unknown": "Der Ausführungsstatus ist nicht verfügbar."
+    }
   }
 }
