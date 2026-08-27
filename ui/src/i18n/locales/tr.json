@@ -49,7 +49,7 @@
     "health": {
       "healthy": {
         "label": "Sağlıklı",
-        "description": "Hiçbir başarısız temsilci, engellenen görev veya acil kararların dikkate alınması gerekmez."
+        "description": "Dikkat gerektiren başarısız ajan, engellenen görev veya acil karar yok."
       },
       "attention": {
         "label": "Dikkat edilmesi gerekiyor",
@@ -57,7 +57,7 @@
       },
       "critical": {
         "label": "Kritik durum",
-        "description": "Başarısız aracıların, engellenen görevlerin veya kritik kararların eyleme geçmesi gerekir."
+        "description": "Başarısız ajanlar, engellenen görevler veya kritik kararlar için işlem yapılması gerekiyor."
       }
     },
     "agentState": {

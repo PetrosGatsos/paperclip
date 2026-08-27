@@ -57,6 +57,128 @@
     "runPhase.timedOut",
     "runPhase.unknown"
   ],
+  "rejectedValues": [
+    {
+      "locale": "de",
+      "path": "refreshing",
+      "value": "Erfrischend",
+      "reason": "refreshing-sensation"
+    },
+    {
+      "locale": "de",
+      "path": "live",
+      "value": "leben",
+      "reason": "to-live-verb"
+    },
+    {
+      "locale": "es",
+      "path": "openRun",
+      "value": "carrera abierta",
+      "reason": "race"
+    },
+    {
+      "locale": "es",
+      "path": "live",
+      "value": "vivir",
+      "reason": "to-live-verb"
+    },
+    {
+      "locale": "fr",
+      "path": "openRuns",
+      "value": "Ouvrir les courses en direct et récentes",
+      "reason": "races"
+    },
+    {
+      "locale": "fr",
+      "path": "live",
+      "value": "vivre",
+      "reason": "to-live-verb"
+    },
+    {
+      "locale": "he",
+      "path": "health.critical.label",
+      "value": "מדינה קריטית",
+      "reason": "country-state"
+    },
+    {
+      "locale": "ja",
+      "path": "refreshing",
+      "value": "さわやか",
+      "reason": "refreshing-sensation"
+    },
+    {
+      "locale": "ja",
+      "path": "live",
+      "value": "生きる",
+      "reason": "to-live-verb"
+    },
+    {
+      "locale": "ar",
+      "path": "agentStates",
+      "value": "دول الوكيل",
+      "reason": "countries"
+    },
+    {
+      "locale": "ar",
+      "path": "health.healthy.description",
+      "value": "لا يحتاج أي عملاء فاشلين أو مهام محظورة أو قرارات عاجلة إلى الاهتمام.",
+      "reason": "customers"
+    },
+    {
+      "locale": "ar",
+      "path": "health.critical.description",
+      "value": "يحتاج العملاء الفاشلون أو المهام المحظورة أو القرارات الحاسمة إلى اتخاذ إجراء.",
+      "reason": "customers"
+    },
+    {
+      "locale": "th",
+      "path": "agentStates",
+      "value": "สถานะตัวแทน",
+      "reason": "representatives"
+    },
+    {
+      "locale": "th",
+      "path": "noLiveRuns",
+      "value": "ไม่มีการดำเนินการของตัวแทนที่ทำงานอยู่",
+      "reason": "representatives"
+    },
+    {
+      "locale": "th",
+      "path": "health.healthy.description",
+      "value": "ไม่มีเจ้าหน้าที่ที่ล้มเหลว งานที่ถูกบล็อก หรือการตัดสินใจเร่งด่วนที่ต้องการความสนใจ",
+      "reason": "staff"
+    },
+    {
+      "locale": "th",
+      "path": "health.critical.description",
+      "value": "เจ้าหน้าที่ล้มเหลว งานที่ถูกบล็อก หรือการตัดสินใจที่สำคัญจำเป็นต้องได้รับการดำเนินการ",
+      "reason": "staff"
+    },
+    {
+      "locale": "tr",
+      "path": "health.healthy.description",
+      "value": "Hiçbir başarısız temsilci, engellenen görev veya acil kararların dikkate alınması gerekmez.",
+      "reason": "representatives"
+    },
+    {
+      "locale": "tr",
+      "path": "health.critical.description",
+      "value": "Başarısız aracıların, engellenen görevlerin veya kritik kararların eyleme geçmesi gerekir.",
+      "reason": "intermediaries"
+    },
+    {
+      "locale": "zh-CN",
+      "path": "health.healthy.description",
+      "value": "无需关注失败的代理、阻塞的任务或紧急决策。",
+      "reason": "proxies"
+    },
+    {
+      "locale": "zh-CN",
+      "path": "health.critical.description",
+      "value": "失败的代理、受阻的任务或关键决策需要采取行动。",
+      "reason": "proxies"
+    }
+  ],
   "locales": {
     "ar": [
       "مراقبة العمليات",
@@ -99,11 +221,11 @@
       "لا توجد عمليات تنفيذ نشطة للوكلاء.",
       "فتح عمليات التنفيذ النشطة والحديثة",
       "صحي",
-      "لا يحتاج أي عملاء فاشلين أو مهام محظورة أو قرارات عاجلة إلى الاهتمام.",
+      "لا يحتاج أي وكلاء فاشلين أو مهام محظورة أو قرارات عاجلة إلى الاهتمام.",
       "يحتاج إلى اهتمام",
       "يحتاج العمل المتوقف مؤقتًا أو القرارات المعلقة إلى مراجعة المشغل.",
       "حالة حرجة",
-      "يحتاج العملاء الفاشلون أو المهام المحظورة أو القرارات الحاسمة إلى اتخاذ إجراء.",
+      "يحتاج الوكلاء الفاشلون أو المهام المحظورة أو القرارات الحاسمة إلى اتخاذ إجراء.",
       "قيد التشغيل",
       "متاح",
       "متوقف مؤقتًا",
@@ -1996,7 +2118,7 @@
       "กำลังอัปเดต",
       "อัปเดตตอนนี้",
       "ไม่สามารถอัปเดตข้อมูลการตรวจสอบบางอย่างได้ ข้อมูลที่มีอยู่ยังคงมองเห็นได้",
-      "สถานะตัวแทน",
+      "สถานะเอเจนต์",
       "ดูทั้งหมด",
       "งานปัจจุบัน",
       "อยู่ระหว่างดำเนินการ",
@@ -2010,14 +2132,14 @@
       "เปิดการตัดสินใจ",
       "ความคืบหน้าการดำเนินการ",
       "ทำงานอยู่",
-      "ไม่มีการดำเนินการของตัวแทนที่ทำงานอยู่",
+      "ไม่มีการดำเนินการของเอเจนต์ที่ทำงานอยู่",
       "เปิดการดำเนินการที่ทำงานอยู่และล่าสุด",
       "ดีต่อสุขภาพ",
-      "ไม่มีเจ้าหน้าที่ที่ล้มเหลว งานที่ถูกบล็อก หรือการตัดสินใจเร่งด่วนที่ต้องการความสนใจ",
+      "ไม่มีเอเจนต์ที่ล้มเหลว งานที่ถูกบล็อก หรือการตัดสินใจเร่งด่วนที่ต้องการความสนใจ",
       "ต้องการความสนใจ",
       "งานที่หยุดชั่วคราวหรือการตัดสินใจที่รอดำเนินการจำเป็นต้องได้รับการตรวจสอบจากผู้ปฏิบัติงาน",
       "สถานะวิกฤต",
-      "เจ้าหน้าที่ล้มเหลว งานที่ถูกบล็อก หรือการตัดสินใจที่สำคัญจำเป็นต้องได้รับการดำเนินการ",
+      "เอเจนต์ที่ล้มเหลว งานที่ถูกบล็อก หรือการตัดสินใจที่สำคัญจำเป็นต้องได้รับการดำเนินการ",
       "กำลังทำงาน",
       "พร้อมใช้งาน",
       "หยุดชั่วคราว",
@@ -2071,11 +2193,11 @@
       "Etkin ajan çalıştırması yok.",
       "Etkin ve son çalıştırmaları aç",
       "Sağlıklı",
-      "Hiçbir başarısız temsilci, engellenen görev veya acil kararların dikkate alınması gerekmez.",
+      "Dikkat gerektiren başarısız ajan, engellenen görev veya acil karar yok.",
       "Dikkat edilmesi gerekiyor",
       "Duraklatılan işler veya bekleyen kararlar operatörün incelemesini gerektirir.",
       "Kritik durum",
-      "Başarısız aracıların, engellenen görevlerin veya kritik kararların eyleme geçmesi gerekir.",
+      "Başarısız ajanlar, engellenen görevler veya kritik kararlar için işlem yapılması gerekiyor.",
       "Çalışıyor",
       "Kullanılabilir",
       "Duraklatıldı",
@@ -2303,11 +2425,11 @@
       "没有活跃的智能体执行。",
       "打开活跃和最近的执行",
       "健康",
-      "无需关注失败的代理、阻塞的任务或紧急决策。",
+      "无需关注失败的智能体、阻塞的任务或紧急决策。",
       "需要注意",
       "暂停的工作或待决的决定需要操作员审查。",
       "严重状态",
-      "失败的代理、受阻的任务或关键决策需要采取行动。",
+      "失败的智能体、受阻的任务或关键决策需要采取行动。",
       "运行中",
       "可用",
       "已暂停",
@@ -2380,7 +2502,7 @@
     ]
   },
   "catalogDigests": {
-    "ar": "5e51193120668efb042b2282b7cb59a5ded7271c64b295ab4670e4b9bfb3e6c6",
+    "ar": "a2fdbae5ca2ac88d305ff0943dd27735ea5beeb1dd15aa3744cfbcd2669d9776",
     "bn": "80ad654b5d36a21eb2bcafc666c505a4f14fe310c9f8c6007423b71c688f4267",
     "cs": "ada69623e1115b807d5140ceb5d710190eba3c643e4e2682d3ea5d754dac1f4b",
     "da": "0863cedd62325da1861d32364b6432fccd2b8875a7cdae51f839a960e4867c3a",
@@ -2413,12 +2535,12 @@
     "sw": "c1f4a1d61924144670cc25ce056b0b62fec4b873e420bd312057fabd16ed5748",
     "ta": "ec5c05ddb7ccf2371525d1e531b966512a83203ad780e8d0143effdd499733d4",
     "te": "55519c7b91319d5714799a7e1be7d0335c3bcf86b675c4afba672bd5e8abcde2",
-    "th": "3a837a1032d700e869296654713865082e50478b144edce2dd7e2c1d2a4a5aea",
-    "tr": "83e78555348745cc9c96a571ace4792f8ecc7037c09b7039ba49914f5be14bf5",
+    "th": "98c9439e3d62f42bedd17ba8e5600991f77ab4b7a9cd81c5220e8f9a8a672319",
+    "tr": "2c392927295922618b36c3c75632f1f4060c0cb8510275d3e9a3046907459b10",
     "uk": "908c3045aff6b3c68870fa68499aa6bbaf42531ddb09d49a701f6d73dd1a424d",
     "ur": "d3da5505bf2a97dde673de2000ad4e9cec115c27e73628765907ab46c79fe3cd",
     "vi": "4f691f892a9c34530b4dfbb6241d24a5b68a9a4bcf71fdb304d07392bd6f35d8",
-    "zh-CN": "4cb441d9875c58b9ca25d315535367f5f3dbe7ecbea6e3b3749abb0b8bb8c7b5",
+    "zh-CN": "5443fa41d50a568d90eb24270a2a2006c7165bdb79d6bffaa1bebb1226d00a23",
     "zh-TW": "2d25ad244a5ae6caf040ae870709c610629a2957ac47f4eed346578d28602179"
   }
 }

@@ -49,7 +49,7 @@
     "health": {
       "healthy": {
         "label": "健康",
-        "description": "无需关注失败的代理、阻塞的任务或紧急决策。"
+        "description": "无需关注失败的智能体、阻塞的任务或紧急决策。"
       },
       "attention": {
         "label": "需要注意",
@@ -57,7 +57,7 @@
       },
       "critical": {
         "label": "严重状态",
-        "description": "失败的代理、受阻的任务或关键决策需要采取行动。"
+        "description": "失败的智能体、受阻的任务或关键决策需要采取行动。"
       }
     },
     "agentState": {

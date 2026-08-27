@@ -34,6 +34,17 @@ function monitorSemanticErrors(locale: FixtureLocale, monitor: MessageTree): str
   const errors: string[] = [];
   const approvedValues = monitorSemanticFixture.locales[locale];
 
+  for (const rejected of monitorSemanticFixture.rejectedValues) {
+    if (
+      rejected.locale === locale &&
+      valueAtPath(monitor, rejected.path) === rejected.value
+    ) {
+      errors.push(
+        `${rejected.path} uses rejected ${rejected.reason} terminology for ${locale}`,
+      );
+    }
+  }
+
   monitorSemanticFixture.paths.forEach((path, index) => {
     if (valueAtPath(monitor, path) !== approvedValues[index]) {
       errors.push(`${path} is not approved for ${locale}`);
@@ -60,22 +71,17 @@ describe("monitor locale semantics", () => {
     }
   });
 
-  it.each([
-    ["de", "refreshing", "Erfrischend"],
-    ["de", "live", "leben"],
-    ["es", "openRun", "carrera abierta"],
-    ["es", "live", "vivir"],
-    ["fr", "openRuns", "Ouvrir les courses en direct et récentes"],
-    ["fr", "live", "vivre"],
-    ["he", "health.critical.label", "מדינה קריטית"],
-    ["ja", "refreshing", "さわやか"],
-    ["ja", "live", "生きる"],
-    ["ar", "agentStates", "دول الوكيل"],
-  ] as const)("rejects the reported wrong sense in %s monitor.%s", (locale, path, wrongSense) => {
-    const messages = localeMessages[locale] as MessageTree;
-    const monitor = structuredClone(messages.monitor) as MessageTree;
-    setValueAtPath(monitor, path, wrongSense);
+  it.each(monitorSemanticFixture.rejectedValues)(
+    "rejects the curated wrong sense in $locale monitor.$path",
+    ({ locale, path, value, reason }) => {
+      const fixtureLocale = locale as FixtureLocale;
+      const messages = localeMessages[fixtureLocale] as MessageTree;
+      const monitor = structuredClone(messages.monitor) as MessageTree;
+      setValueAtPath(monitor, path, value);
 
-    expect(monitorSemanticErrors(locale, monitor)).toContain(`${path} is not approved for ${locale}`);
-  });
+      expect(monitorSemanticErrors(fixtureLocale, monitor)).toContain(
+        `${path} uses rejected ${reason} terminology for ${locale}`,
+      );
+    },
+  );
 });
