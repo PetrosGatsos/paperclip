@@ -305,11 +305,13 @@ export function createMicrosoftGraphCompletionMailTransport(input: {
   fetchImpl?: typeof fetch;
   timeoutMs?: number;
   createCorrelationId?: () => string;
+  monotonicNow?: () => number;
   now?: () => Date;
 }): MicrosoftGraphCompletionMailTransport {
   const fetchImpl = input.fetchImpl ?? fetch;
   const timeoutMs = input.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   const createCorrelationId = input.createCorrelationId ?? randomUUID;
+  const monotonicNow = input.monotonicNow ?? (() => performance.now());
   const now = input.now ?? (() => new Date());
 
   return {
@@ -317,6 +319,7 @@ export function createMicrosoftGraphCompletionMailTransport(input: {
       const correlationId = createCorrelationId();
       let access: MicrosoftGraphAccessContext;
       const controller = new AbortController();
+      const deadline = monotonicNow() + timeoutMs;
       const timer = setTimeout(() => controller.abort(), timeoutMs);
       timer.unref?.();
       try {
@@ -361,6 +364,16 @@ export function createMicrosoftGraphCompletionMailTransport(input: {
           correlationId,
           "scope_or_permission",
           "The delegated Microsoft Graph grant does not include Mail.Send.",
+        );
+      }
+
+      if (controller.signal.aborted || monotonicNow() >= deadline) {
+        clearTimeout(timer);
+        return rejectedBeforeDispatch(
+          correlationId,
+          "transient",
+          "The Microsoft Graph completion-mail deadline expired before dispatch.",
+          true,
         );
       }
 

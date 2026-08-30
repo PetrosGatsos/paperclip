@@ -264,6 +264,35 @@ describe("Microsoft Graph completion-mail transport", () => {
     expect(fetchImpl).not.toHaveBeenCalled();
   });
 
+  it("keeps an expired deadline before dispatch retryable and does not call Graph", async () => {
+    const fetchImpl = vi.fn<typeof fetch>();
+    let clock = 0;
+    const transport = createMicrosoftGraphCompletionMailTransport({
+      config: CONFIG,
+      fetchImpl,
+      acquireAccessContext: async () => {
+        clock = 10;
+        return ACCESS;
+      },
+      timeoutMs: 10,
+      monotonicNow: () => clock,
+      createCorrelationId: () => "notification-correlation-123",
+    });
+
+    const result = await transport.send(MESSAGE);
+
+    expect(result).toMatchObject({
+      outcome: "rejected",
+      correlationId: "notification-correlation-123",
+      error: {
+        category: "transient",
+        retryable: true,
+        diagnostic: "The Microsoft Graph completion-mail deadline expired before dispatch.",
+      },
+    });
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
   it("fails closed before dispatch when Mail.Send is absent", async () => {
     const fetchImpl = vi.fn<typeof fetch>();
     const result = await transportWith(fetchImpl, { ...ACCESS, grantedScopes: ["Mail.Read"] }).send(MESSAGE);
