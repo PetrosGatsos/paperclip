@@ -28,7 +28,7 @@ PAPERCLIP_GRAPH_COMPLETION_MAIL_AUTHENTICATED_SENDER=owner@example.invalid
 
 The recipient setting must resolve to exactly two unique email addresses. The server snapshots those configured recipients when the dependent notification orchestration creates its durable record. Request text, agent output, and incoming email content must never supply or override recipients.
 
-The authenticated sender setting is an identity check. The Graph request uses `POST https://graph.microsoft.com/v1.0/me/sendMail` and contains no `from` property. The acquired delegated access context must report the same authenticated mailbox and include `Mail.Send`, or the transport fails before HTTP dispatch.
+The authenticated sender setting is an identity check. The Graph request uses `POST https://graph.microsoft.com/v1.0/me/sendMail` and contains no `from` property. The acquired delegated access context must report the same authenticated mailbox and include `Mail.Send`, or the transport fails before HTTP dispatch. The transport's overall deadline starts before access-context acquisition, and its injected provider receives the same abort signal used for Graph dispatch.
 
 Do not put an access token or refresh token in either setting. Bind the Microsoft client secret and delegated refresh material through the existing Paperclip secret provider and user-owned OAuth connection. The caller must inject a short-lived access context into the transport. Never persist or log that access token.
 
@@ -55,7 +55,7 @@ Microsoft Graph v1.0 returns `202 Accepted` with no response body for `/me/sendM
 
 An HTTP `401` or `403` is a non-retryable authentication or permission result until credentials or consent change. A `429` result carries retry guidance. A provider `5xx` result is transient. Response bodies, access tokens, message content, and mailbox addresses are excluded from diagnostics.
 
-A timeout, disconnect, or other failure without an HTTP response has an ambiguous outcome. The request might have reached Graph. The transport returns `outcome: "ambiguous"` and `automaticRetryAllowed: false`. Downstream orchestration must stop blind retries and require explicit reconciliation under the original correlation id.
+An access-context timeout before HTTP dispatch is a retryable transient result because no mail request was sent. After dispatch starts, a timeout, disconnect, or other failure without an HTTP response has an ambiguous outcome because the request might have reached Graph. The transport returns `outcome: "ambiguous"` and `automaticRetryAllowed: false`. Downstream orchestration must stop blind retries and require explicit reconciliation under the original correlation id.
 
 ## Deployment verification
 

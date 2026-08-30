@@ -177,8 +177,9 @@ function hasScope(scopes: readonly string[], expected: string): boolean {
 
 function rejectedBeforeDispatch(
   correlationId: string,
-  category: "authentication" | "scope_or_permission",
+  category: "authentication" | "scope_or_permission" | "transient",
   diagnostic: string,
+  retryable = false,
 ): MicrosoftGraphMailSendResult {
   return {
     outcome: "rejected",
@@ -188,11 +189,33 @@ function rejectedBeforeDispatch(
     error: {
       category,
       httpStatus: null,
-      retryable: false,
+      retryable,
       retryAfterSeconds: null,
       diagnostic,
     },
   };
+}
+
+function abortable<T>(operation: Promise<T>, signal: AbortSignal): Promise<T> {
+  if (signal.aborted) return Promise.reject(signal.reason);
+
+  return new Promise<T>((resolve, reject) => {
+    const onAbort = () => {
+      signal.removeEventListener("abort", onAbort);
+      reject(signal.reason);
+    };
+    signal.addEventListener("abort", onAbort, { once: true });
+    operation.then(
+      (value) => {
+        signal.removeEventListener("abort", onAbort);
+        resolve(value);
+      },
+      (error: unknown) => {
+        signal.removeEventListener("abort", onAbort);
+        reject(error);
+      },
+    );
+  });
 }
 
 function resultForHttpFailure(
@@ -278,7 +301,7 @@ function resultForHttpFailure(
 
 export function createMicrosoftGraphCompletionMailTransport(input: {
   config: MicrosoftGraphCompletionMailConfig;
-  acquireAccessContext: () => Promise<MicrosoftGraphAccessContext>;
+  acquireAccessContext: (signal: AbortSignal) => Promise<MicrosoftGraphAccessContext>;
   fetchImpl?: typeof fetch;
   timeoutMs?: number;
   createCorrelationId?: () => string;
@@ -293,9 +316,22 @@ export function createMicrosoftGraphCompletionMailTransport(input: {
     async send(message) {
       const correlationId = createCorrelationId();
       let access: MicrosoftGraphAccessContext;
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+      timer.unref?.();
       try {
-        access = await input.acquireAccessContext();
+        access = await abortable(input.acquireAccessContext(controller.signal), controller.signal);
       } catch {
+        if (controller.signal.aborted) {
+          clearTimeout(timer);
+          return rejectedBeforeDispatch(
+            correlationId,
+            "transient",
+            "Delegated Microsoft Graph access acquisition timed out before mail dispatch.",
+            true,
+          );
+        }
+        clearTimeout(timer);
         return rejectedBeforeDispatch(
           correlationId,
           "authentication",
@@ -304,6 +340,7 @@ export function createMicrosoftGraphCompletionMailTransport(input: {
       }
       const accessToken = access.accessToken.trim();
       if (!accessToken) {
+        clearTimeout(timer);
         return rejectedBeforeDispatch(
           correlationId,
           "authentication",
@@ -311,6 +348,7 @@ export function createMicrosoftGraphCompletionMailTransport(input: {
         );
       }
       if (normalizeEmail(access.authenticatedMailbox) !== input.config.authenticatedSender) {
+        clearTimeout(timer);
         return rejectedBeforeDispatch(
           correlationId,
           "authentication",
@@ -318,6 +356,7 @@ export function createMicrosoftGraphCompletionMailTransport(input: {
         );
       }
       if (!hasScope(access.grantedScopes, MICROSOFT_GRAPH_MAIL_SEND_SCOPE)) {
+        clearTimeout(timer);
         return rejectedBeforeDispatch(
           correlationId,
           "scope_or_permission",
@@ -325,9 +364,6 @@ export function createMicrosoftGraphCompletionMailTransport(input: {
         );
       }
 
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), timeoutMs);
-      timer.unref?.();
       let response: Response;
       try {
         response = await fetchImpl(MICROSOFT_GRAPH_MAIL_SEND_ENDPOINT, {

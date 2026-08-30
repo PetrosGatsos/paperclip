@@ -235,6 +235,35 @@ describe("Microsoft Graph completion-mail transport", () => {
     expect(fetchImpl).not.toHaveBeenCalled();
   });
 
+  it("bounds and aborts delegated access acquisition before dispatch", async () => {
+    const fetchImpl = vi.fn<typeof fetch>();
+    let accessSignal: AbortSignal | undefined;
+    const transport = createMicrosoftGraphCompletionMailTransport({
+      config: CONFIG,
+      fetchImpl,
+      acquireAccessContext: (signal) => {
+        accessSignal = signal;
+        return new Promise<MicrosoftGraphAccessContext>(() => undefined);
+      },
+      timeoutMs: 10,
+      createCorrelationId: () => "notification-correlation-123",
+    });
+
+    const result = await transport.send(MESSAGE);
+
+    expect(accessSignal?.aborted).toBe(true);
+    expect(result).toMatchObject({
+      outcome: "rejected",
+      correlationId: "notification-correlation-123",
+      error: {
+        category: "transient",
+        retryable: true,
+        diagnostic: "Delegated Microsoft Graph access acquisition timed out before mail dispatch.",
+      },
+    });
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
   it("fails closed before dispatch when Mail.Send is absent", async () => {
     const fetchImpl = vi.fn<typeof fetch>();
     const result = await transportWith(fetchImpl, { ...ACCESS, grantedScopes: ["Mail.Read"] }).send(MESSAGE);
