@@ -67,8 +67,13 @@ export type MicrosoftGraphMailSendResult =
       };
     };
 
+export type CompletionMailDispatchOptions = {
+  correlationId?: string;
+  beforeDispatch?: () => Promise<void>;
+};
+
 export type MicrosoftGraphCompletionMailTransport = {
-  send(message: CompletionMailMessage): Promise<MicrosoftGraphMailSendResult>;
+  send(message: CompletionMailMessage, options?: CompletionMailDispatchOptions): Promise<MicrosoftGraphMailSendResult>;
 };
 
 export class MicrosoftGraphCompletionMailConfigError extends Error {
@@ -324,8 +329,8 @@ export function createMicrosoftGraphCompletionMailTransport(input: {
   const now = input.now ?? (() => new Date());
 
   return {
-    async send(message) {
-      const correlationId = createCorrelationId();
+    async send(message, options) {
+      const correlationId = options?.correlationId ?? createCorrelationId();
       let access: MicrosoftGraphAccessContext;
       const controller = new AbortController();
       const deadline = monotonicNow() + timeoutMs;
@@ -382,6 +387,20 @@ export function createMicrosoftGraphCompletionMailTransport(input: {
           correlationId,
           "transient",
           "The Microsoft Graph completion-mail deadline expired before dispatch.",
+          true,
+        );
+      }
+
+      try {
+        // The durable orchestrator records the uncertainty boundary here. If
+        // this callback fails, fetch has not been invoked and a retry is safe.
+        await options?.beforeDispatch?.();
+      } catch {
+        clearTimeout(timer);
+        return rejectedBeforeDispatch(
+          correlationId,
+          "transient",
+          "The completion-mail dispatch marker could not be persisted before dispatch.",
           true,
         );
       }

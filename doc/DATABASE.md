@@ -231,6 +231,21 @@ that invariant. Removing or disabling a future native rollout flag must not
 delete these records; persisted experimental runs remain available for recovery
 and inspection.
 
+## Completion notification delivery ledger
+
+`completion_notifications` stores one company-scoped delivery snapshot for an
+eligible email-triggered parent issue. The unique parent request key makes
+readiness scheduling idempotent. A composite foreign key prevents a row from
+referencing an issue in another company. Database checks and an update trigger
+enforce immutable content snapshots, monotonic attempt counts, valid
+status/dispatch-state pairs, and terminal sent-state timestamps.
+
+Workers claim due rows under a database row lock and persist a lease. An expired
+pre-dispatch lease can be claimed again. An expired post-dispatch lease becomes
+ambiguous and requires mailbox reconciliation or operator attention; it never
+returns to the automatic send queue. Migration `0228_perfect_slyde.sql` creates
+the empty ledger and does not backfill historical issue activity or send mail.
+
 ## Plugin database namespaces
 
 The plugin runtime tracks plugin-owned database namespaces and migrations in `plugin_database_namespaces` and `plugin_migrations`. Hosted deployments that separate runtime and migration connections should set `DATABASE_MIGRATION_URL`; plugin namespace migration work uses the migration connection when present.

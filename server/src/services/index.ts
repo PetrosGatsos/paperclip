@@ -1,3 +1,19 @@
+export {
+  appendCompletionNotificationCorrelationMarker,
+  completionNotificationCorrelationMarker,
+  completionNotificationService,
+  computeCompletionNotificationRetryDelayMs,
+  COMPLETION_NOTIFICATION_CORRELATION_LABEL,
+  COMPLETION_NOTIFICATION_LEASE_MS,
+  COMPLETION_NOTIFICATION_MAX_ATTEMPTS,
+  COMPLETION_NOTIFICATION_RETRY_BASE_MS,
+  COMPLETION_NOTIFICATION_RETRY_CAP_MS,
+  type CompletionNotificationProcessResult,
+  type CompletionNotificationReconciler,
+  type CompletionNotificationReconciliationResult,
+  type CompletionNotificationScheduleResult,
+  type CompletionNotificationService,
+} from "./completion-notifications.js";
 export { companyService } from "./companies.js";
 export { companyArtifactsService } from "./company-artifacts.js";
 export { companySearchService } from "./company-search.js";

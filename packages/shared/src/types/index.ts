@@ -1,5 +1,15 @@
 export { decisionEffectTargetIssueIds } from "./decision.js";
 export {
+  COMPLETION_NOTIFICATION_DISPATCH_STATES,
+  COMPLETION_NOTIFICATION_ERROR_CATEGORIES,
+  COMPLETION_NOTIFICATION_STATUSES,
+  type CompletionNotificationDispatchState,
+  type CompletionNotificationErrorCategory,
+  type CompletionNotificationRecipientsSnapshot,
+  type CompletionNotificationRecord,
+  type CompletionNotificationStatus,
+} from "./completion-notification.js";
+export {
   NATIVE_FINALIZATION_SCHEMA,
   type NativeFinalizationResult,
   type NativeFinalizationResultV1,

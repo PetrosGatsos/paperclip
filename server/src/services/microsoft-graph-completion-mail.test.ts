@@ -107,6 +107,46 @@ describe("Microsoft Graph completion-mail transport", () => {
     expect(JSON.stringify(body).toLowerCase()).not.toContain('"from"');
   });
 
+  it("uses the durable correlation id and awaits the dispatch marker before fetch", async () => {
+    const events: string[] = [];
+    const fetchImpl = vi.fn<typeof fetch>().mockImplementation(async () => {
+      events.push("fetch");
+      return new Response(null, { status: 202 });
+    });
+    const transport = transportWith(fetchImpl);
+
+    const result = await transport.send(MESSAGE, {
+      correlationId: "durable-correlation-456",
+      beforeDispatch: async () => {
+        events.push("marked");
+      },
+    });
+
+    expect(events).toEqual(["marked", "fetch"]);
+    expect(result.correlationId).toBe("durable-correlation-456");
+    expect(fetchImpl.mock.calls[0]?.[1]?.headers).toMatchObject({
+      "client-request-id": "durable-correlation-456",
+    });
+  });
+
+  it("does not dispatch when the durable dispatch marker fails", async () => {
+    const fetchImpl = vi.fn<typeof fetch>();
+    const result = await transportWith(fetchImpl).send(MESSAGE, {
+      correlationId: "durable-correlation-456",
+      beforeDispatch: async () => {
+        throw new Error("database unavailable with private@example.invalid");
+      },
+    });
+
+    expect(fetchImpl).not.toHaveBeenCalled();
+    expect(result).toMatchObject({
+      outcome: "rejected",
+      correlationId: "durable-correlation-456",
+      error: { category: "transient", retryable: true },
+    });
+    expect(JSON.stringify(result)).not.toContain("private@example.invalid");
+  });
+
   it("treats 202 with no response body as provider acceptance, not confirmed delivery", async () => {
     const fetchImpl = vi.fn<typeof fetch>().mockResolvedValue(new Response(null, {
       status: 202,

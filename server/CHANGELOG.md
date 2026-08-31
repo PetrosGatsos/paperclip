@@ -5,6 +5,7 @@
 ### Patch Changes
 
 - Add an injected Microsoft Graph completion-mail transport and a fail-closed parent readiness aggregator for validated email-triggered work.
+- Persist one idempotent completion-notification delivery ledger per email-triggered parent, with atomic worker leases, bounded retries, and fail-closed ambiguous-outcome reconciliation.
 - Bound full-tree workspace Git scans with process-wide concurrency, queue, timeout, cancellation, coalescing, and short-lived changed-file caching. Saturated or timed-out changed-file requests now return a retryable degraded response, and hidden file-browser panels no longer initiate scans.
 
 ## 0.3.1

@@ -59,6 +59,49 @@ An access-context timeout before HTTP dispatch is a retryable transient result b
 
 For this transport, dispatch starts when the injected fetch implementation is invoked. The Fetch API exposes no reliable boundary at which the caller can prove that zero request bytes were transmitted, so even a deadline abort during connection setup after invocation remains ambiguous.
 
+## Durable delivery and recovery
+
+Migration `0228_perfect_slyde.sql` adds `completion_notifications`. The migration
+does not create notifications for historical requests. Each new eligible
+email-triggered parent gets one immutable recipient, subject, body,
+implementation-reference, and correlation snapshot. The scheduler accepts the
+GLO-55 parent-readiness result directly, composes the snapshot from that parent,
+and suppresses ineligible aggregates before creating a row; child transitions
+do not have a default direct-mail path. A company-scoped unique key rejects
+duplicate readiness events. The parent issue foreign key also rejects a
+notification that crosses a company boundary.
+
+The delivery states are:
+
+- `pending`: due work has not been claimed;
+- `sending`: one worker owns a live lease and the dispatch marker records
+  whether Graph invocation has started;
+- `failed`: a definite result can retry at `next_attempt_at`, or the attempt cap
+  has stopped it;
+- `sent`: Graph returned `202`, or mailbox reconciliation found the exact
+  correlation marker. This means provider acceptance, not confirmed delivery;
+- `operator_attention`: dispatch may have occurred, so automatic resend is
+  disabled.
+
+Workers claim rows with a company-scoped row lock and a lease. An expired lease
+is safe to reclaim only when `dispatch_state` is `not_started`. If the lease
+expires after the dispatch marker is stored, recovery moves the row to
+`operator_attention`. The worker or operator must reconcile the exact
+`Paperclip Notification: <correlation id>` marker through the authenticated
+mailbox read boundary. A missing or indeterminate search result never proves
+that resend is safe.
+
+Definite retryable failures use five attempts. The delay starts at 30 seconds,
+doubles by attempt, applies 0.8–1.2 jitter, respects a longer provider retry
+delay, and has a one-hour cap. Authentication, scope, permission, and provider
+contract failures do not retry automatically. Stored diagnostics use bounded,
+redacted classifications and messages. They never contain response bodies,
+credentials, mailbox content, or configured recipient addresses.
+
+This delivery ledger does not update issue or run status. A notification
+failure cannot move a ready-for-testing parent backward, reopen implementation,
+or schedule another implementation run.
+
 ## Deployment verification
 
 1. Confirm the Entra app registration has delegated `Mail.Read` and `Mail.Send` permissions plus the existing sign-in scopes.
