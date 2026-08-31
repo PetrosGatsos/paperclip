@@ -88,6 +88,7 @@ async function closeServer(server: Server | null): Promise<void> {
 
 describeEmbeddedPostgres("native Codex server vertical slice", () => {
   let temporary: Awaited<ReturnType<typeof startEmbeddedPostgresTestDatabase>> | null = null;
+  let db: ReturnType<typeof createDb> | null = null;
   let runtimeRoot: string | null = null;
   let server: Server | null = null;
 
@@ -107,13 +108,14 @@ describeEmbeddedPostgres("native Codex server vertical slice", () => {
   afterAll(async () => {
     runnerPrpWebSocketInternals.resetForTests();
     await closeServer(server);
+    await db?.$client.end();
     await temporary?.cleanup();
     if (runtimeRoot) await rm(runtimeRoot, { recursive: true, force: true });
   });
 
   it("returns a durable result and resumes the provider session on the next run", async () => {
     if (!temporary || !runtimeRoot) throw new Error("Vertical-slice fixture was not initialized");
-    const db = createDb(temporary.connectionString);
+    db = createDb(temporary.connectionString);
     const companyId = randomUUID();
     const agentId = randomUUID();
     const issueId = randomUUID();
