@@ -57,6 +57,8 @@ An HTTP `401` or `403` is a non-retryable authentication or permission result un
 
 An access-context timeout before HTTP dispatch is a retryable transient result because no mail request was sent. After dispatch starts, a timeout, disconnect, or other failure without an HTTP response has an ambiguous outcome because the request might have reached Graph. The transport returns `outcome: "ambiguous"` and `automaticRetryAllowed: false`. Downstream orchestration must stop blind retries and require explicit reconciliation under the original correlation id.
 
+For this transport, dispatch starts when the injected fetch implementation is invoked. The Fetch API exposes no reliable boundary at which the caller can prove that zero request bytes were transmitted, so even a deadline abort during connection setup after invocation remains ambiguous.
+
 ## Deployment verification
 
 1. Confirm the Entra app registration has delegated `Mail.Read` and `Mail.Send` permissions plus the existing sign-in scopes.

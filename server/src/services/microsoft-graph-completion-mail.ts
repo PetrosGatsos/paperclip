@@ -386,6 +386,9 @@ export function createMicrosoftGraphCompletionMailTransport(input: {
         );
       }
 
+      // Fetch exposes no reliable boundary between connection setup and request
+      // transmission. Once invoked, any rejection may follow a transmitted request.
+      // Preserve that uncertainty so downstream orchestration never blindly resends.
       let response: Response;
       try {
         response = await fetchImpl(MICROSOFT_GRAPH_MAIL_SEND_ENDPOINT, {

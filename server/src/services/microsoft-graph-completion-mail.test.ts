@@ -227,6 +227,41 @@ describe("Microsoft Graph completion-mail transport", () => {
     expect(JSON.stringify(result)).not.toContain("private-mailbox@example.invalid");
   });
 
+  it("treats a deadline abort after fetch invocation as ambiguous to prevent blind resend", async () => {
+    const fetchImpl = vi.fn<typeof fetch>().mockImplementation((_input, init) => (
+      new Promise<Response>((_resolve, reject) => {
+        const signal = init?.signal;
+        if (!signal) throw new Error("expected an abort signal");
+        signal.addEventListener("abort", () => reject(signal.reason), { once: true });
+      })
+    ));
+    const transport = createMicrosoftGraphCompletionMailTransport({
+      config: CONFIG,
+      fetchImpl,
+      acquireAccessContext: async () => ACCESS,
+      timeoutMs: 10,
+      createCorrelationId: () => "notification-correlation-123",
+    });
+
+    const result = await transport.send(MESSAGE);
+
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(result).toEqual({
+      outcome: "ambiguous",
+      correlationId: "notification-correlation-123",
+      providerMessageId: null,
+      requestIdentifiers: { requestId: null, clientRequestId: null },
+      automaticRetryAllowed: false,
+      error: {
+        category: "transport_outcome_unknown",
+        httpStatus: null,
+        retryable: false,
+        retryAfterSeconds: null,
+        diagnostic: "The Microsoft Graph connection ended before provider acceptance could be confirmed.",
+      },
+    });
+  });
+
   it("redacts access-context acquisition failures before dispatch", async () => {
     const fetchImpl = vi.fn<typeof fetch>();
     const transport = createMicrosoftGraphCompletionMailTransport({
