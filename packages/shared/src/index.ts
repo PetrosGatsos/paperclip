@@ -37,6 +37,17 @@ export {
 
 export { decisionEffectTargetIssueIds } from "./types/decision.js";
 
+export {
+  COMPLETION_NOTIFICATION_DISPATCH_STATES,
+  COMPLETION_NOTIFICATION_ERROR_CATEGORIES,
+  COMPLETION_NOTIFICATION_STATUSES,
+  type CompletionNotificationDispatchState,
+  type CompletionNotificationErrorCategory,
+  type CompletionNotificationRecipientsSnapshot,
+  type CompletionNotificationRecord,
+  type CompletionNotificationStatus,
+} from "./types/completion-notification.js";
+
 export type {
   DecisionEffectStaleness,
   DecisionOptionStyle,
