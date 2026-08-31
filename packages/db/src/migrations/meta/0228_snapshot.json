@@ -9290,16 +9290,14 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "completion_notifications_parent_company_fk": {
-          "name": "completion_notifications_parent_company_fk",
+        "completion_notifications_parent_issue_id_issues_id_fk": {
+          "name": "completion_notifications_parent_issue_id_issues_id_fk",
           "tableFrom": "completion_notifications",
           "tableTo": "issues",
           "columnsFrom": [
-            "company_id",
             "parent_issue_id"
           ],
           "columnsTo": [
-            "company_id",
             "id"
           ],
           "onDelete": "cascade",

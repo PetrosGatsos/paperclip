@@ -235,8 +235,9 @@ and inspection.
 
 `completion_notifications` stores one company-scoped delivery snapshot for an
 eligible email-triggered parent issue. The unique parent request key makes
-readiness scheduling idempotent. A composite foreign key prevents a row from
-referencing an issue in another company. Database checks and an update trigger
+readiness scheduling idempotent. The parent primary-key foreign key preserves cascade behavior, and an insert/update
+trigger prevents a row from referencing an issue in another company without
+depending on a mutable legacy composite index. Database checks and an update trigger
 enforce immutable content snapshots, monotonic attempt counts, valid
 status/dispatch-state pairs, and terminal sent-state timestamps.
 

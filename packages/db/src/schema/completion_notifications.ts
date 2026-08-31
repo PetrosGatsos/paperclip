@@ -1,7 +1,6 @@
 import { sql } from "drizzle-orm";
 import {
   check,
-  foreignKey,
   index,
   integer,
   jsonb,
@@ -30,7 +29,9 @@ export const completionNotifications = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     companyId: uuid("company_id").notNull().references(() => companies.id, { onDelete: "cascade" }),
-    parentIssueId: uuid("parent_issue_id").notNull(),
+    parentIssueId: uuid("parent_issue_id")
+      .notNull()
+      .references(() => issues.id, { onDelete: "cascade" }),
     parentRequestKey: text("parent_request_key").notNull(),
     status: text("status").$type<CompletionNotificationStatus>().notNull().default("pending"),
     dispatchState: text("dispatch_state")
@@ -60,11 +61,6 @@ export const completionNotifications = pgTable(
     sentAt: timestamp("sent_at", { withTimezone: true }),
   },
   (table) => ({
-    parentCompanyFk: foreignKey({
-      columns: [table.companyId, table.parentIssueId],
-      foreignColumns: [issues.companyId, issues.id],
-      name: "completion_notifications_parent_company_fk",
-    }).onDelete("cascade"),
     companyParentKeyUq: uniqueIndex("completion_notifications_company_parent_key_uq").on(
       table.companyId,
       table.parentRequestKey,

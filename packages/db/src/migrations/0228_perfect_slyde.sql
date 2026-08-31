@@ -53,10 +53,29 @@ CREATE TABLE "completion_notifications" (
 );
 --> statement-breakpoint
 ALTER TABLE "completion_notifications" ADD CONSTRAINT "completion_notifications_company_id_companies_id_fk" FOREIGN KEY ("company_id") REFERENCES "public"."companies"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "completion_notifications" ADD CONSTRAINT "completion_notifications_parent_company_fk" FOREIGN KEY ("company_id","parent_issue_id") REFERENCES "public"."issues"("company_id","id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "completion_notifications" ADD CONSTRAINT "completion_notifications_parent_issue_id_issues_id_fk" FOREIGN KEY ("parent_issue_id") REFERENCES "public"."issues"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE UNIQUE INDEX "completion_notifications_company_parent_key_uq" ON "completion_notifications" USING btree ("company_id","parent_request_key");--> statement-breakpoint
 CREATE UNIQUE INDEX "completion_notifications_company_correlation_uq" ON "completion_notifications" USING btree ("company_id","paperclip_correlation_id");--> statement-breakpoint
 CREATE INDEX "completion_notifications_due_work_idx" ON "completion_notifications" USING btree ("company_id","status","next_attempt_at","lease_expires_at");--> statement-breakpoint
+CREATE OR REPLACE FUNCTION paperclip_validate_completion_notification_parent_company()
+RETURNS trigger AS $completion_parent$
+BEGIN
+	IF NOT EXISTS (
+		SELECT 1
+		FROM "issues"
+		WHERE "issues"."id" = NEW."parent_issue_id"
+			AND "issues"."company_id" = NEW."company_id"
+	) THEN
+		RAISE EXCEPTION 'completion notification parent issue must belong to the same company'
+			USING ERRCODE = '23503';
+	END IF;
+
+	RETURN NEW;
+END;
+$completion_parent$ LANGUAGE plpgsql;--> statement-breakpoint
+CREATE TRIGGER paperclip_completion_notification_parent_company_guard
+BEFORE INSERT OR UPDATE ON "completion_notifications"
+FOR EACH ROW EXECUTE FUNCTION paperclip_validate_completion_notification_parent_company();--> statement-breakpoint
 CREATE OR REPLACE FUNCTION paperclip_validate_completion_notification_update()
 RETURNS trigger AS $$
 BEGIN
