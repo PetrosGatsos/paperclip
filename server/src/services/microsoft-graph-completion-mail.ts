@@ -157,6 +157,15 @@ function responseIdentifiers(response: Response): MicrosoftGraphRequestIdentifie
   };
 }
 
+async function discardResponseBody(response: Response): Promise<void> {
+  if (!response.body) return;
+  try {
+    await response.body.cancel();
+  } catch {
+    // Response metadata already determines the result. Body cleanup is best effort.
+  }
+}
+
 function emptyRequestIdentifiers(): MicrosoftGraphRequestIdentifiers {
   return { requestId: null, clientRequestId: null };
 }
@@ -418,7 +427,11 @@ export function createMicrosoftGraphCompletionMailTransport(input: {
         clearTimeout(timer);
       }
 
-      if (response.status !== 202) return resultForHttpFailure(correlationId, response, now);
+      if (response.status !== 202) {
+        const result = resultForHttpFailure(correlationId, response, now);
+        await discardResponseBody(response);
+        return result;
+      }
 
       return {
         outcome: "accepted",

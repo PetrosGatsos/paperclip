@@ -149,6 +149,25 @@ describe("Microsoft Graph completion-mail transport", () => {
     expect(JSON.stringify(result)).not.toContain("person@example.invalid");
   });
 
+  it("cancels an unread Graph error body after capturing safe response metadata", async () => {
+    const response = new Response(
+      JSON.stringify({ error: { message: "private provider diagnostic" } }),
+      { status: 403, headers: { "request-id": "graph-request-cleanup" } },
+    );
+    const cancelBody = vi.spyOn(response.body!, "cancel");
+    const fetchImpl = vi.fn<typeof fetch>().mockResolvedValue(response);
+
+    const result = await transportWith(fetchImpl).send(MESSAGE);
+
+    expect(cancelBody).toHaveBeenCalledTimes(1);
+    expect(result).toMatchObject({
+      outcome: "rejected",
+      requestIdentifiers: { requestId: "graph-request-cleanup" },
+      error: { category: "scope_or_permission", httpStatus: 403 },
+    });
+    expect(JSON.stringify(result)).not.toContain("private provider diagnostic");
+  });
+
   it("classifies throttling with bounded retry guidance", async () => {
     const fetchImpl = vi.fn<typeof fetch>().mockResolvedValue(new Response(null, {
       status: 429,
